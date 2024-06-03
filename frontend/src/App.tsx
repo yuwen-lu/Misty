@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ReactFlow, {
   addEdge,
   Background,
@@ -17,11 +17,6 @@ import ImageDisplayNode from './components/ImageDisplayNode';
 import ImageUploadNode from './components/ImageUploadNode';
 import 'reactflow/dist/style.css';
 
-
-const nodeTypes: NodeTypes = {
-  imageUploadNode: ImageUploadNode,
-  imageDisplayNode: ImageDisplayNode,
-};
 
 
 const initialNodes: Node[] = [
@@ -52,28 +47,36 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: true,
 };
 
+const nodeTypes: NodeTypes = {
+  imageUploadNode: ImageUploadNode,
+  imageDisplayNode: ImageDisplayNode,
+};
+
 const App: React.FC = () => {
 
   const [response, setResponse] = useState<string>('');
 
-  useEffect(() => {
-    // Example message data
-    const messageData = {
-      username: "test_user",
-      text: "Hello, this is a test message."
-    };
+  // useEffect(() => {
+  //   // Example message data
+  //   const messageData = {
+  //     username: "test_user",
+  //     text: "Hello, this is a test message."
+  //   };
 
-    fetch('http://127.0.0.1:5000/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(messageData),
-    })
-      .then(res => res.json())
-      .then(data => setResponse(data.message))
-      .catch(error => console.error('Error:', error));
-  }, []);
+  //   fetch('http://127.0.0.1:5000/api/chat', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(messageData),
+  //   })
+  //     .then(res => res.json())
+  //     .then(data => setResponse(data.message))
+  //     .catch(error => console.error('Error:', error));
+  // }, []);
+
+
+
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
@@ -123,6 +126,7 @@ const App: React.FC = () => {
             : node
         )}
         edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}

@@ -5,7 +5,7 @@ import 'reactflow/dist/style.css';
 const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
   return (
     <div className="image-display-node">
-      <img src={data.image} alt="Uploaded" style={{ width: '100%', height: '100%' }} />
+      <img src={data.image} alt="Uploaded" style={{ maxWidth: '20vw', maxHeight: '30vh' }} />
       <Handle type="target" position={Position.Top} />
     </div>
   );
