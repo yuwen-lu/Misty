@@ -6,7 +6,6 @@ main = Blueprint('main', __name__)
 
 @main.route('/api/chat', methods=['POST'])
 def chat():
-    print("huh?")
     print("request: ", request)
     data = request.json  # Get the JSON data from the request
     username = data.get('username')
