@@ -16,6 +16,7 @@ import ReactFlow, {
 import ImageDisplayNode from './components/ImageDisplayNode';
 import ImageUploadNode from './components/ImageUploadNode';
 import 'reactflow/dist/style.css';
+import './index.css';
 
 
 

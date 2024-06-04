@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import 'reactflow/dist/style.css';
+import '../index.css';
 
 const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
 
@@ -35,11 +36,11 @@ const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
     }
 
     return (
-        <div className="upload-node">
+        <div className="upload-node px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
             <p>Upload Screenshot</p>
             <input type="file" ref={imageInputRef} onChange={handleUpload} />
             <button onClick={importImage}>Import</button>
-            <Handle type="source" position={Position.Bottom} />
+            {/* <Handle type="source" position={Position.Bottom} /> */}
         </div>
     );
 };

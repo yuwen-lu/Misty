@@ -1,6 +1,7 @@
 import React from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import 'reactflow/dist/style.css';
+import '../index.css';
 
 const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
   return (
