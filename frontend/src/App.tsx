@@ -43,29 +43,6 @@ const nodeTypes: NodeTypes = {
 
 const App: React.FC = () => {
 
-  const [response, setResponse] = useState<string>('');
-
-  // useEffect(() => {
-  //   // Example message data
-  //   const messageData = {
-  //     username: "test_user",
-  //     text: "Hello, this is a test message."
-  //   };
-
-  //   fetch('http://127.0.0.1:5000/api/chat', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(messageData),
-  //   })
-  //     .then(res => res.json())
-  //     .then(data => setResponse(data.message))
-  //     .catch(error => console.error('Error:', error));
-  // }, []);
-
-
-
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
@@ -123,9 +100,6 @@ const App: React.FC = () => {
         <Background />
         <Controls />
       </ReactFlow>
-
-      {/* <h1>OpenAI Response</h1>
-      <p>{response}</p> */}
     </div>
   );
 }
