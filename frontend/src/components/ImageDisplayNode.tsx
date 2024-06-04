@@ -5,9 +5,9 @@ import '../index.css';
 
 const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
   return (
-    <div className="image-display-node">
-      <img src={data.image} alt="Uploaded" style={{ maxWidth: '20vw', maxHeight: '30vh' }} />
-      <Handle type="target" position={Position.Top} />
+    <div className="image-display-node p-5 bg-white rounded-lg border-2 border-stone-400">
+      <img src={data.image} alt="Uploaded" style={{ maxWidth: '30vw', maxHeight: '40vh' }} />
+      {/* <Handle type="target" position={Position.Top} /> */}
       {/* <Handle type="dissect" position={Position.Right} /> */}
     </div>
   );

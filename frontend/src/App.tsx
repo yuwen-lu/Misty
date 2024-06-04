@@ -99,7 +99,7 @@ const App: React.FC = () => {
       nds.concat({
         id: `${nds.length + 1}`,
         type: 'imageDisplayNode',
-        position: { x: 250, y: nds.length * 100 + 100 },
+        position: { x: 800, y: nds.length * 100 + 100 },
         data: { image: imageUrl },
       })
     );

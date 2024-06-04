@@ -36,10 +36,10 @@ const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
     }
 
     return (
-        <div className="upload-node px-4 py-2 shadow-md rounded-md bg-white border-2 border-stone-400">
-            <p>Upload Screenshot</p>
-            <input type="file" ref={imageInputRef} onChange={handleUpload} />
-            <button onClick={importImage}>Import</button>
+        <div className="upload-node flex flex-col items-center px-4 py-2 shadow-md rounded-lg bg-white border-2 border-stone-400">
+            <p className='py-6 font-semibold'>Upload Screenshot</p>
+            <input className='py-4 px-2' type="file" ref={imageInputRef} onChange={handleUpload} />
+            <button className='rounded-md m-2 px-3 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700 focus:outline-none' onClick={importImage}>Import</button>
             {/* <Handle type="source" position={Position.Bottom} /> */}
         </div>
     );
