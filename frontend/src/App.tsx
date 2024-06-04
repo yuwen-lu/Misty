@@ -22,17 +22,6 @@ import 'reactflow/dist/style.css';
 const initialNodes: Node[] = [
   {
     id: '1',
-    data: { label: 'Hello' },
-    position: { x: 0, y: 0 },
-    type: 'input',
-  },
-  {
-    id: '2',
-    data: { label: 'World' },
-    position: { x: 100, y: 100 },
-  },
-  {
-    id: '3',
     type: 'imageUploadNode',
     position: { x: 250, y: 100 },
     data: { onUpload: () => { } },
@@ -40,7 +29,6 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { id: '1-2', source: '1', target: '2', label: 'to the', type: 'step' },
 ];
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
@@ -94,7 +82,7 @@ const App: React.FC = () => {
   );
 
 
-  const handleUpload = (id: string, imageUrl: string) => {
+  const importImage = (id: string, imageUrl: string) => {
     setNodes((nds) =>
       nds.map((node) =>
         node.id === id
@@ -122,7 +110,7 @@ const App: React.FC = () => {
       <ReactFlow
         nodes={nodes.map(node =>
           node.type === 'imageUploadNode'
-            ? { ...node, data: { ...node.data, onUpload: handleUpload } }
+            ? { ...node, data: { ...node.data, onUpload: importImage } }
             : node
         )}
         edges={edges}
