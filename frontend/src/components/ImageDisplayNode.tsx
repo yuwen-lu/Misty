@@ -23,6 +23,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasButtonRef = useRef<HTMLButtonElement>(null);
+  const canvasClearButtonRef = useRef<HTMLButtonElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
   // get bounding box based on a scribble path, to cut the image
@@ -48,6 +49,19 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
       height: maxY - minY,
     };
   };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const img = imgRef.current;
+    if (canvas && img) {
+      canvas.width = img.clientWidth;
+      canvas.height = img.clientHeight;
+      canvas.style.width = `${img.clientWidth}px`;
+      canvas.style.height = `${img.clientHeight}px`;
+    } else {
+      return;
+    }
+  }, []);
 
   // using useEffect to handle the draw operations
   useEffect(() => {
@@ -107,7 +121,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
         setIsDrawing(false);
         const newPaths = paths[paths.length - 1];
         const newBox = getBoundingBox(newPaths);
-        
+
         if (newBox) {
           setBoundingBoxes((prevBoxes) => {
             const newBoxes = [...prevBoxes];
@@ -184,11 +198,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
     if (!canvasActivated) {
       if (img && canvas && canvasButton) {
 
-        canvas.width = img.clientWidth;
-        canvas.height = img.clientHeight;
-        canvas.style.width = `${img.clientWidth}px`;
-        canvas.style.height = `${img.clientHeight}px`;
-
         // set up canvas
         const context = canvas.getContext('2d');
         if (!context) return;
@@ -204,18 +213,26 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
     } else {
       if (img && canvas && canvasButton) {
 
-        // clear canvas
-        const context = canvas.getContext('2d');
-        if (context) {
-          context.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
-        setPaths([]); // clear the paths as well
+        clearCanvas();
 
         canvasButton.innerText = "Scribble Elements"
         setCanvasActivated(false);
       }
     }
+  }
+
+  // clear canvas
+  const clearCanvas = () => {
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext('2d');
+
+    if (context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    // clear the paths as well
+    setPaths([]);
   }
 
 
@@ -233,14 +250,22 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
         <canvas ref={canvasRef} className='absolute top-0 left-0 z-10'></canvas>
       </div>
 
-      <button
-        className='rounded-full bottom- mt-6 px-3 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700 focus:outline-none'
-        ref={canvasButtonRef}
-        // onClick={() => dissectImage(data.image)}
-        onClick={toggleCanvas}
-      >
-        Scribble Elements
-      </button>
+      <div className='flex flex-row'>
+        <button
+          className={`rounded-full bottom- mt-6 mx-2 px-3 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700 focus:outline-none ${canvasActivated ? "" : "hidden"}`}
+          onClick={clearCanvas}
+        >
+          Clear
+        </button>
+        <button
+          className='rounded-full bottom- mt-6 mx-2 px-3 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700 focus:outline-none'
+          ref={canvasButtonRef}
+          // onClick={() => dissectImage(data.image)}
+          onClick={toggleCanvas}
+        >
+          Scribble Elements
+        </button>
+      </div>
     </div>
   );
 };
