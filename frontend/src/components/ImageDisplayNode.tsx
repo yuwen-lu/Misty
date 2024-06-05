@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
+import { FaTrash, FaUndo, FaCheck } from 'react-icons/fa';
 import 'reactflow/dist/style.css';
 import '../index.css';
 
@@ -188,39 +189,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
       .catch(error => console.error('Error:', error));
   }
 
-
-  const toggleCanvas = () => {
-
-    const img = imgRef.current;
-    const canvas = canvasRef.current;
-    const canvasButton = canvasButtonRef.current;
-
-    if (!canvasActivated) {
-      if (img && canvas && canvasButton) {
-
-        // set up canvas
-        const context = canvas.getContext('2d');
-        if (!context) return;
-
-        // test draw something
-        context.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        // set button text
-        canvasButton.innerText = "Finish"
-        setCanvasActivated(true);
-      }
-    } else {
-      if (img && canvas && canvasButton) {
-
-        clearCanvas();
-
-        canvasButton.innerText = "Scribble Elements"
-        setCanvasActivated(false);
-      }
-    }
-  }
-
   // clear canvas
   const clearCanvas = () => {
 
@@ -235,9 +203,17 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
     setPaths([]);
   }
 
+  const undoCanvas = () => {
+    // TODO Implement this
+  }
+
 
   return (
     <div className="image-display-node flex flex-col items-center p-5 bg-white rounded-lg border-2 border-stone-400">
+
+      <div className='font-bold text-xl mb-5'>
+        Scribble Elements
+      </div>
 
       <div className='image-display-section relative'>
         <img
@@ -252,18 +228,28 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
 
       <div className='flex flex-row'>
         <button
-          className={`rounded-full bottom- mt-6 mx-2 px-3 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700 focus:outline-none ${canvasActivated ? "" : "hidden"}`}
+          className={`flex items-center rounded-full mt-6 mx-2 px-6 py-4 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
           onClick={clearCanvas}
+          disabled={!canvasActivated}
         >
-          Clear
+          <FaTrash />
+          <span className='ml-2'>Clear</span>
         </button>
         <button
-          className='rounded-full bottom- mt-6 mx-2 px-3 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700 focus:outline-none'
-          ref={canvasButtonRef}
-          // onClick={() => dissectImage(data.image)}
-          onClick={toggleCanvas}
+          className={`flex items-center rounded-full mt-6 mx-2 px-6 py-4 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
+          onClick={undoCanvas}
+          disabled={!canvasActivated}
         >
-          Scribble Elements
+          <FaUndo />
+          <span className='ml-2'>Undo</span>
+        </button>
+        <button
+          className='flex items-center rounded-full mt-6 mx-2 px-6 py-4 bg-teal-500 text-white font-semibold hover:bg-teal-700 focus:outline-none'
+          ref={canvasButtonRef}
+        // onClick={() => dissectImage(data.image)}
+        >
+          <FaCheck />
+          <span className='ml-2'>Finish</span>
         </button>
       </div>
     </div>
