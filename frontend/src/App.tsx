@@ -59,6 +59,10 @@ const App: React.FC = () => {
     [],
   );
 
+  const handleOnNodesClick = (event: React.MouseEvent, node: Node) => {
+    console.log("nodes clicked, id: " + node.id);
+  }
+
 
   const importImage = (id: string, imageUrl: string) => {
     setNodes((nds) =>
@@ -76,6 +80,7 @@ const App: React.FC = () => {
       nds.concat({
         id: `${nds.length + 1}`,
         type: 'imageDisplayNode',
+        draggable: false,
         position: { x: 800, y: nds.length * 100 + 100 },
         data: { image: imageUrl },
       })
@@ -96,6 +101,7 @@ const App: React.FC = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeClick={handleOnNodesClick}
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
         <Controls />

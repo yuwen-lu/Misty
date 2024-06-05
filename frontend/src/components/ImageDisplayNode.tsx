@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { DissectHandle } from './DissectHandle';
 import 'reactflow/dist/style.css';
 import '../index.css';
 
@@ -15,6 +14,10 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
 
 
   const [response, setResponse] = useState<string>('');
+  const [canvasActivated, setCanvasActivated] = useState<Boolean>(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasButtonRef = useRef<HTMLButtonElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const dissectImage = (base64image: string) => {
 
@@ -48,18 +51,72 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
       .catch(error => console.error('Error:', error));
   }
 
+
+
+  const toggleCanvas = () => {
+
+    const img = imgRef.current;
+    const canvas = canvasRef.current;
+    const canvasButton = canvasButtonRef.current;
+
+    if (!canvasActivated) {
+      if (img && canvas && canvasButton) {
+
+        canvas.width = img.clientWidth;
+        canvas.height = img.clientHeight;
+        canvas.style.width = `${img.clientWidth}px`;
+        canvas.style.height = `${img.clientHeight}px`;
+
+        // set up canvas
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        // test draw something
+        context.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // set button text
+        canvasButton.innerText = "Done"
+        setCanvasActivated(true);
+      }
+    } else {
+      if (img && canvas && canvasButton) {
+
+        // clear canvas
+        const context = canvas.getContext('2d');
+        if (context) {
+          context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        canvasButton.innerText = "Scribble Elements"
+        setCanvasActivated(false);
+      }
+    }
+  }
+
+
   return (
     <div className="image-display-node flex flex-col items-center p-5 bg-white rounded-lg border-2 border-stone-400">
-      <img className='rounded-md' src={data.image} alt="Uploaded" style={{ maxWidth: '30vw', maxHeight: '40vh' }} />
-      {/* <DissectHandle position={Position.Right} source='' ></DissectHandle> */}
+
+      <div className='image-display-section relative'>
+        <img
+          ref={imgRef}
+          className='rounded-md cursor-wait'
+          src={data.image}
+          alt="Uploaded"
+          style={{ maxWidth: '30vw', maxHeight: '40vh' }}
+        />
+        <canvas ref={canvasRef} className='absolute top-0 left-0 z-10'></canvas>
+      </div>
+
       <button
         className='rounded-full bottom- mt-6 px-3 py-2 bg-teal-500 text-white font-semibold rounded-md hover:bg-teal-700 focus:outline-none'
-        onClick={() => dissectImage(data.image)}
+        ref={canvasButtonRef}
+        // onClick={() => dissectImage(data.image)}
+        onClick={toggleCanvas}
       >
-        Dissect
+        Scribble Elements
       </button>
-      <h1 className='font-bold m-2'>OpenAI Response</h1>
-      <div id="openai-response-div"></div>
     </div>
   );
 };
