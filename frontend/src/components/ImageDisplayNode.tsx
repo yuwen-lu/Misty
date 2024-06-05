@@ -4,6 +4,12 @@ import { DissectHandle } from './DissectHandle';
 import 'reactflow/dist/style.css';
 import '../index.css';
 
+const formatContent = (text: string) => {
+  return text
+    .split('\n\n')
+    .map(paragraph => `<p>${paragraph}</p>`)
+    .join('')
+}
 
 const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
 
@@ -11,10 +17,12 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
   const [response, setResponse] = useState<string>('');
 
   const dissectImage = (base64image: string) => {
-    
+
+    console.log("length of displayed source base64: ", data.image.length);
+    console.log("length of base64: ", base64image.length);
     // construct message data using the image
     const messageData = {
-      message: "Describe this image using one sentence.",
+      message: "I am a designer working on my own design, but I want to borrow ideas from this example. What are some noticable, good design decisions to refer to on this website UI? Be specific and focus on things including the layout, interaction, and visual styles.",
       image: base64image
     };
 
@@ -26,7 +34,17 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
       body: JSON.stringify(messageData),
     })
       .then(res => res.json())
-      .then(data => setResponse(data.response))
+      .then(data => {
+        setResponse(data.response);
+        const targetDiv = document.getElementById("openai-response-div");
+        if (targetDiv) {
+          console.log("raw data: \n" + data.response);
+          console.log("formatted data: \n" + formatContent(data.response));
+          targetDiv.innerHTML = formatContent(data.response);
+        } else {
+          console.log("cannot find target div for response result!");
+        }
+      })
       .catch(error => console.error('Error:', error));
   }
 
@@ -41,7 +59,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
         Dissect
       </button>
       <h1 className='font-bold m-2'>OpenAI Response</h1>
-      <p>{response}</p>
+      <div id="openai-response-div"></div>
     </div>
   );
 };
