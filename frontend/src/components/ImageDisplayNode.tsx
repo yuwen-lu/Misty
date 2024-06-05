@@ -51,18 +51,27 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       height: maxY - minY,
     };
   };
-
+  
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const img = imgRef.current;
-    if (canvas && img) {
-      canvas.width = img.clientWidth;
-      canvas.height = img.clientHeight;
-      canvas.style.width = `${img.clientWidth}px`;
-      canvas.style.height = `${img.clientHeight}px`;
-    } else {
-      return;
+    const handleLoad = () => {
+      if (imgRef.current && canvasRef.current) {
+        const img = imgRef.current;
+        const canvas = canvasRef.current;
+        canvas.width = img.width;
+        canvas.height = img.height;
+      }
+    };
+
+    const imgElement = imgRef.current;
+    if (imgElement) {
+      if (imgElement.complete) {
+        handleLoad();
+      } else {
+        imgElement.addEventListener('load', handleLoad);
+        return () => imgElement.removeEventListener('load', handleLoad);
+      }
     }
+    
   }, []);
 
   // using useEffect to handle the draw operations
