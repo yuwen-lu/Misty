@@ -132,8 +132,12 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
           // Extract sub-image
           const imageData = context.getImageData(newBox.x, newBox.y, newBox.width, newBox.height);
           console.log('Sub-image data:', imageData);
-          // TODO handle the sub-image data 
+          // convert Uint8ClampedArray to base64
+          var decoder = new TextDecoder('utf8');
+          // var b64SubImage = btoa(decoder.decode(imageData.data));
+          
         }
+          // TODO handle the sub-image data 
       }
       e.stopPropagation(); // Prevent ReactFlow from handling this event
     };
@@ -228,7 +232,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
 
       <div className='flex flex-row'>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-6 py-4 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
+          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
           onClick={clearCanvas}
           disabled={!canvasActivated}
         >
@@ -236,7 +240,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
           <span className='ml-2'>Clear</span>
         </button>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-6 py-4 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
+          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
           onClick={undoCanvas}
           disabled={!canvasActivated}
         >
@@ -244,12 +248,12 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
           <span className='ml-2'>Undo</span>
         </button>
         <button
-          className='flex items-center rounded-full mt-6 mx-2 px-6 py-4 bg-teal-500 text-white font-semibold hover:bg-teal-700 focus:outline-none'
+          className='flex items-center rounded-full mt-6 mx-2 px-5 py-3 bg-teal-500 text-white font-semibold hover:bg-teal-700 focus:outline-none'
           ref={canvasButtonRef}
         // onClick={() => dissectImage(data.image)}
         >
           <FaCheck />
-          <span className='ml-2'>Finish</span>
+          <span className='ml-2'>Done</span>
         </button>
       </div>
     </div>
