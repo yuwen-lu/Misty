@@ -62,13 +62,25 @@ const App: React.FC = () => {
   );
 
   const createSubImages = (id: string, imageUrlList: string[]) => {
+    const currentNode : Node | undefined = nodes.find( node => node.id === id);
+
+    let currentRightEdge = 1500;
+    if (currentNode && currentNode.width) {
+      currentRightEdge = currentNode.position.x + currentNode.width;
+      console.log("current node: ");
+      console.log(currentNode);
+      console.log("current right edge: " + currentRightEdge);
+    } else {
+      console.log("huh?");
+    }
+
     setNodes((nds) =>
       nds.concat(
         imageUrlList.map((imageUrl, index) => ({
           id: `${nds.length + index + 1}`,
           type: 'subimageNode',
           draggable: true,
-          position: { x: 1500, y: (nds.length + index) * 100 + 100 },
+          position: { x: currentRightEdge, y: (nds.length + index) * 100 + 100 },
           data: { image: imageUrl },
         }))
       )

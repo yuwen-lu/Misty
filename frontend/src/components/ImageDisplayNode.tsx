@@ -269,7 +269,11 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           className='flex items-center rounded-full mt-6 mx-2 px-5 py-3 bg-teal-500 text-white font-semibold hover:bg-teal-700 focus:outline-none'
           ref={canvasButtonRef}
         // onClick={() => dissectImage(data.image)}
-          onClick={() => data.onSelectionConfirmed(id, subImageList)}
+          onClick={() => {
+            data.onSelectionConfirmed(id, subImageList);
+            clearCanvas();
+            setSubImageList([]);  // refresh the subimage list
+          }}
         >
           <FaCheck />
           <span className='ml-2'>Done</span>
