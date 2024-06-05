@@ -15,9 +15,132 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
 
   const [response, setResponse] = useState<string>('');
   const [canvasActivated, setCanvasActivated] = useState<Boolean>(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
+  const [paths, setPaths] = useState<{ x: number, y: number }[][]>([]); // record the paths of scribble
+  const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]); // record bounding box to cut image
+
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasButtonRef = useRef<HTMLButtonElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+
+  // get bounding box based on a scribble path, to cut the image
+  const getBoundingBox = (path: { x: number, y: number }[]) => {
+    if (path.length === 0) return null;
+
+    let minX = path[0].x;
+    let minY = path[0].y;
+    let maxX = path[0].x;
+    let maxY = path[0].y;
+
+    path.forEach(point => {
+      if (point.x < minX) minX = point.x;
+      if (point.y < minY) minY = point.y;
+      if (point.x > maxX) maxX = point.x;
+      if (point.y > maxY) maxY = point.y;
+    });
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    };
+  };
+
+  // using useEffect to handle the draw operations
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    const draw = () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = 'rgba(177, 230, 103, 0.5)';
+      context.lineJoin = 'round';
+      context.lineCap = 'round';
+      context.lineWidth = 10;
+
+      paths.forEach((path) => {
+        if (path.length < 2) return;
+        context.beginPath();
+        context.moveTo(path[0].x, path[0].y);
+
+        for (let i = 1; i < path.length - 1; i++) {
+          const midPoint = {
+            x: (path[i].x + path[i + 1].x) / 2,
+            y: (path[i].y + path[i + 1].y) / 2,
+          };
+          context.quadraticCurveTo(path[i].x, path[i].y, midPoint.x, midPoint.y);
+        }
+
+        context.lineTo(path[path.length - 1].x, path[path.length - 1].y);
+        context.stroke();
+      });
+    };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      setIsDrawing(true);
+      const { offsetX, offsetY } = e;
+      setPaths((prevPaths) => [...prevPaths, [{ x: offsetX, y: offsetY }]]);
+      e.stopPropagation(); // Prevent ReactFlow from handling this event
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDrawing) return;
+
+      const { offsetX, offsetY } = e;
+      setPaths((prevPaths) => {
+        const newPaths = [...prevPaths];
+        newPaths[newPaths.length - 1].push({ x: offsetX, y: offsetY });
+        return newPaths;
+      });
+      draw();
+      e.stopPropagation(); // Prevent ReactFlow from handling this event
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      if (isDrawing) {
+        setIsDrawing(false);
+        const newPaths = paths[paths.length - 1];
+        const newBox = getBoundingBox(newPaths);
+        
+        if (newBox) {
+          setBoundingBoxes((prevBoxes) => {
+            const newBoxes = [...prevBoxes];
+            newBoxes.push(newBox)
+            return newBoxes;
+          });
+          // Extract sub-image
+          const imageData = context.getImageData(newBox.x, newBox.y, newBox.width, newBox.height);
+          console.log('Sub-image data:', imageData);
+          // TODO handle the sub-image data 
+        }
+      }
+      e.stopPropagation(); // Prevent ReactFlow from handling this event
+    };
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      setIsDrawing(false);
+      e.stopPropagation(); // Prevent ReactFlow from handling this event
+    };
+
+
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseup', handleMouseUp);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [isDrawing, lastPoint]);
 
   const dissectImage = (base64image: string) => {
 
@@ -52,7 +175,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
   }
 
 
-
   const toggleCanvas = () => {
 
     const img = imgRef.current;
@@ -72,11 +194,11 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
         if (!context) return;
 
         // test draw something
-        context.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        context.fillStyle = 'rgba(255, 255, 255, 0.2)';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
         // set button text
-        canvasButton.innerText = "Done"
+        canvasButton.innerText = "Finish"
         setCanvasActivated(true);
       }
     } else {
@@ -87,6 +209,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
         if (context) {
           context.clearRect(0, 0, canvas.width, canvas.height);
         }
+
+        setPaths([]); // clear the paths as well
 
         canvasButton.innerText = "Scribble Elements"
         setCanvasActivated(false);
@@ -101,7 +225,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
       <div className='image-display-section relative'>
         <img
           ref={imgRef}
-          className='rounded-md cursor-wait'
+          className='rounded-md cursor-text'
           src={data.image}
           alt="Uploaded"
           style={{ maxWidth: '30vw', maxHeight: '40vh' }}

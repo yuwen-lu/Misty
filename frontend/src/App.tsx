@@ -59,11 +59,6 @@ const App: React.FC = () => {
     [],
   );
 
-  const handleOnNodesClick = (event: React.MouseEvent, node: Node) => {
-    console.log("nodes clicked, id: " + node.id);
-  }
-
-
   const importImage = (id: string, imageUrl: string) => {
     setNodes((nds) =>
       nds.map((node) =>
@@ -101,7 +96,7 @@ const App: React.FC = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onNodeClick={handleOnNodesClick}
+        nodeDragThreshold={4}
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
         <Controls />
