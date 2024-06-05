@@ -3,6 +3,7 @@ from openai import OpenAI
 import base64
 from dotenv import load_dotenv
 import os
+import markdown
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -10,10 +11,6 @@ ORGANIZATION_ID = os.getenv('ORGANIZATION_ID')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 MODEL = "gpt-4o"
-
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
     
 def get_openai_response(text_message, base64_image=None):
     
@@ -53,4 +50,6 @@ def get_openai_response(text_message, base64_image=None):
         if chunk.choices[0].delta.content is not None:
             response += chunk.choices[0].delta.content
     print("Here is the response: " + response)
+    response = markdown.markdown(response)
+    print("Markdown processed response: " + response)
     return response

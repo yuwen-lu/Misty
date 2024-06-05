@@ -9,6 +9,7 @@ flask = "*"
 install = "*"
 python-dotenv = "*"
 flask-cors = "*"
+markdown = "*"
 
 [dev-packages]
 

@@ -7,7 +7,7 @@ import '../index.css';
 const formatContent = (text: string) => {
   return text
     .split('\n\n')
-    .map(paragraph => `<p>${paragraph}</p>`)
+    .map(paragraph => `<p>${paragraph + "\n\n"}</p>`)
     .join('')
 }
 
