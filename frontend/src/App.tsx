@@ -15,6 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import ImageDisplayNode from './components/ImageDisplayNode';
 import ImageUploadNode from './components/ImageUploadNode';
+import SubImageNode from './components/SubImageNode';
 import 'reactflow/dist/style.css';
 import './index.css';
 
@@ -39,6 +40,7 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 const nodeTypes: NodeTypes = {
   imageUploadNode: ImageUploadNode,
   imageDisplayNode: ImageDisplayNode,
+  subimageNode: SubImageNode,
 };
 
 const App: React.FC = () => {
@@ -59,6 +61,21 @@ const App: React.FC = () => {
     [],
   );
 
+  const createSubImages = (id: string, imageUrlList: string[]) => {
+    setNodes((nds) =>
+      nds.concat(
+        imageUrlList.map((imageUrl, index) => ({
+          id: `${nds.length + index + 1}`,
+          type: 'subimageNode',
+          draggable: true,
+          position: { x: 1500, y: (nds.length + index) * 100 + 100 },
+          data: { image: imageUrl },
+        }))
+      )
+    );
+    // TODO add edges too
+  }
+
   const importImage = (id: string, imageUrl: string) => {
     setNodes((nds) =>
       nds.map((node) =>
@@ -77,7 +94,7 @@ const App: React.FC = () => {
         type: 'imageDisplayNode',
         draggable: false,
         position: { x: 800, y: nds.length * 100 + 100 },
-        data: { image: imageUrl },
+        data: { image: imageUrl, onSelectionConfirmed: createSubImages },
       })
     );
   };

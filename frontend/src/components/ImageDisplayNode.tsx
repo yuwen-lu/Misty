@@ -11,7 +11,7 @@ const formatContent = (text: string) => {
     .join('')
 }
 
-const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
+const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
 
   const [response, setResponse] = useState<string>('');
@@ -20,6 +20,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
   const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
   const [paths, setPaths] = useState<{ x: number, y: number }[][]>([]); // record the paths of scribble
   const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]); // record bounding box to cut image
+  const [subImageList, setSubImageList] = useState< string[] >([]);
 
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -130,14 +131,22 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
             return newBoxes;
           });
           // Extract sub-image
+          // TODO this seems to sometimes get index out of bound error
           const imageData = context.getImageData(newBox.x, newBox.y, newBox.width, newBox.height);
           console.log('Sub-image data:', imageData);
           // convert Uint8ClampedArray to base64
           var decoder = new TextDecoder('utf8');
+          // TODO there is issue here
           // var b64SubImage = btoa(decoder.decode(imageData.data));
+          var b64SubImage = "";
           
         }
-          // TODO handle the sub-image data 
+          // add the new sub-image data to the list
+          setSubImageList((prevSubImageList) => {
+            const newSubImageList = [...prevSubImageList];
+            newSubImageList.push(b64SubImage);
+            return newSubImageList;
+          });
       }
       e.stopPropagation(); // Prevent ReactFlow from handling this event
     };
@@ -251,6 +260,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ data }) => {
           className='flex items-center rounded-full mt-6 mx-2 px-5 py-3 bg-teal-500 text-white font-semibold hover:bg-teal-700 focus:outline-none'
           ref={canvasButtonRef}
         // onClick={() => dissectImage(data.image)}
+          onClick={() => data.onSelectionConfirmed(id, subImageList)}
         >
           <FaCheck />
           <span className='ml-2'>Done</span>
