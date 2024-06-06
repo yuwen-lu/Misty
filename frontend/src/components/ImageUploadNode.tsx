@@ -39,12 +39,14 @@ const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
 
     return (
         <div 
-            className="flex flex-col items-center p-10 shadow-lg rounded-lg text-white bg-stone-600/70" 
+            className="flex flex-col items-center p-10 shadow-lg rounded-lg text-white bg-stone-900/70" 
             onDrop={handleUpload} 
             onDragOver={handleDragOver}
         >
+            <div className='flex flex-col items-center p-10 mb-4 rounded-lg border border-dashed'>
             <FaCloudUploadAlt size={50} color="#fff" />
             <p className="p-4 font-semibold">Drag and Drop a Screenshot</p>
+            </div>
             <p className="py-2">Or</p>
             <input 
                 className="hidden" 
@@ -53,7 +55,7 @@ const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
                 onChange={handleUpload} 
             />
             <button 
-                className="mt-2 px-4 py-2 bg-teal-500 text-white font-semibold rounded-full hover:bg-teal-600 focus:outline-none"
+                className="mt-2 px-4 py-2 bg-zinc-700 text-white font-semibold rounded-lg hover:bg-zinc-900 focus:outline-none"
                 onClick={() => imageInputRef.current?.click()}
             >
                 Browse

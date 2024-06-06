@@ -140,7 +140,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
             return newBoxes;
           });
           // Extract sub-image
-          // TODO this seems to sometimes get index out of bound error
+          // TODO this seems to sometimes get index out of bound error.
+          // TODO I think this should be cutting the image tag instead
           const imageData = context.getImageData(newBox.x, newBox.y, newBox.width, newBox.height);
           console.log('Sub-image data:', imageData);
           // convert Uint8ClampedArray to base64
@@ -231,7 +232,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
 
   return (
-    <div className="image-display-node flex flex-col items-center p-5 text-white bg-stone-600/70 rounded-lg">
+    <div className="image-display-node flex flex-col items-center p-5 text-white bg-stone-900/70 rounded-lg">
 
       <div className='font-semibold text-xl mb-5'>
         Scribble Elements
@@ -250,7 +251,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
       <div className='flex flex-row'>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
+          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
           onClick={clearCanvas}
           disabled={!canvasActivated}
         >
@@ -258,7 +259,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           <span className='ml-2'>Clear</span>
         </button>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-teal-500 hover:bg-teal-700" : "bg-stone-400"}`}
+          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
           onClick={undoCanvas}
           disabled={!canvasActivated}
         >
@@ -266,7 +267,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           <span className='ml-2'>Undo</span>
         </button>
         <button
-          className='flex items-center rounded-full mt-6 mx-2 px-5 py-3 bg-teal-500 text-white font-semibold hover:bg-teal-700 focus:outline-none'
+          className='flex items-center rounded-full mt-6 mx-2 px-5 py-3 bg-zinc-700 text-white font-semibold hover:bg-zinc-900 focus:outline-none'
           ref={canvasButtonRef}
         // onClick={() => dissectImage(data.image)}
           onClick={() => {
