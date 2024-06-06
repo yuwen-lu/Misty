@@ -231,9 +231,9 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
 
   return (
-    <div className="image-display-node flex flex-col items-center p-5 bg-white rounded-lg border-2 border-stone-400">
+    <div className="image-display-node flex flex-col items-center p-5 text-white bg-stone-600/70 rounded-lg">
 
-      <div className='font-bold text-xl mb-5'>
+      <div className='font-semibold text-xl mb-5'>
         Scribble Elements
       </div>
 

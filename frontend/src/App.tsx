@@ -64,6 +64,8 @@ const App: React.FC = () => {
   const createSubImages = (id: string, imageUrlList: string[]) => {
     const currentNode : Node | undefined = nodes.find( node => node.id === id);
 
+
+    // TODO I don't think the below dynamic thing is working.
     let currentRightEdge = 1500;
     if (currentNode && currentNode.width) {
       currentRightEdge = currentNode.position.x + currentNode.width;
