@@ -61,8 +61,15 @@ const App: React.FC = () => {
     [],
   );
 
+  useEffect( () => {
+    console.log("Nodes list updated, current length: " + nodes.length);
+    console.log("yoyo, nodes: " + nodes.map((node) => node.id + ", " + node.type + "; "));
+  }, [nodes]);
+
   const createSubImages = (id: string, imageUrlList: string[]) => {
-    const currentNode : Node | undefined = nodes.find( node => node.id === id);
+
+    console.log("Creating sub images, nodes length: " + nodes.length);
+    const currentNode: Node | undefined = nodes.find(node => node.id === id);
 
 
     // TODO I don't think the below dynamic thing is working.
@@ -73,21 +80,28 @@ const App: React.FC = () => {
       console.log(currentNode);
       console.log("current right edge: " + currentRightEdge);
     } else {
-      console.log("huh?");
+      console.log("node with id not found?");
     }
 
-    setNodes((nds) =>
-      nds.concat(
-        imageUrlList.map((imageUrl, index) => ({
-          id: `${nds.length + index + 1}`,
+    imageUrlList.forEach((imageUrl, index) => {
+      // const newEdge = {
+      //   id: `e${id}-${newNodeId}`,
+      //   source: id,
+      //   target: newNodeId,
+      // };
+    
+      setNodes((nds) => nds.concat(
+        {
+          id: `${nds.length + 1}`,
           type: 'subimageNode',
           draggable: true,
-          position: { x: currentRightEdge, y: (nds.length + index) * 100 + 100 },
+          position: { x: currentRightEdge, y: (nodes.length + index) * 100 + 100 },
           data: { image: imageUrl },
-        }))
-      )
-    );
-    // TODO add edges too
+        }
+      ));
+      // setEdges((eds) => addEdge(newEdge, eds));
+    });
+    
   }
 
   const importImage = (id: string, imageUrl: string) => {
@@ -111,6 +125,8 @@ const App: React.FC = () => {
         data: { image: imageUrl, onSelectionConfirmed: createSubImages },
       })
     );
+
+    console.log("Image node added, current node length: " + nodes.length);
   };
 
 

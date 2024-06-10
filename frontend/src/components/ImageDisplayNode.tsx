@@ -142,7 +142,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           // Extract sub-image
           // TODO this seems to sometimes get index out of bound error.
           // TODO I think this should be cutting the image tag instead
-          const imageData = context.getImageData(newBox.x, newBox.y, newBox.width, newBox.height);
+          // const imageData = context.getImageData(newBox.x, newBox.y, newBox.width, newBox.height);
+          const imageData = "";
           console.log('Sub-image data:', imageData);
           // convert Uint8ClampedArray to base64
           var decoder = new TextDecoder('utf8');
