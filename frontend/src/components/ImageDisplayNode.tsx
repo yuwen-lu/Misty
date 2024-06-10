@@ -1,15 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { FaTrash, FaUndo, FaCheck } from 'react-icons/fa';
+import { formatContent, BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../util";
 import 'reactflow/dist/style.css';
 import '../index.css';
-
-const formatContent = (text: string) => {
-  return text
-    .split('\n\n')
-    .map(paragraph => `<p>${paragraph + "\n\n"}</p>`)
-    .join('')
-}
 
 const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
@@ -20,7 +14,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
   const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
   const [paths, setPaths] = useState<{ x: number, y: number }[][]>([]); // record the paths of scribble
   const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]); // record bounding box to cut image
-  const [subImageList, setSubImageList] = useState< string[] >([]);
+  const [subImageList, setSubImageList] = useState<string[]>([]);
 
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -51,7 +45,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       height: maxY - minY,
     };
   };
-  
+
   useEffect(() => {
     const handleLoad = () => {
       if (imgRef.current && canvasRef.current) {
@@ -71,7 +65,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         return () => imgElement.removeEventListener('load', handleLoad);
       }
     }
-    
+
   }, []);
 
   // using useEffect to handle the draw operations
@@ -127,6 +121,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       e.stopPropagation(); // Prevent ReactFlow from handling this event
     };
 
+    // when mouse moves up, add the new path as a bounding box to the state variable.
+    // we will process them together once a user confirms the selection (see func getMergedSubImages)
     const handleMouseUp = (e: MouseEvent) => {
       if (isDrawing) {
         setIsDrawing(false);
@@ -139,25 +135,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
             newBoxes.push(newBox)
             return newBoxes;
           });
-          // Extract sub-image
-          // TODO this seems to sometimes get index out of bound error.
-          // TODO I think this should be cutting the image tag instead
-          // const imageData = context.getImageData(newBox.x, newBox.y, newBox.width, newBox.height);
-          const imageData = "";
-          console.log('Sub-image data:', imageData);
-          // convert Uint8ClampedArray to base64
-          var decoder = new TextDecoder('utf8');
-          // TODO there is issue here
-          // var b64SubImage = btoa(decoder.decode(imageData.data));
-          var b64SubImage = "";
-          
         }
-          // add the new sub-image data to the list
-          setSubImageList((prevSubImageList) => {
-            const newSubImageList = [...prevSubImageList];
-            newSubImageList.push(b64SubImage);
-            return newSubImageList;
-          });
       }
       e.stopPropagation(); // Prevent ReactFlow from handling this event
     };
@@ -181,10 +159,33 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
     };
   }, [isDrawing, lastPoint]);
 
+  const getMergedSubImages = () => {
+    // first, merge all of the bounding boxes if there are overlaps
+    const mergedBoxes = mergeOverlappingBoundingBoxes(boundingBoxes);
+    // then get the corresponding sub images as base64 encoded strings
+
+    const croppedImagesPromises = mergedBoxes.map(bbox =>
+      cropImage(data.image, bbox)
+    );
+
+    Promise.all(croppedImagesPromises)
+      .then(croppedImages => {
+        console.log(croppedImages); // Array of cropped base64 images
+        setSubImageList((prevSubImageList) => {
+          const newSubImageList = [...prevSubImageList];
+
+          // add the new sub-image data to the list
+          newSubImageList.push(...croppedImages);
+          return newSubImageList;
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
   const dissectImage = (base64image: string) => {
 
-    console.log("length of displayed source base64: ", data.image.length);
-    console.log("length of base64: ", base64image.length);
     // construct message data using the image
     const messageData = {
       message: "I am a designer working on my own design, but I want to borrow ideas from this example. What are some noticable, good design decisions to refer to on this website UI? Be specific and focus on things including the layout, interaction, and visual styles.",
@@ -215,11 +216,9 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
   // clear canvas
   const clearCanvas = () => {
-
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
-
     if (context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -270,9 +269,10 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         <button
           className='flex items-center rounded-full mt-6 mx-2 px-5 py-3 bg-zinc-700 text-white font-semibold hover:bg-zinc-900 focus:outline-none'
           ref={canvasButtonRef}
-        // onClick={() => dissectImage(data.image)}
+          // onClick={() => dissectImage(data.image)}
           onClick={() => {
-            data.onSelectionConfirmed(id, subImageList);
+            getMergedSubImages();
+            data.onSubImageConfirmed(id, subImageList);
             clearCanvas();
             setSubImageList([]);  // refresh the subimage list
           }}

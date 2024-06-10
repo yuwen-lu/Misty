@@ -61,11 +61,6 @@ const App: React.FC = () => {
     [],
   );
 
-  useEffect(() => {
-    console.log("Nodes list updated, current length: " + nodes.length);
-    console.log("yoyo, nodes: " + nodes.map((node) => node.id + ", " + node.type + "; "));
-  }, [nodes]);
-
   const createSubImages = (sourceId: string, imageUrlList: string[]) => {
 
     console.log("Creating sub images, nodes length: " + nodes.length);
@@ -79,7 +74,6 @@ const App: React.FC = () => {
       return nds;
     })
 
-    // TODO I don't think the below dynamic thing is working.
     let currentRightEdge = 1500;
     if (currentNode && currentNode.width) {
       currentRightEdge = currentNode.position.x + currentNode.width;
@@ -129,7 +123,7 @@ const App: React.FC = () => {
         type: 'imageDisplayNode',
         draggable: false,
         position: { x: 800, y: nds.length * 100 + 100 },
-        data: { image: imageUrl, onSelectionConfirmed: createSubImages },
+        data: { image: imageUrl, onSubImageConfirmed: createSubImages },
       })
     );
 
