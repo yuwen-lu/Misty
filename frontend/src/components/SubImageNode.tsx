@@ -14,6 +14,13 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             >
             </img>
             Subsection of image
+
+            <Handle
+                type="target"
+                position={Position.Left}
+                id="b"
+                isConnectable={true}
+            />
         </div>
     )
 };

@@ -61,47 +61,54 @@ const App: React.FC = () => {
     [],
   );
 
-  useEffect( () => {
+  useEffect(() => {
     console.log("Nodes list updated, current length: " + nodes.length);
     console.log("yoyo, nodes: " + nodes.map((node) => node.id + ", " + node.type + "; "));
   }, [nodes]);
 
-  const createSubImages = (id: string, imageUrlList: string[]) => {
+  const createSubImages = (sourceId: string, imageUrlList: string[]) => {
 
     console.log("Creating sub images, nodes length: " + nodes.length);
-    const currentNode: Node | undefined = nodes.find(node => node.id === id);
 
+    let currentNode: Node | undefined;
+    let newNodeId: number | undefined;
+
+    setNodes((nds) => {
+      currentNode = nds.find(node => node.id === sourceId);
+      newNodeId = nds.length + 1;
+      return nds;
+    })
 
     // TODO I don't think the below dynamic thing is working.
     let currentRightEdge = 1500;
     if (currentNode && currentNode.width) {
       currentRightEdge = currentNode.position.x + currentNode.width;
-      console.log("current node: ");
-      console.log(currentNode);
-      console.log("current right edge: " + currentRightEdge);
     } else {
-      console.log("node with id not found?");
+      console.log("Cannot find the node with target id " + sourceId);
     }
 
     imageUrlList.forEach((imageUrl, index) => {
-      // const newEdge = {
-      //   id: `e${id}-${newNodeId}`,
-      //   source: id,
-      //   target: newNodeId,
-      // };
-    
-      setNodes((nds) => nds.concat(
-        {
-          id: `${nds.length + 1}`,
-          type: 'subimageNode',
-          draggable: true,
-          position: { x: currentRightEdge, y: (nodes.length + index) * 100 + 100 },
-          data: { image: imageUrl },
-        }
-      ));
-      // setEdges((eds) => addEdge(newEdge, eds));
+      if (newNodeId !== undefined) {
+        const validNewNodeId: string = newNodeId.toString();
+        setNodes((nds) => nds.concat(
+          {
+            id: validNewNodeId,
+            type: 'subimageNode',
+            draggable: true,
+            position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
+            data: { image: imageUrl },
+          }
+        ));
+
+        const newEdge = {
+          id: `e${sourceId}-${newNodeId}`,
+          source: sourceId,
+          target: validNewNodeId,
+        };
+
+        setEdges((eds) => addEdge(newEdge, eds));
+      }
     });
-    
   }
 
   const importImage = (id: string, imageUrl: string) => {

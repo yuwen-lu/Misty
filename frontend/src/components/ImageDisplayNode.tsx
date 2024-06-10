@@ -281,6 +281,14 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           <span className='ml-2'>Done</span>
         </button>
       </div>
+
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="b"
+        // style={{ bottom: 10, top: 'auto', background: '#555' }}
+        isConnectable={true}
+      />
     </div>
   );
 };
