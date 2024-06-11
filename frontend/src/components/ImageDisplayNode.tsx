@@ -264,8 +264,9 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           <span className='ml-2'>Undo</span>
         </button>
         <button
-          className='flex items-center rounded-full mt-6 mx-2 px-5 py-3 bg-zinc-700 text-white font-semibold hover:bg-zinc-900 focus:outline-none'
+          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
           ref={canvasButtonRef}
+          disabled={paths.length === 0}
           // onClick={() => dissectImage(data.image)}
           onClick={() => {
             getMergedSubImages();
