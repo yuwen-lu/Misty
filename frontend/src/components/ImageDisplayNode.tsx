@@ -15,7 +15,9 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
   const [paths, setPaths] = useState<{ x: number, y: number }[][]>([]); // record the paths of scribble
   const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]); // record bounding box to cut image
   const [subImageList, setSubImageList] = useState<string[]>([]);
+  const [resizeRatio, setResizeRatio] = useState<number>(0);
 
+  const scribbleStrokeWidth = 10;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasButtonRef = useRef<HTMLButtonElement>(null);
@@ -38,11 +40,12 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       if (point.y > maxY) maxY = point.y;
     });
 
+    // account for resizing of the image in the bbox values
     return {
-      x: minX,
-      y: minY,
-      width: maxX - minX,
-      height: maxY - minY,
+      x: minX * resizeRatio,
+      y: (minY - scribbleStrokeWidth / 2) * resizeRatio,  // account for the thickness of the stroke in scribbling
+      width: (maxX - minX) * resizeRatio,
+      height: (maxY - minY + scribbleStrokeWidth) * resizeRatio,
     };
   };
 
@@ -53,6 +56,10 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         const canvas = canvasRef.current;
         canvas.width = img.width;
         canvas.height = img.height;
+
+        // Also, set the resize ratio so that we can more easily crop the image
+        setResizeRatio( img.naturalWidth / img.width );
+        console.log("resize ratio: " + img.naturalWidth / img.width);
       }
     };
 
@@ -81,7 +88,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       context.strokeStyle = 'rgba(177, 230, 103, 0.5)';
       context.lineJoin = 'round';
       context.lineCap = 'round';
-      context.lineWidth = 10;
+      context.lineWidth = scribbleStrokeWidth;
 
       paths.forEach((path) => {
         if (path.length < 2) return;
@@ -163,13 +170,9 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
     // first, merge all of the bounding boxes if there are overlaps
     const mergedBoxes = mergeOverlappingBoundingBoxes(boundingBoxes);
     // then get the corresponding sub images as base64 encoded strings
-
-    const croppedImagesPromises = mergedBoxes.map(bbox =>
-      cropImage(data.image, bbox)
-    );
-
-    Promise.all(croppedImagesPromises)
-      .then(croppedImages => {
+    (async () => {
+      try {
+        const croppedImages = await Promise.all(mergedBoxes.map(bbox => cropImage(data.image, bbox)));
         console.log(croppedImages); // Array of cropped base64 images
         setSubImageList((prevSubImageList) => {
           const newSubImageList = [...prevSubImageList];
@@ -178,11 +181,20 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           newSubImageList.push(...croppedImages);
           return newSubImageList;
         });
-      })
-      .catch(error => {
+      } catch (error) {
         console.error(error);
-      });
+      }
+    })();
   }
+
+  // when subImageList is updated, send it to App.tsx
+  useEffect(() => {
+    if (subImageList.length > 0) {
+      data.onSubImageConfirmed(id, subImageList);
+      clearCanvas();
+      setSubImageList([]);  // refresh the subimage list
+    }
+  }, [subImageList])
 
   const dissectImage = (base64image: string) => {
 
@@ -232,7 +244,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
 
   return (
-    <div className="image-display-node flex flex-col items-center p-5 text-white bg-stone-900/70 rounded-lg">
+    <div className="image-display-node flex flex-col items-center p-5 text-white bg-stone-900/70 rounded-lg border-2 border-stone-400">
 
       <div className='font-semibold text-xl mb-5'>
         Scribble Elements
@@ -272,9 +284,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           // onClick={() => dissectImage(data.image)}
           onClick={() => {
             getMergedSubImages();
-            data.onSubImageConfirmed(id, subImageList);
-            clearCanvas();
-            setSubImageList([]);  // refresh the subimage list
           }}
         >
           <FaCheck />

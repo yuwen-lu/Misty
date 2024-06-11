@@ -63,8 +63,6 @@ const App: React.FC = () => {
 
   const createSubImages = (sourceId: string, imageUrlList: string[]) => {
 
-    console.log("Creating sub images, nodes length: " + nodes.length);
-
     let currentNode: Node | undefined;
     let newNodeId: number | undefined;
 
@@ -84,15 +82,18 @@ const App: React.FC = () => {
     imageUrlList.forEach((imageUrl, index) => {
       if (newNodeId !== undefined) {
         const validNewNodeId: string = newNodeId.toString();
-        setNodes((nds) => nds.concat(
-          {
-            id: validNewNodeId,
-            type: 'subimageNode',
-            draggable: true,
-            position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
-            data: { image: imageUrl },
-          }
-        ));
+        setNodes((nds) => {
+          console.log("Creating new node for image at index " + index);
+          return nds.concat(
+            {
+              id: validNewNodeId,
+              type: 'subimageNode',
+              draggable: true,
+              position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
+              data: { image: imageUrl },
+            }
+          );
+        });
 
         const newEdge = {
           id: `e${sourceId}-${newNodeId}`,
@@ -121,7 +122,7 @@ const App: React.FC = () => {
       nds.concat({
         id: `${nds.length + 1}`,
         type: 'imageDisplayNode',
-        draggable: false,
+        draggable: true,
         position: { x: 800, y: nds.length * 100 + 100 },
         data: { image: imageUrl, onSubImageConfirmed: createSubImages },
       })

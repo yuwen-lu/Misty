@@ -6,14 +6,17 @@ import '../index.css';
 const SubImageNode: React.FC<NodeProps> = ({ data }) => {
 
     return (
-        <div className='flex flex-col items-center p-5 bg-white rounded-lg border-2 border-stone-400'>
+        <div className='flex flex-col items-center p-5 text-white bg-stone-900/70 rounded-lg border-2 border-stone-400'>
+            <div className='text-l mb-3'>
+                Selected Image Section
+            </div>
             <img
+                className='rounded-md'
                 src={data.image}
                 alt={"Subimage"}
-                style={{ maxWidth: '30vw', maxHeight: '40vh' }}
+                style={{ maxWidth: '20vw', maxHeight: '30vh' }}
             >
             </img>
-            Subsection of image
 
             <Handle
                 type="target"

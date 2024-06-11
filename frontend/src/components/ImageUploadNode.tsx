@@ -39,7 +39,7 @@ const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
 
     return (
         <div 
-            className="flex flex-col items-center p-10 shadow-lg rounded-lg text-white bg-stone-900/70" 
+            className="flex flex-col items-center p-10 shadow-lg rounded-lg text-white bg-stone-900/70 border-2 border-stone-400" 
             onDrop={handleUpload} 
             onDragOver={handleDragOver}
         >
