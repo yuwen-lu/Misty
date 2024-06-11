@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { FaTrash, FaUndo, FaCheck } from 'react-icons/fa';
-import { formatContent, BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../util";
+import { formatContent, draw, scribbleStrokeWidth, BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../util";
 import 'reactflow/dist/style.css';
 import '../index.css';
 
@@ -9,15 +9,12 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
 
   const [response, setResponse] = useState<string>('');
-  const [canvasActivated, setCanvasActivated] = useState<Boolean>(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
   const [paths, setPaths] = useState<{ x: number, y: number }[][]>([]); // record the paths of scribble
   const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]); // record bounding box to cut image
   const [subImageList, setSubImageList] = useState<string[]>([]);
   const [resizeRatio, setResizeRatio] = useState<number>(0);
-
-  const scribbleStrokeWidth = 10;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasButtonRef = useRef<HTMLButtonElement>(null);
@@ -75,38 +72,19 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
   }, []);
 
+  // whenever the paths are updated, update canvas drawing too
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    draw(canvas, context, paths);
+  }, [paths])
+
   // using useEffect to handle the draw operations
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    const draw = () => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.strokeStyle = 'rgba(177, 230, 103, 0.5)';
-      context.lineJoin = 'round';
-      context.lineCap = 'round';
-      context.lineWidth = scribbleStrokeWidth;
-
-      paths.forEach((path) => {
-        if (path.length < 2) return;
-        context.beginPath();
-        context.moveTo(path[0].x, path[0].y);
-
-        for (let i = 1; i < path.length - 1; i++) {
-          const midPoint = {
-            x: (path[i].x + path[i + 1].x) / 2,
-            y: (path[i].y + path[i + 1].y) / 2,
-          };
-          context.quadraticCurveTo(path[i].x, path[i].y, midPoint.x, midPoint.y);
-        }
-
-        context.lineTo(path[path.length - 1].x, path[path.length - 1].y);
-        context.stroke();
-      });
-    };
 
     const handleMouseDown = (e: MouseEvent) => {
       setIsDrawing(true);
@@ -124,7 +102,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         newPaths[newPaths.length - 1].push({ x: offsetX, y: offsetY });
         return newPaths;
       });
-      draw();
       e.stopPropagation(); // Prevent ReactFlow from handling this event
     };
 
@@ -139,7 +116,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         if (newBox) {
           setBoundingBoxes((prevBoxes) => {
             const newBoxes = [...prevBoxes];
-            newBoxes.push(newBox)
+            newBoxes.push(newBox);
             return newBoxes;
           });
         }
@@ -187,7 +164,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
     })();
   }
 
-  // when subImageList is updated, send it to App.tsx
+  // when subImageList is updated, which happens in batch once Done button is pressed, send it to App.tsx
   useEffect(() => {
     if (subImageList.length > 0) {
       data.onSubImageConfirmed(id, subImageList);
@@ -228,18 +205,26 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
   // clear canvas
   const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext('2d');
-    if (context) {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    // clear the paths as well
+    // clear the paths, the useEffect for paths will take care of re-draw
     setPaths([]);
+    // clear the bounding boxes too
+    setBoundingBoxes([]);
   }
 
   const undoCanvas = () => {
-    // TODO Implement this
+
+    // remove the last added path
+    setPaths((prevPaths) => {
+      const newPaths = [...prevPaths];
+      newPaths.pop();
+      return newPaths;
+    });
+    // remove the associated last bounding box
+    setBoundingBoxes((prevBoxes) => {
+      const newBoxes = [...prevBoxes];
+      newBoxes.pop();
+      return newBoxes;
+    });
   }
 
 
@@ -263,17 +248,17 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
       <div className='flex flex-row'>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
+          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
           onClick={clearCanvas}
-          disabled={!canvasActivated}
+          disabled={paths.length === 0}
         >
           <FaTrash />
           <span className='ml-2'>Clear</span>
         </button>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${canvasActivated ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
+          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
           onClick={undoCanvas}
-          disabled={!canvasActivated}
+          disabled={paths.length === 0}
         >
           <FaUndo />
           <span className='ml-2'>Undo</span>

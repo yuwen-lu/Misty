@@ -92,4 +92,32 @@ export type BoundingBox = {
   
     return canvas.toDataURL();
   }
-  
+
+  export const scribbleStrokeWidth = 10;
+
+  export const draw = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, paths: { x: number, y: number }[][]) => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.strokeStyle = 'rgba(177, 230, 103, 0.5)';
+    context.lineJoin = 'round';
+    context.lineCap = 'round';
+    context.lineWidth = scribbleStrokeWidth;
+
+    console.log("Re-drawing, current path count: " + paths.length);
+
+    paths.forEach((path) => {
+      if (path.length < 2) return;
+      context.beginPath();
+      context.moveTo(path[0].x, path[0].y);
+
+      for (let i = 1; i < path.length - 1; i++) {
+        const midPoint = {
+          x: (path[i].x + path[i + 1].x) / 2,
+          y: (path[i].y + path[i + 1].y) / 2,
+        };
+        context.quadraticCurveTo(path[i].x, path[i].y, midPoint.x, midPoint.y);
+      }
+
+      context.lineTo(path[path.length - 1].x, path[path.length - 1].y);
+      context.stroke();
+    });
+  };
