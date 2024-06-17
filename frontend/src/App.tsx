@@ -15,6 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import ImageDisplayNode from './components/ImageDisplayNode';
 import ImageUploadNode from './components/ImageUploadNode';
+import { CodeRenderNode } from './components/CodeRenderNode';
 import SubImageNode from './components/SubImageNode';
 import 'reactflow/dist/style.css';
 import './index.css';
@@ -26,6 +27,12 @@ const initialNodes: Node[] = [
     id: '1',
     type: 'imageUploadNode',
     position: { x: 250, y: 100 },
+    data: { onUpload: () => { } },
+  },
+  {
+    id: '2',
+    type: 'codeRenderNode',
+    position: { x: 750, y: 100 },
     data: { onUpload: () => { } },
   }
 ];
@@ -41,6 +48,7 @@ const nodeTypes: NodeTypes = {
   imageUploadNode: ImageUploadNode,
   imageDisplayNode: ImageDisplayNode,
   subimageNode: SubImageNode,
+  codeRenderNode: CodeRenderNode,
 };
 
 const App: React.FC = () => {

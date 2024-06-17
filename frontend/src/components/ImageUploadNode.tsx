@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { NodeProps } from 'reactflow';
-import { FaCloudUploadAlt } from 'react-icons/fa';
+import { LuHardDriveUpload } from 'react-icons/lu';
 import 'reactflow/dist/style.css';
 import '../index.css';
 
@@ -44,7 +44,7 @@ const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
             onDragOver={handleDragOver}
         >
             <div className='flex flex-col items-center p-10 mb-4 rounded-lg border border-dashed'>
-            <FaCloudUploadAlt size={50} color="#fff" />
+            <LuHardDriveUpload size={50} color="#fff" />
             <p className="p-4 font-semibold">Drag and Drop a Screenshot</p>
             </div>
             <p className="py-2">Or</p>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { FaTrash, FaUndo, FaCheck } from 'react-icons/fa';
+import { LuTrash2, LuUndo2, LuCheck, LuTrash } from 'react-icons/lu';
 import { formatContent, draw, scribbleStrokeWidth, BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../util";
 import 'reactflow/dist/style.css';
 import '../index.css';
@@ -55,7 +55,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         canvas.height = img.height;
 
         // Also, set the resize ratio so that we can more easily crop the image
-        setResizeRatio( img.naturalWidth / img.width );
+        setResizeRatio(img.naturalWidth / img.width);
         console.log("resize ratio: " + img.naturalWidth / img.width);
       }
     };
@@ -252,7 +252,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           onClick={clearCanvas}
           disabled={paths.length === 0}
         >
-          <FaTrash />
+          <LuTrash2 />
           <span className='ml-2'>Clear</span>
         </button>
         <button
@@ -260,7 +260,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           onClick={undoCanvas}
           disabled={paths.length === 0}
         >
-          <FaUndo />
+          <LuUndo2 />
           <span className='ml-2'>Undo</span>
         </button>
         <button
@@ -272,7 +272,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
             getMergedSubImages();
           }}
         >
-          <FaCheck />
+          <LuCheck />
           <span className='ml-2'>Done</span>
         </button>
       </div>
