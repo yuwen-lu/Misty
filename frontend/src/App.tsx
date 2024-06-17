@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import ImageDisplayNode from './components/ImageDisplayNode';
 import ImageUploadNode from './components/ImageUploadNode';
-import { CodeRenderNode } from './components/CodeRenderNode';
+import CodeRenderNode from './components/CodeRenderNode';
 import SubImageNode from './components/SubImageNode';
 import 'reactflow/dist/style.css';
 import './index.css';
