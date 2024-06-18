@@ -34,7 +34,7 @@ const CodeRenderIframe = () => {
                 ref={iframeRef}
                 className='rounded-md'
                 title="Tailwind iframe"
-                style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '750px',  border: 'none' }} />
+                style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px',  border: 'none' }} />
         </div>
     );
 };

@@ -21,7 +21,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                     <span className='ml-2'>Show Code</span>
                 </button>
             </div>
-            <NodeResizer isVisible={selected} />
+            <NodeResizer isVisible={selected} minHeight={900} minWidth={400}/>
         </div>
     );
 };
