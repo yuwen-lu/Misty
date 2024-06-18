@@ -30,7 +30,11 @@ const CodeRenderIframe = () => {
 
     return (
         <div className="iframe-container grow w-full">
-            <iframe ref={iframeRef} title="Tailwind iframe" style={{ width: '100%', height: '100%', border: 'none' }} />
+            <iframe
+                ref={iframeRef}
+                className='rounded-md'
+                title="Tailwind iframe"
+                style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '750px',  border: 'none' }} />
         </div>
     );
 };
