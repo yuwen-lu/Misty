@@ -34,7 +34,7 @@ const initialNodes: Node[] = [
     id: '2',
     type: 'codeRenderNode',
     position: { x: 750, y: 100 },
-    data: { onUpload: () => { } },
+    data: { code: "" },
   }
 ];
 
@@ -156,7 +156,6 @@ const App: React.FC = () => {
         onConnect={onConnect}
         nodeDragThreshold={4}
         defaultEdgeOptions={defaultEdgeOptions}>
-          <CodeEditorNode />
         <Background />
         <Controls />
       </ReactFlow>
