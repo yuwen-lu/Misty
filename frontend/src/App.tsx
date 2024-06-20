@@ -17,7 +17,7 @@ import ImageDisplayNode from './components/ImageDisplayNode';
 import ImageUploadNode from './components/ImageUploadNode';
 import CodeRenderNode from './components/CodeRenderNode';
 import SubImageNode from './components/SubImageNode';
-import CodeEditorNode from './components/CodeEditorNode';
+import CodeEditorPanel from './components/CodeEditorPanel';
 import 'reactflow/dist/style.css';
 import './index.css';
 
@@ -158,6 +158,7 @@ const App: React.FC = () => {
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
         <Controls />
+        <CodeEditorPanel code={"hi hi"} />
       </ReactFlow>
     </div>
   );
