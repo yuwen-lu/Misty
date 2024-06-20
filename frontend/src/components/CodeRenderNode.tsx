@@ -15,10 +15,10 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
             <div className='flex flex-row'>
                 <button
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
-                // onClick={clearCanvas}
+                    onClick={data.toggleCodePanelVisible}
                 >
                     <LuTerminal />
-                    <span className='ml-2'>Show Code</span>
+                    <span className='ml-2'>{data.codePanelVisible? "Hide" : "Show"} Code</span>
                 </button>
             </div>
             <NodeResizeControl style={{background: 'transparent', border: 'none'}} minWidth={500} minHeight={900}>

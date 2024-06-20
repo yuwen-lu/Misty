@@ -5,7 +5,7 @@ import { basicSetup } from 'codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import FidelityNaturalHeader from './tempComponents/FidelityNaturalHeader';
 
-const CodeEditorPanel: React.FC<{ code: string }> = ({ code }) => {
+const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean }> = ({ code, isVisible }) => {
     const editorRef = useRef(null);
     const [panelWidth, setPanelWidth] = useState('30vw');
     const [isResizing, setIsResizing] = useState(false);
@@ -39,28 +39,25 @@ const CodeEditorPanel: React.FC<{ code: string }> = ({ code }) => {
 
     const resize = (e: MouseEvent) => {
         if (isResizing) {
-            const newWidth = Math.min(window.innerWidth - e.clientX, window.innerWidth * 0.5);
+            const newWidth = window.innerWidth - e.clientX;
             setPanelWidth(`${newWidth}px`);
         }
     };
-
+    
     useEffect(() => {
         if (isResizing) {
             window.addEventListener('mousemove', resize);
             window.addEventListener('mouseup', stopResizing);
-        } else {
-            window.removeEventListener('mousemove', resize);
-            window.removeEventListener('mouseup', stopResizing);
         }
         return () => {
             window.removeEventListener('mousemove', resize);
             window.removeEventListener('mouseup', stopResizing);
         };
     }, [isResizing]);
-
+    
     return (
         <div
-            className="code-editor-side-panel absolute right-0 h-full z-10 flex flex-col transition-all items-center p-5 text-white bg-stone-900/70 border-2 border-stone-400"
+            className={`${isVisible ? "visible" : "invisible"} code-editor-side-panel absolute right-0 h-full z-10 flex flex-col rounded-lg items-center p-5 text-white bg-stone-900/70 border-2 border-stone-400`}
             style={{ width: panelWidth }}
         >
             <div className='font-semibold text-xl mb-5'>

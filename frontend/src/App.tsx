@@ -34,7 +34,7 @@ const initialNodes: Node[] = [
     id: '2',
     type: 'codeRenderNode',
     position: { x: 750, y: 100 },
-    data: { code: "" },
+    data: { code: "", setCodePanelVisible: null },
   }
 ];
 
@@ -56,6 +56,11 @@ const App: React.FC = () => {
 
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
+
+  const toggleCodePanelVisible = () => {
+    setCodePanelVisible(!codePanelVisible);
+  }
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -144,10 +149,15 @@ const App: React.FC = () => {
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <ReactFlow
-        nodes={nodes.map(node =>
-          node.type === 'imageUploadNode'
-            ? { ...node, data: { ...node.data, onUpload: importImage } }
-            : node
+        nodes={nodes.map(node => {
+          if (node.type === 'imageUploadNode') {
+            return { ...node, data: { ...node.data, onUpload: importImage } };
+          } else if (node.type === 'codeRenderNode') {
+            return { ...node, data: { ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible } }
+          } else {
+            return node;
+          }
+        }
         )}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -158,7 +168,7 @@ const App: React.FC = () => {
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
         <Controls />
-        <CodeEditorPanel code={"hi hi"} />
+        <CodeEditorPanel code={"hi hi"} isVisible={codePanelVisible} />
       </ReactFlow>
     </div>
   );
