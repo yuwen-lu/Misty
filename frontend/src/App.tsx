@@ -168,7 +168,7 @@ const App: React.FC = () => {
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
         <Controls />
-        <CodeEditorPanel code={"hi hi"} isVisible={codePanelVisible} />
+        <CodeEditorPanel code={"hi hi"} isVisible={codePanelVisible} setCodePanelVisible={setCodePanelVisible}/>
       </ReactFlow>
     </div>
   );

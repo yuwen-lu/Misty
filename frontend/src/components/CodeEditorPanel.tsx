@@ -4,8 +4,9 @@ import { EditorView } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import FidelityNaturalHeader from './tempComponents/FidelityNaturalHeader';
+import { LuCheck, LuChevronsLeftRight, LuEqual, LuGripVertical } from 'react-icons/lu';
 
-const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean }> = ({ code, isVisible }) => {
+const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean, setCodePanelVisible: (visible: boolean) => void }> = ({ code, isVisible, setCodePanelVisible }) => {
     const editorRef = useRef(null);
     const [panelWidth, setPanelWidth] = useState('30vw');
     const [isResizing, setIsResizing] = useState(false);
@@ -43,7 +44,7 @@ const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean }> = ({ code,
             setPanelWidth(`${newWidth}px`);
         }
     };
-    
+
     useEffect(() => {
         if (isResizing) {
             window.addEventListener('mousemove', resize);
@@ -54,10 +55,10 @@ const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean }> = ({ code,
             window.removeEventListener('mouseup', stopResizing);
         };
     }, [isResizing]);
-    
+
     return (
         <div
-            className={`${isVisible ? "visible" : "invisible"} code-editor-side-panel absolute right-0 h-full z-10 flex flex-col rounded-lg items-center p-5 text-white bg-stone-900/70 border-2 border-stone-400`}
+            className={`${isVisible ? "visible" : "invisible"} code-editor-side-panel transition-transform absolute right-0 h-full z-10 flex flex-col rounded-lg items-center p-5 text-white bg-stone-900/70 border-2 border-stone-400`}
             style={{ width: panelWidth }}
         >
             <div className='font-semibold text-xl mb-5'>
@@ -70,7 +71,7 @@ const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean }> = ({ code,
                 className='h-full w-full'
             />
             <div
-                className="resize-handle"
+                className="resize-handle flex flex-col justify-center"
                 onMouseDown={startResizing}
                 style={{
                     width: '10px',
@@ -81,8 +82,27 @@ const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean }> = ({ code,
                     left: 0,
                     backgroundColor: 'transparent',
                 }}
-            />
-        </div>
+
+            >
+                <div className='origin-center rotate-90 ml-2'>
+                    <LuEqual size={20} color='#ddd'/>
+                </div>
+            </div>
+
+            <div className='flex flex-row'>
+                <button
+                    className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
+                    onClick={
+                        () => {
+                            setCodePanelVisible(false);
+                        }
+                    }
+                >
+                    <LuCheck />
+                    <span className='ml-2'>Done</span>
+                </button>
+            </div>
+        </div >
     );
 };
 

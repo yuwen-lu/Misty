@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
-import { LuUndo2, LuGripHorizontal, LuTerminal } from 'react-icons/lu';
+import { LuUndo2, LuGripHorizontal, LuTerminal, LuEqual } from 'react-icons/lu';
 import CodeRenderIframe from './CodeRenderIframe';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
@@ -23,7 +23,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
             </div>
             <NodeResizeControl style={{background: 'transparent', border: 'none'}} minWidth={500} minHeight={900}>
                 <div style={{ color: "#ddd", position: 'absolute', right: 7, bottom: 5, visibility: selected ? "visible" : "hidden"  }}>
-                    <LuGripHorizontal />
+                    <LuEqual />
                 </div>
             </NodeResizeControl>
         </div>
