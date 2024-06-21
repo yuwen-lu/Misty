@@ -11,7 +11,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
             <div className='font-semibold text-xl mb-5'>
                 Source Code Render
             </div>
-            <CodeRenderIframe />
+            <CodeRenderIframe code={data.code}/>
             <div className='flex flex-row'>
                 <button
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}

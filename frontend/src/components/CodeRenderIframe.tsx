@@ -1,13 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-// import { transform } from '@babel/standalone';
-import { FidelityNaturalHeader } from './tempComponents/FidelityNaturalHeader';
+import { transform } from '@babel/standalone';
 
-const CodeRenderIframe = () => {
-    const iframeRef = useRef(null);
+const CodeRenderIframe: React.FC<{ code: string }> = ({ code }) => {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
     useEffect(() => {
-
         if (iframeRef.current) {
             const iframe: HTMLIFrameElement = iframeRef.current;
             const iframeDocument = iframe.contentDocument || iframe.contentWindow?.document;
@@ -21,41 +19,51 @@ const CodeRenderIframe = () => {
                 // Render React component into iframe
                 const mountNode = iframeDocument.createElement('div');
                 iframeDocument.body.appendChild(mountNode);
+
                 const root = createRoot(mountNode);
-                // root.render(<FidelityNaturalHeader />);
+
+                // Transform the code using Babel
+                const transformedCode = transform(code, {
+                    presets: ['react', 'es2015']
+                }).code;
+
+                // Create a new script element and append the transformed code
+                const script = iframeDocument.createElement('script');
+                script.type = 'text/javascript';
+                script.textContent = `
+                    (function() {
+                        ${transformedCode}
+                        const Component = window.FidelityNaturalHeader;
+                        const root = window.ReactDOM.createRoot(document.getElementById('root'));
+                        root.render(React.createElement(Component));
+                    })();
+                `;
+                iframeDocument.body.appendChild(script);
+
+                // Make React and ReactDOM available in the iframe context
+                const reactScript = iframeDocument.createElement('script');
+                reactScript.src = 'https://unpkg.com/react@17/umd/react.development.js';
+                reactScript.onload = () => {
+                    const reactDomScript = iframeDocument.createElement('script');
+                    reactDomScript.src = 'https://unpkg.com/react-dom@17/umd/react-dom.development.js';
+                    reactDomScript.onload = () => {
+                        iframeDocument.body.appendChild(script);
+                    };
+                    iframeDocument.body.appendChild(reactDomScript);
+                };
+                iframeDocument.body.appendChild(reactScript);
             }
         }
-
-
-    }, []);
-
-    // useEffect(() => {
-    //     if (iframeRef.current) {
-    //         const doc = iframeRef.current.contentDocument;
-    //         const script = doc.createElement('script');
-    //         const transformedCode = transform(code, {
-    //             presets: ['env', 'react'],
-    //         }).code;
-
-    //         script.type = 'text/javascript';
-    //         script.innerHTML = `
-    //       ${transformedCode}
-    //       ReactDOM.render(React.createElement(FidelityNaturalHeader), document.getElementById('root'));
-    //     `;
-
-    //         doc.body.innerHTML = '<div id="root"></div>';
-    //         doc.body.appendChild(script);
-    //     }
-
-    // }, [code]);
+    }, [code]);
 
     return (
         <div className="iframe-container grow w-full">
             <iframe
                 ref={iframeRef}
-                className='rounded-md'
+                className="rounded-md"
                 title="Tailwind iframe"
-                style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }} />
+                style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
+            />
         </div>
     );
 };
