@@ -18,6 +18,7 @@ import ImageUploadNode from './components/ImageUploadNode';
 import CodeRenderNode from './components/CodeRenderNode';
 import SubImageNode from './components/SubImageNode';
 import CodeEditorPanel from './components/CodeEditorPanel';
+import { FidelityNaturalHeader } from './components/tempComponents/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import './index.css';
 
@@ -57,7 +58,7 @@ const App: React.FC = () => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-  const [renderCode, setRenderCode] = useState<string>("");
+  const [renderCode, setRenderCode] = useState<string>(FidelityNaturalHeader);
 
   const toggleCodePanelVisible = () => {
     setCodePanelVisible(!codePanelVisible);

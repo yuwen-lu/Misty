@@ -1,3 +1,4 @@
+export const FidelityNaturalHeader: string = `
 import React from 'react';
 import {
     LuLeaf, LuSearch, LuPlusCircle, LuUser, LuHome,
@@ -107,3 +108,5 @@ const FidelityNaturalHeader = () => {
 }
 
 export default FidelityNaturalHeader;
+
+`

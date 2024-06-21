@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
-import FidelityNaturalHeader from './tempComponents/FidelityNaturalHeader';
+// import { transform } from '@babel/standalone';
+import { FidelityNaturalHeader } from './tempComponents/FidelityNaturalHeader';
 
 const CodeRenderIframe = () => {
     const iframeRef = useRef(null);
@@ -21,12 +22,32 @@ const CodeRenderIframe = () => {
                 const mountNode = iframeDocument.createElement('div');
                 iframeDocument.body.appendChild(mountNode);
                 const root = createRoot(mountNode);
-                root.render(<FidelityNaturalHeader />);
+                // root.render(<FidelityNaturalHeader />);
             }
         }
 
 
     }, []);
+
+    // useEffect(() => {
+    //     if (iframeRef.current) {
+    //         const doc = iframeRef.current.contentDocument;
+    //         const script = doc.createElement('script');
+    //         const transformedCode = transform(code, {
+    //             presets: ['env', 'react'],
+    //         }).code;
+
+    //         script.type = 'text/javascript';
+    //         script.innerHTML = `
+    //       ${transformedCode}
+    //       ReactDOM.render(React.createElement(FidelityNaturalHeader), document.getElementById('root'));
+    //     `;
+
+    //         doc.body.innerHTML = '<div id="root"></div>';
+    //         doc.body.appendChild(script);
+    //     }
+
+    // }, [code]);
 
     return (
         <div className="iframe-container grow w-full">
@@ -34,7 +55,7 @@ const CodeRenderIframe = () => {
                 ref={iframeRef}
                 className='rounded-md'
                 title="Tailwind iframe"
-                style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px',  border: 'none' }} />
+                style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }} />
         </div>
     );
 };
