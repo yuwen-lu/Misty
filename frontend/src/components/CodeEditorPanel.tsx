@@ -6,7 +6,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import FidelityNaturalHeader from './tempComponents/FidelityNaturalHeader';
 import { LuCheck, LuChevronsLeftRight, LuEqual, LuGripVertical } from 'react-icons/lu';
 
-const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean, setCodePanelVisible: (visible: boolean) => void }> = ({ code, isVisible, setCodePanelVisible }) => {
+const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void, isVisible: boolean, setCodePanelVisible: (visible: boolean) => void }> = ({ code, setCode, isVisible, setCodePanelVisible }) => {
     const editorRef = useRef(null);
     const [panelWidth, setPanelWidth] = useState('30vw');
     const [isResizing, setIsResizing] = useState(false);
@@ -58,13 +58,14 @@ const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean, setCodePanel
 
     return (
         <div
-            className={`${isVisible ? "visible" : "invisible"} code-editor-side-panel transition-transform absolute right-0 h-full z-10 flex flex-col rounded-lg items-center p-5 text-white bg-stone-900/70 border-2 border-stone-400`}
+            className={`${isVisible ? "visible" : "invisible"} code-editor-side-panel transition-transform absolute right-0 h-full z-10 flex flex-col rounded-sm items-center p-5 text-white bg-stone-900/70 border-2 border-stone-400`}
             style={{ width: panelWidth }}
         >
             <div className='font-semibold text-xl mb-5'>
                 Code Editor
             </div>
 
+            {/* TODO for Editor, when code changes, propogate code change back to app.tsx */}
             <div
                 ref={editorRef}
                 style={{ border: '1px solid #ccc', borderRadius: 4 }}
@@ -85,7 +86,7 @@ const CodeEditorPanel: React.FC<{ code: string, isVisible: boolean, setCodePanel
 
             >
                 <div className='origin-center rotate-90 ml-2'>
-                    <LuEqual size={20} color='#ddd'/>
+                    <LuEqual size={20} color='#ddd' />
                 </div>
             </div>
 

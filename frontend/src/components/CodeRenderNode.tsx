@@ -15,7 +15,10 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
             <div className='flex flex-row'>
                 <button
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
-                    onClick={data.toggleCodePanelVisible}
+                    onClick={ () => {
+                        data.toggleCodePanelVisible();
+                        data.setRenderCode("yuy");
+                    }}
                 >
                     <LuTerminal />
                     <span className='ml-2'>{data.codePanelVisible? "Hide" : "Show"} Code</span>
@@ -26,7 +29,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                     <LuEqual />
                 </div>
             </NodeResizeControl>
-        </div>
+        </div >
     );
 };
 

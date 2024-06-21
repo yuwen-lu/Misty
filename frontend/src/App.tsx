@@ -57,6 +57,7 @@ const App: React.FC = () => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
+  const [renderCode, setRenderCode] = useState<string>("");
 
   const toggleCodePanelVisible = () => {
     setCodePanelVisible(!codePanelVisible);
@@ -153,7 +154,7 @@ const App: React.FC = () => {
           if (node.type === 'imageUploadNode') {
             return { ...node, data: { ...node.data, onUpload: importImage } };
           } else if (node.type === 'codeRenderNode') {
-            return { ...node, data: { ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible } }
+            return { ...node, data: { ...node.data, renderCode: renderCode, setRenderCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible } }
           } else {
             return node;
           }
@@ -168,7 +169,7 @@ const App: React.FC = () => {
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
         <Controls />
-        <CodeEditorPanel code={"hi hi"} isVisible={codePanelVisible} setCodePanelVisible={setCodePanelVisible}/>
+        <CodeEditorPanel code={renderCode} setCode={setRenderCode} isVisible={codePanelVisible} setCodePanelVisible={setCodePanelVisible}/>
       </ReactFlow>
     </div>
   );
