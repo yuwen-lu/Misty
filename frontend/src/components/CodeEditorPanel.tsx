@@ -3,7 +3,7 @@ import { EditorState } from '@codemirror/state';
 import { EditorView, ViewUpdate } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { javascript } from '@codemirror/lang-javascript';
-import { basicDark } from '@uiw/codemirror-theme-basic';
+import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { LuCheck, LuEqual } from 'react-icons/lu';
 
 const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void, isVisible: boolean, setCodePanelVisible: (visible: boolean) => void }> = ({ code, setCode, isVisible, setCodePanelVisible }) => {
@@ -18,7 +18,7 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
                 extensions: [
                     basicSetup,
                     javascript(),
-                    basicDark,
+                    vscodeDark,
                     EditorView.updateListener.of((update: ViewUpdate) => {
                         if (update.docChanged) {
                             setCode(update.state.doc.toString());
