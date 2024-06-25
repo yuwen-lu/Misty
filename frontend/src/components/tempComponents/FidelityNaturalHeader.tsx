@@ -1,7 +1,7 @@
 export const FidelityNaturalHeader: string = `
 () => {
     return (
-        <div className="min-h-screen bg-white text-black font-sans">
+        <div className="min-h-screen h-full bg-white text-black font-sans relative">
             <header className="flex justify-between items-center p-4 bg-white shadow-md">
                 <div className="font-bold text-lg flex items-center">
                     <img src='/fidelity.png' className='w-6 mr-2' alt="Fidelity Logo" />
@@ -77,7 +77,7 @@ export const FidelityNaturalHeader: string = `
                     <p>Indicates that the security has not priced today. Some securities, such as mutual funds, are not priced until after the market closes.</p>
                 </footer>
             </main>
-            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-md">
+            <nav className="absolute bottom-0 left-0 right-0 bg-white border-t shadow-md">
                 <div className="flex justify-around p-2">
                     <button className="text-green-600 flex flex-col items-center">
                         <LuHome /><span className="text-xs">Home</span>
