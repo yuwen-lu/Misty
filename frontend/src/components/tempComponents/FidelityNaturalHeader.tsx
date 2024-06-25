@@ -1,12 +1,5 @@
 export const FidelityNaturalHeader: string = `
-import React from 'react';
-import {
-    LuLeaf, LuSearch, LuPlusCircle, LuUser, LuHome,
-    LuLineChart, LuDollarSign, LuCog, LuGrip, LuChevronRight,
-    LuChevronDown, LuMoreHorizontal
-} from 'react-icons/lu';
-
-const FidelityNaturalHeader = () => {
+() => {
     return (
         <div className="min-h-screen bg-white text-black font-sans">
             <header className="flex justify-between items-center p-4 bg-white shadow-md">
@@ -106,7 +99,4 @@ const FidelityNaturalHeader = () => {
         </div>
     );
 }
-
-export default FidelityNaturalHeader;
-
 `

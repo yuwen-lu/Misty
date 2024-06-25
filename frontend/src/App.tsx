@@ -35,7 +35,7 @@ const initialNodes: Node[] = [
     id: '2',
     type: 'codeRenderNode',
     position: { x: 750, y: 100 },
-    data: { code: "", setCodePanelVisible: null },
+    data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
   }
 ];
 
