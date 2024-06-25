@@ -24,7 +24,7 @@ export const FidelityNaturalHeader: string = `
                 <button className="bg-black text-white py-2 px-4 rounded-lg">Continue with Apple</button>
                 <p className="mt-2 text-gray-500">Signup / Login with phone</p>
             </section>
-            <main className="p-4">
+            <main className="p-4 pb-16">
                 <section className='mb-6 flex justify-center'>
                     <button className="flex items-center text-lg">
                         <LuPlusCircle />

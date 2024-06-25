@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
 import { LuUndo2, LuGripHorizontal, LuTerminal, LuEqual } from 'react-icons/lu';
-import CodeRenderIframe from './CodeRenderIframe';
+import CodeRenderFrame from './CodeRenderFrame';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
 
@@ -11,7 +11,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
             <div className='font-semibold text-xl mb-5'>
                 Source Code Render
             </div>
-            <CodeRenderIframe code={data.code}/>
+            <CodeRenderFrame code={data.code}/>
             <div className='flex flex-row'>
                 <button
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
