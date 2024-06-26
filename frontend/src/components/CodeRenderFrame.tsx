@@ -4,16 +4,21 @@ import * as LuIcons from 'react-icons/lu';
 
 const CodeRenderFrame: React.FC<{ code: string }> = ({ code }) => {
 
+    
+    const [renderCode, setRenderCode] = useState(code);
+
     useEffect( () => {
-        console.log("code changed");
-    }, [code])
+        setRenderCode(code);
+        console.log("Code updated in the render frame: ")
+        console.log(renderCode);
+    }, [code]);
 
     return (
         <div
             className="code-render-container grow w-full overflow-auto"
             style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
         >
-            <LiveProvider code={code} scope={{ ...LuIcons }}>
+            <LiveProvider code={renderCode} scope={{ ...LuIcons }}>
                 <LivePreview />
                 <LiveError />
             </LiveProvider>

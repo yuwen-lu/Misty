@@ -6,10 +6,6 @@ import CodeRenderFrame from './CodeRenderFrame';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
 
-    useEffect( () => {
-        console.log("code changed in code render node");
-    }, [data.code])
-
     return (
         <div className="flex flex-col items-center px-20 py-5 text-white bg-stone-900/70 rounded-lg border-2 border-stone-400 w-full h-full">
             <div className='font-semibold text-xl mb-5'>
@@ -21,7 +17,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
                     onClick={ () => {
                         data.toggleCodePanelVisible();
-                        // data.setRenderCode("yuy");
+                        // data.setCode("yuy");
                         // TODO pull code from react component 
                     }}
                 >

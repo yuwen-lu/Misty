@@ -34,7 +34,6 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
                     vscodeDark,
                     EditorState.changeFilter.of((tr) => {
                         if (tr.docChanged) {
-                            console.log('Change detected in changeFilter');
                             debouncedSetCode(tr.newDoc.toString());
                         }
                         return true; // Allow all changes
@@ -56,7 +55,7 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
                 view.destroy();
             };
         }
-    }, [code, setCode]);
+    }, [code]);
 
     const startResizing = () => {
         setIsResizing(true);
