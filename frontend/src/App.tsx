@@ -155,7 +155,10 @@ const App: React.FC = () => {
           if (node.type === 'imageUploadNode') {
             return { ...node, data: { ...node.data, onUpload: importImage } };
           } else if (node.type === 'codeRenderNode') {
-            return { ...node, data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible } }
+            return {
+              ...node,
+              data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible }
+            }
           } else {
             return node;
           }

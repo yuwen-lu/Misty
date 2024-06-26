@@ -1,5 +1,4 @@
-export const FidelityNaturalHeader: string = `
-() => {
+export const FidelityNaturalHeader: string = `() => {
     return (
         <div className="min-h-screen h-full bg-white text-black font-sans relative">
             <header className="flex justify-between items-center p-4 bg-white shadow-md">
