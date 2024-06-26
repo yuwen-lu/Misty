@@ -60,24 +60,6 @@ const App: React.FC = () => {
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
   const [renderCode, setRenderCode] = useState<string>(FidelityNaturalHeader);
 
-  useEffect(() => {
-    console.log("Render code changed in app.tsx");
-    console.log("code in app.tsx")
-    console.log(renderCode);
-    // TODO Now the renderCode state changes, but it does not reflect in the React flow nodes. 
-    // we need to force the update to react flow nodes
-    setNodes((nds) => {
-      nds.map((node) => {
-        if (node.type === "codeRenderNode") {
-          return { ...node, data: { ...node.data, code: renderCode } };
-        } else {
-          return node;
-        }
-      });
-      return nds;
-    })
-  }, [renderCode])
-
   const toggleCodePanelVisible = () => {
     setCodePanelVisible(!codePanelVisible);
   }
