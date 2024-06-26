@@ -3,13 +3,26 @@ import { EditorState } from '@codemirror/state';
 import { EditorView, ViewUpdate } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { javascript } from '@codemirror/lang-javascript';
+import { indentUnit } from "@codemirror/language";
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
 import { LuCheck, LuEqual } from 'react-icons/lu';
+
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
+    let timeout: ReturnType<typeof setTimeout>;
+    return (...args: Parameters<T>) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+    };
+}
 
 const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void, isVisible: boolean, setCodePanelVisible: (visible: boolean) => void }> = ({ code, setCode, isVisible, setCodePanelVisible }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const [panelWidth, setPanelWidth] = useState('45vw');
     const [isResizing, setIsResizing] = useState(false);
+
+    const debouncedSetCode = debounce((newCode: string) => {
+        setCode(newCode);
+    }, 300);
 
     useEffect(() => {
         if (editorRef.current) {
@@ -19,21 +32,27 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
                     basicSetup,
                     javascript(),
                     vscodeDark,
-                    EditorView.updateListener.of((update: ViewUpdate) => {
-                        if (update.docChanged) {
-                            setCode(update.state.doc.toString());
+                    EditorState.changeFilter.of((tr) => {
+                        if (tr.docChanged) {
+                            console.log('Change detected in changeFilter');
+                            debouncedSetCode(tr.newDoc.toString());
                         }
-                    })
+                        return true; // Allow all changes
+                    }),
+                    indentUnit.of("    ")
                 ],
             });
 
             const view = new EditorView({
                 state: startState,
-                parent: editorRef.current,
+                parent: editorRef.current!,
             });
+
+            console.log('EditorView initialized');
 
             // Cleanup the view on unmount
             return () => {
+                console.log('Destroying EditorView');
                 view.destroy();
             };
         }

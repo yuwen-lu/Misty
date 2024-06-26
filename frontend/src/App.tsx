@@ -60,6 +60,10 @@ const App: React.FC = () => {
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
   const [renderCode, setRenderCode] = useState<string>(FidelityNaturalHeader);
 
+  useEffect( () => {
+    console.log("Render code changed in app.tsx");
+  }, [renderCode])
+
   const toggleCodePanelVisible = () => {
     setCodePanelVisible(!codePanelVisible);
   }

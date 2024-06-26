@@ -20,6 +20,7 @@ code {
   display: flex;
   flex-direction: column;
   height: 100%;
+  font-size: 0.9rem;
 }
 
 .code-editor-side-panel .cm-editor {

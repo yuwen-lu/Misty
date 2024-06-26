@@ -1,10 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
-import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
-import { LuUndo2, LuGripHorizontal, LuTerminal, LuEqual } from 'react-icons/lu';
+import { NodeProps, NodeResizeControl } from 'reactflow';
+import { LuTerminal, LuEqual } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
+
+    useEffect( () => {
+        console.log("code changed in code render node");
+    }, [data.code])
 
     return (
         <div className="flex flex-col items-center px-20 py-5 text-white bg-stone-900/70 rounded-lg border-2 border-stone-400 w-full h-full">

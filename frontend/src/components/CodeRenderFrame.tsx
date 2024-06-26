@@ -4,6 +4,10 @@ import * as LuIcons from 'react-icons/lu';
 
 const CodeRenderFrame: React.FC<{ code: string }> = ({ code }) => {
 
+    useEffect( () => {
+        console.log("code changed");
+    }, [code])
+
     return (
         <div
             className="code-render-container grow w-full overflow-auto"

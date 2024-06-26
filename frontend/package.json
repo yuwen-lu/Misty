@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/language": "^6.10.2",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
