@@ -62,6 +62,8 @@ const App: React.FC = () => {
 
   useEffect( () => {
     console.log("Render code changed in app.tsx");
+    // TODO Now the renderCode state changes, but it does not reflect in the React flow nodes. 
+    // we need to force the update to react flow nodes
   }, [renderCode])
 
   const toggleCodePanelVisible = () => {
