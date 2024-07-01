@@ -13,16 +13,6 @@ export const FidelityNaturalHeader: string = `() => {
                     <LuUser />
                 </div>
             </header>
-            <section className="p-4 bg-gradient-to-r from-purple-300 to-blue-300 text-center rounded-lg mb-4">
-                <h2 className="text-2xl font-bold mb-2">Rethink Simplicity</h2>
-                <p className="text-lg mb-4">
-                    Tired of too many different kinds of delivery and shopping apps?
-                    Natural brings you exactly what you need, when you need it from your
-                    favorite stores, directly to your fingertips.
-                </p>
-                <button className="bg-black text-white py-2 px-4 rounded-lg">Continue with Apple</button>
-                <p className="mt-2 text-gray-500">Signup / Login with phone</p>
-            </section>
             <main className="p-4 pb-16">
                 <section className='mb-6 flex justify-center'>
                     <button className="flex items-center text-lg">

@@ -23,7 +23,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                     className="ml-auto flex items-center justify-center p-2 bg-stone-700 rounded-full border border-stone-500 hover:bg-stone-600"
                 >
                     <LuSmartphone size={24} className={`transition-opacity duration-300 mr-2 ${isMobile ? 'opacity-100' : 'opacity-50'}`} />
-                    <LuMonitor size={24} className={`transition-opacity duration-300 ${isMobile ? 'opacity-50' : 'opacity-100'}`} />
+                    <LuMonitor size={24} className={`transition-opacity duration-300 mr-1 ${isMobile ? 'opacity-50' : 'opacity-100'}`} />
                 </button>
             </div>
             <CodeRenderFrame isMobile={isMobile} code={data.code} />

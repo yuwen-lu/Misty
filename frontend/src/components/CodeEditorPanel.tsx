@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { EditorState } from '@codemirror/state';
-import { EditorView, ViewUpdate } from '@codemirror/view';
+import { EditorView } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { indentUnit } from "@codemirror/language";
@@ -17,6 +17,7 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (.
 
 const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void, isVisible: boolean, setCodePanelVisible: (visible: boolean) => void }> = ({ code, setCode, isVisible, setCodePanelVisible }) => {
     const editorRef = useRef<HTMLDivElement>(null);
+    const viewRef = useRef<EditorView | null>(null);
     const [panelWidth, setPanelWidth] = useState('45vw');
     const [isResizing, setIsResizing] = useState(false);
 
@@ -24,8 +25,9 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
         setCode(newCode);
     }, 300);
 
+    // Initialize the editor view once
     useEffect(() => {
-        if (editorRef.current) {
+        if (editorRef.current && !viewRef.current) {
             const startState = EditorState.create({
                 doc: code,
                 extensions: [
@@ -42,9 +44,9 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
                 ],
             });
 
-            const view = new EditorView({
+            viewRef.current = new EditorView({
                 state: startState,
-                parent: editorRef.current!,
+                parent: editorRef.current,
             });
 
             console.log('EditorView initialized');
@@ -52,8 +54,25 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
             // Cleanup the view on unmount
             return () => {
                 console.log('Destroying EditorView');
-                view.destroy();
+                viewRef.current?.destroy();
+                viewRef.current = null;
             };
+        }
+    }, []);
+
+    // Update the editor content when code changes
+    useEffect(() => {
+        if (viewRef.current) {
+            const updateTransaction = viewRef.current.state.update({
+                changes: {
+                    from: 0,
+                    to: viewRef.current.state.doc.length,
+                    insert: code,
+                },
+            });
+
+            viewRef.current.dispatch(updateTransaction);
+            debouncedSetCode(code);
         }
     }, [code]);
 
