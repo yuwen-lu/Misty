@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ReactDOMServer from 'react-dom/server';
-import { NodeProps, NodeResizeControl } from 'reactflow';
+import { Node, NodeProps, Handle, Position, NodeResizeControl } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
 
     const [isMobile, setIsMobile] = useState<boolean>(true);
+    const [handledNodes, setHandledNodes] = useState<Node>();
+
+    // when a new node connect to this node, update the source code render
+    const updateConnectNode = () => {
+
+    }
 
     const handleToggle = () => {
         setIsMobile(!isMobile);
@@ -20,11 +25,16 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                 </div>
                 <button
                     onClick={handleToggle}
-                    className="ml-auto flex items-center justify-center p-2 bg-stone-700 rounded-full border border-stone-500 hover:bg-stone-600"
+                    className="ml-auto flex items-center justify-center px-1 py-1 bg-stone-700 rounded-full border border-stone-500 hover:bg-stone-600"
                 >
-                    <LuSmartphone size={24} className={`transition-opacity duration-300 mr-2 ${isMobile ? 'opacity-100' : 'opacity-50'}`} />
-                    <LuMonitor size={24} className={`transition-opacity duration-300 mr-1 ${isMobile ? 'opacity-50' : 'opacity-100'}`} />
+                    <div className={`px-0.5 py-0.5 rounded-full ${isMobile ? "bg-stone-500" : ""} `}>
+                        <LuSmartphone size={24} className={`transition-opacity duration-300 mx-2 my-1 ${isMobile ? 'opacity-100' : 'opacity-50'}`} />
+                    </div>
+                    <div className={`px-0.5 py-0.5 rounded-full ${!isMobile ? "bg-stone-500" : ""} `}>
+                    <LuMonitor size={24} className={`transition-opacity duration-300 mx-2 my-1 ${isMobile ? 'opacity-50' : 'opacity-100'}`} />
+                    </div>
                 </button>
+
             </div>
             <CodeRenderFrame isMobile={isMobile} code={data.code} />
             <div className='flex flex-row'>
@@ -43,6 +53,13 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                     <LuEqual />
                 </div>
             </NodeResizeControl>
+            <Handle
+                type="target"
+                position={Position.Left}
+                id="render-t"
+                isConnectable={true}
+                onConnect={updateConnectNode}
+            />
         </div >
     );
 };

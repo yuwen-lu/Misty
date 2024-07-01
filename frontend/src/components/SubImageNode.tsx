@@ -24,6 +24,12 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 id="b"
                 isConnectable={true}
             />
+            <Handle
+                type="source"
+                position={Position.Right}
+                id="s"
+                isConnectable={true}
+            />
         </div>
     )
 };
