@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
@@ -15,28 +15,41 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (.
     };
 }
 
-const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void, isVisible: boolean, setCodePanelVisible: (visible: boolean) => void }> = ({ code, setCode, isVisible, setCodePanelVisible }) => {
+interface CodeEditorPanelProps {
+    code: string;
+    setCode: (code: string) => void;
+    isVisible: boolean;
+    setCodePanelVisible: (visible: boolean) => void;
+}
+
+const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setCode, isVisible, setCodePanelVisible }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
+    const codeRef = useRef(code);
     const [panelWidth, setPanelWidth] = useState('45vw');
     const [isResizing, setIsResizing] = useState(false);
 
-    const debouncedSetCode = debounce((newCode: string) => {
-        setCode(newCode);
-    }, 300);
+    const debouncedSetCode = useCallback(
+        debounce((newCode: string) => {
+            setCode(newCode);
+        }, 300),
+        [setCode]
+    );
 
     // Initialize the editor view once
     useEffect(() => {
         if (editorRef.current && !viewRef.current) {
             const startState = EditorState.create({
-                doc: code,
+                doc: codeRef.current,
                 extensions: [
                     basicSetup,
                     javascript(),
                     vscodeDark,
                     EditorState.changeFilter.of((tr) => {
                         if (tr.docChanged) {
-                            debouncedSetCode(tr.newDoc.toString());
+                            const newCode = tr.newDoc.toString();
+                            codeRef.current = newCode;
+                            debouncedSetCode(newCode);
                         }
                         return true; // Allow all changes
                     }),
@@ -60,9 +73,9 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
         }
     }, []);
 
-    // Update the editor content when code changes
+    // Update the editor content when code prop changes
     useEffect(() => {
-        if (viewRef.current) {
+        if (viewRef.current && code !== codeRef.current) {
             const updateTransaction = viewRef.current.state.update({
                 changes: {
                     from: 0,
@@ -72,24 +85,24 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
             });
 
             viewRef.current.dispatch(updateTransaction);
-            debouncedSetCode(code);
+            codeRef.current = code;
         }
     }, [code]);
 
-    const startResizing = () => {
+    const startResizing = useCallback(() => {
         setIsResizing(true);
-    };
+    }, []);
 
-    const stopResizing = () => {
+    const stopResizing = useCallback(() => {
         setIsResizing(false);
-    };
+    }, []);
 
-    const resize = (e: MouseEvent) => {
+    const resize = useCallback((e: MouseEvent) => {
         if (isResizing) {
             const newWidth = window.innerWidth - e.clientX;
             setPanelWidth(`${newWidth}px`);
         }
-    };
+    }, [isResizing]);
 
     useEffect(() => {
         if (isResizing) {
@@ -100,7 +113,7 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
             window.removeEventListener('mousemove', resize);
             window.removeEventListener('mouseup', stopResizing);
         };
-    }, [isResizing]);
+    }, [isResizing, resize, stopResizing]);
 
     return (
         <div
@@ -111,7 +124,6 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
                 Code Editor
             </div>
 
-            {/* Editor container with fixed height and scroll */}
             <div
                 ref={editorRef}
                 style={{ border: '1px solid #ccc', borderRadius: 4, flex: 1, overflow: 'auto' }}
@@ -146,6 +158,6 @@ const CodeEditorPanel: React.FC<{ code: string, setCode: (code: string) => void,
             </div>
         </div>
     );
-};
+});
 
 export default CodeEditorPanel;

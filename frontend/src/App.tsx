@@ -58,11 +58,7 @@ const App: React.FC = () => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-  const [renderCode, setRenderCode] = useState<string>(FidelityNaturalHeader);
-
-  const toggleCodePanelVisible = () => {
-    setCodePanelVisible(!codePanelVisible);
-  }
+  const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -148,6 +144,26 @@ const App: React.FC = () => {
   };
 
 
+  const toggleCodePanelVisible = () => {
+    setCodePanelVisible(!codePanelVisible);
+  }
+
+  const setRenderCode = useCallback((newCode: string) => {
+    // Any processing you need to do with the new code
+    setRenderCodeState(newCode);
+  }, []);
+
+  // memorize the code editor panel to avoid unnecessary re-render
+  const memoizedCodeEditorPanel = useMemo(() => (
+    <CodeEditorPanel
+      code={renderCode}
+      setCode={setRenderCode}
+      isVisible={codePanelVisible}
+      setCodePanelVisible={setCodePanelVisible}
+    />
+  ), [renderCode, setRenderCode, codePanelVisible, setCodePanelVisible]);
+
+
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <ReactFlow
@@ -173,7 +189,7 @@ const App: React.FC = () => {
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
         <Controls />
-        <CodeEditorPanel code={renderCode} setCode={setRenderCode} isVisible={codePanelVisible} setCodePanelVisible={setCodePanelVisible} />
+        {memoizedCodeEditorPanel}
       </ReactFlow>
     </div>
   );
