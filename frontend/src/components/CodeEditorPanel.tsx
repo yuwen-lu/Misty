@@ -161,7 +161,7 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
 
     return (
         <div
-            className={`${isVisible ? "visible" : "invisible"} code-editor-side-panel transition-transform absolute right-0 h-full z-10 flex flex-col rounded-sm items-center p-5 text-black bg-stone-900/70 border-2 border-stone-400`}
+            className={`${isVisible ? "visible translate-x-0" : "invisible translate-x-full"} code-editor-side-panel transition-transform duration-300 ease-in-out absolute right-0 h-full z-10 flex flex-col rounded-sm items-center p-5 text-black bg-stone-900/70 border-2 border-stone-400`}
             style={{ width: panelWidth }}
         >
             <div className='font-semibold text-white text-xl mb-5'>
