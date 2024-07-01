@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { EditorState } from '@codemirror/state';
-import { EditorView } from '@codemirror/view';
+import { EditorView, keymap } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { indentUnit } from "@codemirror/language";
+import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
-import { LuCheck, LuEqual } from 'react-icons/lu';
+import { LuCheck, LuEqual, LuSave } from 'react-icons/lu';
+
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
     let timeout: ReturnType<typeof setTimeout>;
@@ -15,6 +17,18 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (.
     };
 }
 
+// used for show a saved popup
+const SavePopup: React.FC<{ isVisible: boolean }> = ({ isVisible }) => (
+    <div className={`absolute inset-0 flex items-center justify-center z-50 transition-all duration-200 ease-in-out ${isVisible ? 'bg-opacity-50' : 'bg-opacity-0 pointer-events-none'}`}>
+        <div className={`bg-gray-800 backdrop-filter backdrop-blur-sm rounded-lg p-6 shadow-lg transition-all duration-200 ease-in-out ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+            <div className="flex items-center justify-center text-white">
+                <LuSave className="mr-3 text-3xl" />
+                <span className="text-xl font-semibold">Changes Saved!</span>
+            </div>
+        </div>
+    </div>
+);
+
 interface CodeEditorPanelProps {
     code: string;
     setCode: (code: string) => void;
@@ -22,12 +36,14 @@ interface CodeEditorPanelProps {
     setCodePanelVisible: (visible: boolean) => void;
 }
 
+
 const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setCode, isVisible, setCodePanelVisible }) => {
     const editorRef = useRef<HTMLDivElement>(null);
     const viewRef = useRef<EditorView | null>(null);
     const codeRef = useRef(code);
     const [panelWidth, setPanelWidth] = useState('45vw');
     const [isResizing, setIsResizing] = useState(false);
+    const [showSavePopup, setShowSavePopup] = useState(false);
 
     const debouncedSetCode = useCallback(
         debounce((newCode: string) => {
@@ -35,6 +51,15 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
         }, 300),
         [setCode]
     );
+
+
+    // when the user press cmd+s, we handle the save event by re-render the code and show a popup
+    const handleSave = useCallback(() => {
+        const newCode = viewRef.current?.state.doc.toString() || '';
+        setCode(newCode);
+        setShowSavePopup(true);
+        setTimeout(() => setShowSavePopup(false), 800); // Hide popup after 2 seconds
+    }, [setCode]);
 
     // Initialize the editor view once
     useEffect(() => {
@@ -53,7 +78,26 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
                         }
                         return true; // Allow all changes
                     }),
-                    indentUnit.of("    ")
+                    indentUnit.of("    "),
+                    keymap.of([
+                        ...defaultKeymap,
+                        indentWithTab,
+                        {
+                            key: "Mod-s",
+                            run: () => {
+                                handleSave();
+                                return true;
+                            },
+                            preventDefault: true
+                        }
+                    ]),
+                    EditorView.domEventHandlers({
+                        keydown: (event) => {
+                            if (event.key === 'Tab') {
+                                event.preventDefault();
+                            }
+                        }
+                    })
                 ],
             });
 
@@ -156,6 +200,7 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
                     <span className='ml-2'>Done</span>
                 </button>
             </div>
+            <SavePopup isVisible={showSavePopup} />
         </div>
     );
 });
