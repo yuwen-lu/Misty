@@ -50,6 +50,6 @@ def get_openai_response(text_message, base64_image=None):
         if chunk.choices[0].delta.content is not None:
             response += chunk.choices[0].delta.content
     print("Here is the response: " + response)
-    response = markdown.markdown(response)
-    print("Markdown processed response: " + response)
+    # response = markdown.markdown(response)
+    # print("Markdown processed response: " + response)
     return response
