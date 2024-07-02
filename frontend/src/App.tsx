@@ -124,8 +124,20 @@ const App: React.FC = () => {
         console.log("seems like a source node. id: " + connection.source);
         const sourceNode = nodes.find((node) => node.id === connection.source);
         if (sourceNode) {
-          console.log("source node confirmed. here is the image: " + sourceNode.data.image);
-          handleFetchResponse();
+          const referenceImageBase64 = sourceNode.data.image;
+          const textPrompt = `Here is my react and tailwind code: 
+          
+          ${renderCode}. 
+          
+          Help me blend the prominent color of the reference image into the react code. a few rules:
+
+          1. return the updated component code only;
+          2. only use tailwind, react, and react icons. Follow the current code structure, do not include any export or import statements, just use a simple component definition () => {}
+          3. Explain what you changed.
+          
+          `
+          console.log("source node confirmed. here is the image: " + referenceImageBase64);
+          handleFetchResponse(textPrompt, referenceImageBase64);
         } else {
           console.log("Error: cannot find source node. current nodes: \n" + nodes);
         }
