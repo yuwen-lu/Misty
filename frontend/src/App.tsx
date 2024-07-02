@@ -21,6 +21,7 @@ import SubImageNode from './components/customNodes/SubImageNode';
 import CodeEditorPanel from './components/CodeEditorPanel';
 import { FidelityNaturalHeader } from './components/renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
+import './tailwind.css'
 import './index.css';
 
 
