@@ -94,8 +94,8 @@ const App: React.FC = () => {
     setError("");
     try {
       const response = await getOpenAIResponse(textPrompt, base64Image);
-      console.log("Response got: " + response);
-      setResponse(response);
+      console.log("Response got: " + JSON.stringify(response));
+      setResponse(JSON.stringify(response));
     } catch (err) {
       setError('Error fetching response from OpenAI API');
       console.log("error openai api call: " + err);
@@ -117,22 +117,21 @@ const App: React.FC = () => {
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     [],
   );
-  const onConnect: OnConnect = useCallback(
-    (connection) => {
+  const onConnect: OnConnect = (connection) => {
       setEdges((eds) => addEdge(connection, eds));
       // when a new node connect to the code render node, update the source code render
       if (connection.targetHandle === "render-t") {
-        console.log("seems like a source node.");
+        console.log("seems like a source node. id: " + connection.source);
         const sourceNode = nodes.find((node) => node.id === connection.source);
         if (sourceNode) {
           console.log("source node confirmed. here is the image: " + sourceNode.data.image);
           handleFetchResponse();
+        } else {
+          console.log("Error: cannot find source node. current nodes: \n" + nodes);
         }
       }
       console.log("connection added: \n" + JSON.stringify(connection));
-    },
-    [],
-  );
+    };
 
   const createSubImages = (sourceId: string, imageUrlList: string[]) => {
 
