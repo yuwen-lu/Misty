@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { LuTrash2, LuUndo2, LuCheck, LuTrash } from 'react-icons/lu';
-import { formatContent, draw, scribbleStrokeWidth, BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../util";
+import { formatContent, draw, scribbleStrokeWidth, BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../../util";
 import 'reactflow/dist/style.css';
-import '../index.css';
+import '../../index.css';
 
 const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
@@ -172,36 +172,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       setSubImageList([]);  // refresh the subimage list
     }
   }, [subImageList])
-
-  const dissectImage = (base64image: string) => {
-
-    // construct message data using the image
-    const messageData = {
-      message: "I am a designer working on my own design, but I want to borrow ideas from this example. What are some noticable, good design decisions to refer to on this website UI? Be specific and focus on things including the layout, interaction, and visual styles.",
-      image: base64image
-    };
-
-    fetch('http://127.0.0.1:5000/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(messageData),
-    })
-      .then(res => res.json())
-      .then(data => {
-        setResponse(data.response);
-        const targetDiv = document.getElementById("openai-response-div");
-        if (targetDiv) {
-          console.log("raw data: \n" + data.response);
-          console.log("formatted data: \n" + formatContent(data.response));
-          targetDiv.innerHTML = formatContent(data.response);
-        } else {
-          console.log("cannot find target div for response result!");
-        }
-      })
-      .catch(error => console.error('Error:', error));
-  }
 
   // clear canvas
   const clearCanvas = () => {

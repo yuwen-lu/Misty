@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import 'reactflow/dist/style.css';
-import '../index.css';
+import '../../index.css';
 
 const SubImageNode: React.FC<NodeProps> = ({ data }) => {
 

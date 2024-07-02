@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { NodeProps } from 'reactflow';
 import { LuHardDriveUpload } from 'react-icons/lu';
 import 'reactflow/dist/style.css';
-import '../index.css';
+import '../../index.css';
 
 const ImageUploadNode: React.FC<NodeProps> = ({ id, data }) => {
     const imageInputRef = useRef<HTMLInputElement>(null);

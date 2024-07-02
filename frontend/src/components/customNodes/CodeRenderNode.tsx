@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Node, NodeProps, Handle, Position, NodeResizeControl } from 'reactflow';
+import React, { useCallback, useState } from 'react';
+import { Node, NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 
@@ -8,10 +8,6 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
     const [isMobile, setIsMobile] = useState<boolean>(true);
     const [handledNodes, setHandledNodes] = useState<Node>();
 
-    // when a new node connect to this node, update the source code render
-    const updateConnectNode = () => {
-
-    }
 
     const handleToggle = () => {
         setIsMobile(!isMobile);
@@ -58,7 +54,6 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                 position={Position.Left}
                 id="render-t"
                 isConnectable={true}
-                onConnect={updateConnectNode}
             />
         </div >
     );

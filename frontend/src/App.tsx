@@ -7,21 +7,21 @@ import ReactFlow, {
   applyEdgeChanges,
   Node,
   Edge,
+  Connection,
   OnNodesChange,
   OnEdgesChange,
   OnConnect,
   NodeTypes,
   DefaultEdgeOptions,
 } from 'reactflow';
-import ImageDisplayNode from './components/ImageDisplayNode';
-import ImageUploadNode from './components/ImageUploadNode';
-import CodeRenderNode from './components/CodeRenderNode';
-import SubImageNode from './components/SubImageNode';
+import ImageDisplayNode from './components/customNodes/ImageDisplayNode';
+import ImageUploadNode from './components/customNodes/ImageUploadNode';
+import CodeRenderNode from './components/customNodes/CodeRenderNode';
+import SubImageNode from './components/customNodes/SubImageNode';
 import CodeEditorPanel from './components/CodeEditorPanel';
-import { FidelityNaturalHeader } from './components/tempComponents/FidelityNaturalHeader';
+import { FidelityNaturalHeader } from './components/renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import './index.css';
-
 
 
 const initialNodes: Node[] = [
@@ -60,6 +60,55 @@ const App: React.FC = () => {
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
   const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
 
+  const [response, setResponse] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);  // TODO render code using this loading status
+
+  // code block to handle API calls
+  // Async function to fetch data from the API
+  const getOpenAIResponse = async (textPrompt: string, base64Image: string): Promise<string> => {
+    const messageData = {
+      message: textPrompt,
+      image: base64Image,
+    };
+
+    const response = await fetch('http://127.0.0.1:5000/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(messageData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  };
+
+
+  const handleFetchResponse = async (textPrompt = "test", base64Image = "") => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await getOpenAIResponse(textPrompt, base64Image);
+      console.log("Response got: " + response);
+      setResponse(response);
+    } catch (err) {
+      setError('Error fetching response from OpenAI API');
+      console.log("error openai api call: " + err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    console.log("openai api response updated: " + response);
+  }, [response])
+
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [],
@@ -69,7 +118,19 @@ const App: React.FC = () => {
     [],
   );
   const onConnect: OnConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
+    (connection) => {
+      setEdges((eds) => addEdge(connection, eds));
+      // when a new node connect to the code render node, update the source code render
+      if (connection.targetHandle === "render-t") {
+        console.log("seems like a source node.");
+        const sourceNode = nodes.find((node) => node.id === connection.source);
+        if (sourceNode) {
+          console.log("source node confirmed. here is the image: " + sourceNode.data.image);
+          handleFetchResponse();
+        }
+      }
+      console.log("connection added: \n" + JSON.stringify(connection));
+    },
     [],
   );
 
