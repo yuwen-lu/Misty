@@ -121,6 +121,8 @@ const App: React.FC = () => {
       setEdges((eds) => addEdge(connection, eds));
       // when a new node connect to the code render node, update the source code render
       if (connection.targetHandle === "render-t") {
+        // TODO handle different node inputs: if it's an subimage node, maybe blend the prominent style in;
+        // if it's a whole image node, maybe do some implicit intent reasoning
         console.log("seems like a source node. id: " + connection.source);
         const sourceNode = nodes.find((node) => node.id === connection.source);
         if (sourceNode) {

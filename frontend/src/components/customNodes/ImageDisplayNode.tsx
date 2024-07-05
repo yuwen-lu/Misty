@@ -199,7 +199,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
 
   return (
-    <div className="image-display-node flex flex-col items-center p-5 text-white bg-stone-900/70 rounded-lg border-2 border-stone-400">
+    <div className="image-display-node flex flex-col items-center p-5 text-white bg-sky-800/70 rounded-lg border-2 border-sky-400">
 
       <div className='font-semibold text-xl mb-5'>
         Scribble Elements
@@ -218,7 +218,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
       <div className='flex flex-row'>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           onClick={clearCanvas}
           disabled={paths.length === 0}
         >
@@ -226,7 +226,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           <span className='ml-2'>Clear</span>
         </button>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           onClick={undoCanvas}
           disabled={paths.length === 0}
         >
@@ -234,7 +234,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           <span className='ml-2'>Undo</span>
         </button>
         <button
-          className={`flex items-center rounded-full mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-zinc-700 hover:bg-zinc-900" : "bg-stone-400"}`}
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           ref={canvasButtonRef}
           disabled={paths.length === 0}
           // onClick={() => dissectImage(data.image)}
