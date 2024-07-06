@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { LuMove } from 'react-icons/lu';
 import 'reactflow/dist/style.css';
 import '../../index.css';
@@ -9,56 +9,70 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const nodeRef = useRef<HTMLDivElement>(null);
+    const reactFlow = useReactFlow();
 
-    const handleCustomDragStart = (e: React.MouseEvent) => {
-        console.log("yuyuyuyuuy")
-        console.log(e.target)
-        if (nodeRef.current && e.target !== nodeRef.current.querySelector('.move-handle')) {
-            console.log("HUhuuhuhuh");
+    const handleWashiDragStart = (e: MouseEvent) => {
+        console.log('Drag start triggered'); // Debug log
+        if (nodeRef.current) {
             const rect = nodeRef.current.getBoundingClientRect();
+            console.log("rect: ", rect.toJSON());
             setOffset({
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top,
+                x: rect.left,
+                y: rect.top,
             });
+
+            // setPosition({
+            //     x: e.clientX - offset.x,
+            //     y: e.clientY - offset.y,
+            // });
             setIsDragging(true);
-            e.stopPropagation(); // Prevent React Flow from handling this event
+            e.stopPropagation();
+            e.preventDefault();
         }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
+        if (!isDragging) return;
+        console.log("from window: mouse move");
         if (isDragging) {
+
+            const zoom = reactFlow.getZoom();
+
             setPosition({
-                x: e.clientX - offset.x,
-                y: e.clientY - offset.y,
+                x: (e.clientX - offset.x) / zoom,
+                y: (e.clientY - offset.y) / zoom,
             });
+            console.log("x: " + e.clientX + ", y: " + e.clientY);
+            console.log("corrected x: " + String(e.clientX - offset.x), ", corrected y: " + String(e.clientY - offset.y));
         }
+        e.stopPropagation();
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+        console.log("from window: mouse up");
         setIsDragging(false);
-        setPosition({ x: 0, y: 0 });
+        e.stopPropagation();
     };
 
     useEffect(() => {
-        if (isDragging) {
-            window.addEventListener('mousemove', handleMouseMove);
+        const node = nodeRef.current;
+        if (node) {
+            node.addEventListener('mousedown', handleWashiDragStart);
             window.addEventListener('mouseup', handleMouseUp);
-        } else {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
+            window.addEventListener('mousemove', handleMouseMove);
         }
+
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
+            if (node) {
+                node.removeEventListener('mousedown', handleWashiDragStart);
+                window.removeEventListener('mouseup', handleMouseUp);
+                window.removeEventListener('mousemove', handleMouseMove);
+            }
         };
     }, [isDragging]);
 
     return (
-        <div
-            ref={nodeRef}
-            className="relative max-w-md mx-auto my-8"
-            onMouseDown={handleCustomDragStart}
-        >
+        <div ref={nodeRef} className="relative max-w-md mx-auto my-8">
             <Handle type="target" position={Position.Top} />
             <Handle type="source" position={Position.Bottom} />
             <div className="absolute inset-0 bg-blue-900/70 transform rotate-1 rounded-sm"></div>
@@ -68,7 +82,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 <div className='flex flex-col items-center p-5 text-white bg-blue-900/70'>
                     <div className='text-l mb-3 flex justify-between w-full items-center'>
                         <span>Selected Image Section</span>
-                        <div className="move-handle cursor-move">
+                        <div className="react-flow-drag-handle cursor-move">
                             <LuMove size={24} />
                         </div>
                     </div>
