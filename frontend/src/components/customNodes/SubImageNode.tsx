@@ -13,6 +13,14 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
 
     const handleWashiDragStart = (e: MouseEvent) => {
         console.log('Drag start triggered'); // Debug log
+        console.log((e.target as HTMLElement));
+        console.log((e.target as HTMLElement).classList);
+        // if we are dragging the handle, don't need to do anything, fallback to react flow default
+        if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle')) {
+            return;
+        }
+
+
         if (nodeRef.current) {
             const rect = nodeRef.current.getBoundingClientRect();
             console.log("rect: ", rect.toJSON());
@@ -20,22 +28,23 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 x: rect.left,
                 y: rect.top,
             });
-
-            // setPosition({
-            //     x: e.clientX - offset.x,
-            //     y: e.clientY - offset.y,
-            // });
             setIsDragging(true);
             e.stopPropagation();
             e.preventDefault();
         }
     };
 
+    // TODO: 1. once drag past the node to the right, everything looks wrong; 2. mouse up always cannot be registered
+
     const handleMouseMove = (e: MouseEvent) => {
         if (!isDragging) return;
+        console.log((e.target as HTMLElement).className);
+        // if we are dragging the handle, don't need to do anything, fallback to react flow default
+        if ((e.target as HTMLElement).className === 'react-flow-drag-handle') {
+            return;
+        }
         console.log("from window: mouse move");
         if (isDragging) {
-
             const zoom = reactFlow.getZoom();
 
             setPosition({
@@ -45,7 +54,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             console.log("x: " + e.clientX + ", y: " + e.clientY);
             console.log("corrected x: " + String(e.clientX - offset.x), ", corrected y: " + String(e.clientY - offset.y));
         }
-        e.stopPropagation();
+        // e.stopPropagation();
     };
 
     const handleMouseUp = (e: MouseEvent) => {
@@ -80,11 +89,12 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 <div className="absolute top-0 left-0 right-0 h-2 bg-white/20 rounded-t-sm"></div>
                 <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/20 rounded-b-sm"></div>
                 <div className='flex flex-col items-center p-5 text-white bg-blue-900/70'>
+                    <div className="absolute right-3 top-4 w-20 h-20 react-flow-drag-handle cursor-move flex items-center justify-center">
+                        <LuMove className="react-flow-drag-handle" size={24} />
+                    </div>
                     <div className='text-l mb-3 flex justify-between w-full items-center'>
                         <span>Selected Image Section</span>
-                        <div className="react-flow-drag-handle cursor-move">
-                            <LuMove size={24} />
-                        </div>
+
                     </div>
                     <div className="w-full h-64 flex items-center justify-center overflow-hidden">
                         <img
@@ -101,7 +111,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                     style={{
                         left: `${position.x}px`,
                         top: `${position.y}px`,
-                        transform: 'scale(0.5)',
+                        // transform: 'scale(0.5)',
                         opacity: 0.8,
                     }}
                 >
