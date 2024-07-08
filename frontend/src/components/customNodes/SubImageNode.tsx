@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
-import { LuMove } from 'react-icons/lu';
+import { LuEqual } from 'react-icons/lu';
 import 'reactflow/dist/style.css';
 import '../../index.css';
 
@@ -30,7 +30,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         console.log((e.target as HTMLElement));
         console.log((e.target as HTMLElement).classList);
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
-        if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle') || (e.target as HTMLElement).className.includes('react-flow__handle')) {
+        if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle') || (e.target as HTMLElement).classList.contains('react-flow__handle')) {
             return;
         }
 
@@ -47,14 +47,12 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         }
     };
 
-    // TODO: 1. once drag past the node to the right, everything looks wrong; 2. mouse up always cannot be registered
-
     const handleMouseMove = (e: MouseEvent) => {
         if (!isDragging) return;
-        console.log((e.target as HTMLElement).className);
+        console.log((e.target as HTMLElement).classList);
 
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
-        if ((e.target as HTMLElement).className.includes('react-flow-drag-handle')) {
+        if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle')) {
             return;
         }
         console.log("from window: mouse move");
@@ -117,8 +115,8 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 <div className="absolute top-0 left-0 right-0 h-2 bg-white/20 rounded-t-sm"></div>
                 <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/20 rounded-b-sm"></div>
                 <div className='flex flex-col items-center p-5 text-white bg-blue-900/70'>
-                    <div className="absolute right-3 top-4 w-20 h-20 p-4 border-transparent border-4 react-flow-drag-handle cursor-move flex items-center justify-center">
-                        <LuMove className="react-flow-drag-handle" size={24} />
+                    <div className="w-full h-1 p-4 border-transparent border-4 react-flow-drag-handle cursor-move flex items-center justify-center">
+                        <LuEqual className="react-flow-drag-handle" size={24} />
                     </div>
                     <div className='text-l mb-3 flex justify-between w-full items-center'>
                         <span>Selected Image Section</span>
