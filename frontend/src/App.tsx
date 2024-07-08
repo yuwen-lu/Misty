@@ -16,6 +16,7 @@ import ReactFlow, {
 } from 'reactflow';
 import ImageDisplayNode from './components/customNodes/ImageDisplayNode';
 import ImageUploadNode from './components/customNodes/ImageUploadNode';
+import ExplanationNode from './components/customNodes/ExplanationNode';
 import CodeRenderNode from './components/customNodes/CodeRenderNode';
 import SubImageNode from './components/customNodes/SubImageNode';
 import CodeEditorPanel from './components/CodeEditorPanel';
@@ -53,6 +54,7 @@ const nodeTypes: NodeTypes = {
   imageUploadNode: ImageUploadNode,
   imageDisplayNode: ImageDisplayNode,
   subimageNode: SubImageNode,
+  explanationNode: ExplanationNode,
   codeRenderNode: CodeRenderNode,
 };
 
@@ -91,19 +93,31 @@ const App: React.FC = () => {
     return data.response;
   };
 
-  function parseResponseToCode(response: string): string {
-    console.log("Code parsed!!");
-    
+  function parseResponse(response: string): string[] {
     const index = response.indexOf("() =>");
     if (index !== -1) {
       response = response.slice(index);
     } else {
       console.log("error: cannot find the code prefix for generated result")
     }
-    const splitResponse = response.split('```')[0].split("Explanation")[0];
+    const splitResponse = response.replace('```', '').split("Explanations:");
     return splitResponse;
   }
 
+
+  const addExplanationsNode = (explanations : string) => {
+    setNodes((nds) => {
+      return nds.concat(
+        {
+          id: String(nds.length + 1),
+          type: 'explanationNode',
+          draggable: true,
+          position: { x: 200, y: 500 },
+          data: { text: explanations },
+        }
+      );
+    });
+  }
 
   const handleFetchResponse = async (textPrompt = "test", base64Image = "") => {
     setLoading(true);
@@ -112,7 +126,9 @@ const App: React.FC = () => {
       const response = await getOpenAIResponse(textPrompt, base64Image);
       console.log("raw response:" + response);
       setResponse(response);
-      setRenderCodeState(parseResponseToCode(response));
+      const [responseCode, changeExplanations] = parseResponse(response);
+      setRenderCodeState(responseCode);
+      addExplanationsNode(changeExplanations);
     } catch (err) {
       setError('Error fetching response from OpenAI API');
       console.log("error openai api call: " + err);
@@ -152,7 +168,7 @@ const App: React.FC = () => {
 
           1. return the updated component code only;
           2. only use tailwind, react, and react icons. Follow the current code structure, do not include any export or import statements, just use a simple component definition () => {}
-          3. Explain what you changed.
+          3. Explain what you changed. In your response, use the format "Explanations:" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"
           
           `
         console.log("source node confirmed. here is the image: " + referenceImageBase64);
