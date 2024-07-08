@@ -30,14 +30,13 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         console.log((e.target as HTMLElement));
         console.log((e.target as HTMLElement).classList);
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
-        if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle')) {
+        if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle') || (e.target as HTMLElement).className.includes('react-flow__handle')) {
             return;
         }
 
 
         if (nodeRef.current) {
             const rect = nodeRef.current.getBoundingClientRect();
-            console.log("rect: ", rect.toJSON());
             setOffset({
                 x: rect.left,
                 y: rect.top,
@@ -53,8 +52,9 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     const handleMouseMove = (e: MouseEvent) => {
         if (!isDragging) return;
         console.log((e.target as HTMLElement).className);
+
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
-        if ((e.target as HTMLElement).className === 'react-flow-drag-handle') {
+        if ((e.target as HTMLElement).className.includes('react-flow-drag-handle')) {
             return;
         }
         console.log("from window: mouse move");
