@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Node, NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
@@ -8,6 +8,11 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
     const [isMobile, setIsMobile] = useState<boolean>(true);
     const [handledNodes, setHandledNodes] = useState<Node>();
 
+
+    useEffect( () => {
+
+        console.log("Code updated in codeRenderNode: " + data.code + "\n\n Above is the code update in codeRenderNode.");
+    }, [data.code]);
 
     const handleToggle = () => {
         setIsMobile(!isMobile);

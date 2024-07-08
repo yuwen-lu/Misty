@@ -23,6 +23,9 @@ import { FidelityNaturalHeader } from './components/renderCode/FidelityNaturalHe
 import 'reactflow/dist/style.css';
 import './index.css';
 
+interface OpenAIResponse {
+  response: string;
+}
 
 const initialNodes: Node[] = [
   {
@@ -84,9 +87,22 @@ const App: React.FC = () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data;
+    const data: OpenAIResponse = await response.json();
+    return data.response;
   };
+
+  function parseResponseToCode(response: string): string {
+    console.log("Code parsed!!");
+    
+    const index = response.indexOf("() =>");
+    if (index !== -1) {
+      response = response.slice(index);
+    } else {
+      console.log("error: cannot find the code prefix for generated result")
+    }
+    const splitResponse = response.split('```')[0].split("Explanation")[0];
+    return splitResponse;
+  }
 
 
   const handleFetchResponse = async (textPrompt = "test", base64Image = "") => {
@@ -94,8 +110,9 @@ const App: React.FC = () => {
     setError("");
     try {
       const response = await getOpenAIResponse(textPrompt, base64Image);
-      console.log("Response got: " + JSON.stringify(response));
-      setResponse(JSON.stringify(response));
+      console.log("raw response:" + response);
+      setResponse(response);
+      setRenderCodeState(parseResponseToCode(response));
     } catch (err) {
       setError('Error fetching response from OpenAI API');
       console.log("error openai api call: " + err);
@@ -118,16 +135,16 @@ const App: React.FC = () => {
     [],
   );
   const onConnect: OnConnect = (connection) => {
-      setEdges((eds) => addEdge(connection, eds));
-      // when a new node connect to the code render node, update the source code render
-      if (connection.targetHandle === "render-t") {
-        // TODO handle different node inputs: if it's an subimage node, maybe blend the prominent style in;
-        // if it's a whole image node, maybe do some implicit intent reasoning
-        console.log("seems like a source node. id: " + connection.source);
-        const sourceNode = nodes.find((node) => node.id === connection.source);
-        if (sourceNode) {
-          const referenceImageBase64 = sourceNode.data.image;
-          const textPrompt = `Here is my react and tailwind code: 
+    setEdges((eds) => addEdge(connection, eds));
+    // when a new node connect to the code render node, update the source code render
+    if (connection.targetHandle === "render-t") {
+      // TODO handle different node inputs: if it's an subimage node, maybe blend the prominent style in;
+      // if it's a whole image node, maybe do some implicit intent reasoning
+      console.log("seems like a source node. id: " + connection.source);
+      const sourceNode = nodes.find((node) => node.id === connection.source);
+      if (sourceNode) {
+        const referenceImageBase64 = sourceNode.data.image;
+        const textPrompt = `Here is my react and tailwind code: 
           
           ${renderCode}. 
           
@@ -138,14 +155,14 @@ const App: React.FC = () => {
           3. Explain what you changed.
           
           `
-          console.log("source node confirmed. here is the image: " + referenceImageBase64);
-          handleFetchResponse(textPrompt, referenceImageBase64);
-        } else {
-          console.log("Error: cannot find source node. current nodes: \n" + nodes);
-        }
+        console.log("source node confirmed. here is the image: " + referenceImageBase64);
+        handleFetchResponse(textPrompt, referenceImageBase64);
+      } else {
+        console.log("Error: cannot find source node. current nodes: \n" + nodes);
       }
-      console.log("connection added: \n" + JSON.stringify(connection));
-    };
+    }
+    console.log("connection added: \n" + JSON.stringify(connection));
+  };
 
   const createSubImages = (sourceId: string, imageUrlList: string[]) => {
 
@@ -223,7 +240,6 @@ const App: React.FC = () => {
   }
 
   const setRenderCode = useCallback((newCode: string) => {
-    // Any processing you need to do with the new code
     setRenderCodeState(newCode);
   }, []);
 
