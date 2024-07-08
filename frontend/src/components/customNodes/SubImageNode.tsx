@@ -73,7 +73,8 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     };
 
     const handleMouseUp = (e: MouseEvent) => {
-        console.log("from window: mouse up");
+        setPosition({ x: 0, y: 0 });
+        setOffset({ x: 0, y: 0 });
         setIsDragging(false);
         e.stopPropagation();
     };
