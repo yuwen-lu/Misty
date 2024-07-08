@@ -41,6 +41,12 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 x: rect.left,
                 y: rect.top,
             });
+            const zoom = reactFlow.getZoom();
+
+            setPosition({
+                x: (e.clientX - offset.x) / zoom,
+                y: (e.clientY - offset.y) / zoom,
+            });
             setIsDragging(true);
             e.stopPropagation();
             e.preventDefault();
