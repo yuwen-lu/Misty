@@ -114,8 +114,8 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
 
     return (
         <div ref={nodeRef} className="relative max-w-md mx-auto my-8">
-            <Handle type="target" position={Position.Top} />
-            <Handle type="source" position={Position.Bottom} />
+            <Handle type="target" position={Position.Left} />
+            <Handle type="source" position={Position.Right} />
             <div className="absolute inset-0 bg-blue-900/70 transform rotate-1 rounded-sm"></div>
             <div className="relative bg-blue-900/70 p-5 text-white font-handwriting transform -rotate-1 rounded-sm shadow-lg">
                 <div className="absolute top-0 left-0 right-0 h-2 bg-white/20 rounded-t-sm"></div>
@@ -138,7 +138,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             </div>
             {isDragging && (
                 <div
-                    className="fixed z-50 pointer-events-none"
+                    className="fixed z-5000 pointer-events-none"
                     ref={draggedRef}
                     style={{
                         // Calculate the appropriate attribute to use (left or right)
