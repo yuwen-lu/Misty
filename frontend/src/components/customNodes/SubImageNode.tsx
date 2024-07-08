@@ -14,6 +14,17 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     const [draggedElementWidth, setdraggedElementWidth] = useState<number>(0);
     const reactFlow = useReactFlow();
 
+    const dismissDrag = (e: MouseEvent) => {
+        // sometimes there are glitches, so if the user did not have the washitape released,
+        // force click to release it
+        // this will not interfere with the desired mousedown event, because the event trigger sequence is:
+        // mousedown -> mouseup -> click, so isDragging will only be dismissed after the mouse is released
+        if (isDragging) {
+            setIsDragging(false);
+            return;
+        }
+    }
+
     const handleWashiDragStart = (e: MouseEvent) => {
         console.log('Drag start triggered'); // Debug log
         console.log((e.target as HTMLElement));
@@ -68,6 +79,12 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     };
 
     useEffect(() => {
+
+        // if the user clicks on the rest of the screen, dismiss the drag
+        // this will not interfere with the desired mousedown event, because the event trigger sequence is:
+        // mousedown -> mouseup -> click, so isDragging will only be dismissed after the mouse is released
+        window.addEventListener('click', dismissDrag);
+
         const node = nodeRef.current;
         const draggedNode = draggedRef.current
         if (node) {
@@ -99,12 +116,11 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 <div className="absolute top-0 left-0 right-0 h-2 bg-white/20 rounded-t-sm"></div>
                 <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/20 rounded-b-sm"></div>
                 <div className='flex flex-col items-center p-5 text-white bg-blue-900/70'>
-                    <div className="absolute right-3 top-4 w-20 h-20 react-flow-drag-handle cursor-move flex items-center justify-center">
+                    <div className="absolute right-3 top-4 w-20 h-20 p-4 border-transparent border-4 react-flow-drag-handle cursor-move flex items-center justify-center">
                         <LuMove className="react-flow-drag-handle" size={24} />
                     </div>
                     <div className='text-l mb-3 flex justify-between w-full items-center'>
                         <span>Selected Image Section</span>
-
                     </div>
                     <div className="w-full h-64 flex items-center justify-center overflow-hidden">
                         <img
@@ -121,6 +137,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                     ref={draggedRef}
                     style={{
                         // Calculate the appropriate attribute to use (left or right)
+                        // if we don't do this, somehow the image will shrink once past one edge of the parent element
                         left: (position.x + draggedElementWidth < nodeWidth) ? `${position.x}px` : 'auto',
                         right: (position.x + draggedElementWidth < nodeWidth) ? 'auto' : `${nodeWidth - position.x}px`,
                         top: `${position.y}px`,
