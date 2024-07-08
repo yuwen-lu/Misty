@@ -9,6 +9,9 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const nodeRef = useRef<HTMLDivElement>(null);
+    const [nodeWidth, setNodeWidth] = useState<number>(0);
+    const draggedRef = useRef<HTMLDivElement>(null);
+    const [draggedElementWidth, setdraggedElementWidth] = useState<number>(0);
     const reactFlow = useReactFlow();
 
     const handleWashiDragStart = (e: MouseEvent) => {
@@ -51,6 +54,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 x: (e.clientX - offset.x) / zoom,
                 y: (e.clientY - offset.y) / zoom,
             });
+            console.log("node width: " + nodeWidth);
             console.log("x: " + e.clientX + ", y: " + e.clientY);
             console.log("corrected x: " + String(e.clientX - offset.x), ", corrected y: " + String(e.clientY - offset.y));
         }
@@ -65,18 +69,24 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
 
     useEffect(() => {
         const node = nodeRef.current;
+        const draggedNode = draggedRef.current
         if (node) {
+            setNodeWidth(node.clientWidth);
             node.addEventListener('mousedown', handleWashiDragStart);
             window.addEventListener('mouseup', handleMouseUp);
             window.addEventListener('mousemove', handleMouseMove);
         }
 
+        if (draggedNode) setdraggedElementWidth(draggedNode.clientWidth);
+
         return () => {
             if (node) {
+                setNodeWidth(0);    // reset to default
                 node.removeEventListener('mousedown', handleWashiDragStart);
                 window.removeEventListener('mouseup', handleMouseUp);
                 window.removeEventListener('mousemove', handleMouseMove);
             }
+            if (draggedNode) setdraggedElementWidth(0);
         };
     }, [isDragging]);
 
@@ -108,31 +118,28 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             {isDragging && (
                 <div
                     className="fixed z-50 pointer-events-none"
+                    ref={draggedRef}
                     style={{
-                        left: `${position.x}px`,
+                        // Calculate the appropriate attribute to use (left or right)
+                        left: (position.x + draggedElementWidth < nodeWidth) ? `${position.x}px` : 'auto',
+                        right: (position.x + draggedElementWidth < nodeWidth) ? 'auto' : `${nodeWidth - position.x}px`,
                         top: `${position.y}px`,
-                        // transform: 'scale(0.5)',
+                        transform: (position.x + draggedElementWidth < nodeWidth) ? '' : 'translate(100%, 0%)',
+                        // transform: 'translate(-50%, -50%)',
                         opacity: 0.8,
-                    }}
-                >
+                    }}>
                     <div className="bg-blue-900/70 p-2 rounded-sm shadow-lg">
                         <img
-                            className='rounded-md object-contain w-32 h-32'
+                            className='rounded-md w-full h-32'
                             src={data.image}
                             alt="dragged_image"
                         />
                     </div>
                 </div>
-            )}
-            <style>{`
-        .bg-blue-900\/70 {
-          background-color: rgba(30, 58, 138, 0.7);
-        }
-        .rounded-sm {
-          border-radius: 0.125rem;
-        }
-      `}</style>
-        </div>
+            )
+            }
+
+        </div >
     );
 };
 
