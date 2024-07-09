@@ -23,6 +23,7 @@ import CodeEditorPanel from './components/CodeEditorPanel';
 import { FidelityNaturalHeader } from './components/renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import './index.css';
+import { addEventHandlersToCode } from './util';
 
 interface OpenAIResponse {
   response: string;
@@ -127,7 +128,7 @@ const App: React.FC = () => {
       console.log("raw response:" + response);
       setResponse(response);
       const [responseCode, changeExplanations] = parseResponse(response);
-      setRenderCodeState(responseCode);
+      setRenderCode(responseCode);
       addExplanationsNode(changeExplanations);
     } catch (err) {
       setError('Error fetching response from OpenAI API');

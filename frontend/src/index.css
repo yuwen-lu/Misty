@@ -32,3 +32,19 @@ code {
   overflow: auto;
   max-height: 100%;
 }
+
+@keyframes breathing {
+  0% {
+    background-color: rgba(37, 99, 235, 0.276);
+  }
+  50% {
+    background-color: rgba(37, 99, 235, 0.1); 
+  }
+  100% {
+    background-color: rgba(37, 99, 235, 0.276);
+  }
+}
+
+.highlight {
+  animation: breathing 2s ease-in-out infinite;
+}

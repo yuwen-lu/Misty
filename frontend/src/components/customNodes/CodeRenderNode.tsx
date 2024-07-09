@@ -9,11 +9,6 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
     const [handledNodes, setHandledNodes] = useState<Node>();
 
 
-    useEffect( () => {
-
-        console.log("Code updated in codeRenderNode: " + data.code + "\n\n Above is the code update in codeRenderNode.");
-    }, [data.code]);
-
     const handleToggle = () => {
         setIsMobile(!isMobile);
     }
