@@ -83,7 +83,14 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     };
 
     const handleMouseUp = (e: MouseEvent) => {
+        if (!localIsDragging) return;
         console.log("washi tape dropped, current position, x: " + e.clientX + ", y: " + e.clientY);
+        // send this back to App.tsx to show the blending options popup
+        // we just use the view port default position
+        const mousePosition = { x: e.clientX, y: e.clientY };
+        data.setBlendingOptionPosition(mousePosition);
+        
+        // reset states to default
         setPosition({ x: 0, y: 0 });
         setOffset({ x: 0, y: 0 });
         syncIsDragging(false);

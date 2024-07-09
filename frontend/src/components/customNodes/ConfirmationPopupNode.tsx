@@ -58,7 +58,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
         <div
             ref={popupRef}
             className="flex flex-col items-center p-5 text-white bg-blue-900/80 shadow-lg transition-all duration-200 ease-in-out"
-            style={{ top: data.position.y, left: data.position.x }}
+            // style={{ top: data.position.y, left: data.position.x }}
         >
             <div className="font-semibold text-l mb-5">
                 Blending Options

@@ -30,6 +30,10 @@ interface OpenAIResponse {
   response: string;
 }
 
+interface popUpPositionType {
+  x: number,
+  y: number,
+}
 
 const nodeTypes: NodeTypes = {
   imageUploadNode: ImageUploadNode,
@@ -52,14 +56,6 @@ const initialNodes: Node[] = [
     type: 'codeRenderNode',
     position: { x: 750, y: 100 },
     data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
-  },
-  {
-    id: '3',
-    type: 'confirmationPopupNode',
-    draggable: true,
-    position: { x: 1550, y: 100 },
-    // TODO deal with this data later
-    data: { position: { x: 0, y: 0 }, setConfirmationSelection: (selection: string) => console.log("Here is the selection: " + selection) },
   }
 ];
 
@@ -75,7 +71,8 @@ const App: React.FC = () => {
 
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
+  const [blendingOptionPosition, setBlendingOptionPosition] = useState({ x: 0, y: 0 });
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
   const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
 
@@ -217,7 +214,7 @@ const App: React.FC = () => {
               type: 'subimageNode',
               draggable: true,
               position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
-              data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging },
+              data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging, setBlendingOptionPosition: setBlendingOptionPosition },
             }
           );
         });
@@ -232,6 +229,34 @@ const App: React.FC = () => {
       }
     });
   }
+
+  const showBlendingConfirmationPopup = (popUpPosition: popUpPositionType) => {
+    const posX = popUpPosition.x;
+    const posY = popUpPosition.y;
+
+    if (posX !== 0 && posY !== 0) {
+
+      setNodes((nds) => {
+        const newNodeId = nds.length + 1;
+        console.log("Creating blend confirmation popup with id " + newNodeId);
+        return nds.concat(
+          {
+            id: newNodeId.toString(),
+            type: 'confirmationPopupNode',
+            draggable: true,
+            position: { x: posX, y: posY },
+            data: { setConfirmationSelection: (selectedOptions: string[]) => console.log("selected: " + selectedOptions.join(", ")) },  // TODO Change this function
+          }
+        );
+      });
+    }
+
+  }
+
+  // when the blendingOptionPosition changes, that means we can show the popup
+  useEffect(() => {
+    showBlendingConfirmationPopup(blendingOptionPosition);
+  }, [blendingOptionPosition]);
 
   const importImage = (id: string, imageUrl: string) => {
     setNodes((nds) =>
