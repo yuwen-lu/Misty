@@ -5,7 +5,7 @@ import 'reactflow/dist/style.css';
 import '../../index.css';
 
 const SubImageNode: React.FC<NodeProps> = ({ data }) => {
-    
+    const [localIsDragging, setLocalIsDragging] = useState< boolean | null>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const nodeRef = useRef<HTMLDivElement>(null);
@@ -14,13 +14,19 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     const [draggedElementWidth, setdraggedElementWidth] = useState<number>(0);
     const reactFlow = useReactFlow();
 
+    // set isDragging state both locally and in app tsx
+    const syncIsDragging = (draggingState: boolean) => {
+        setLocalIsDragging(draggingState);
+        data.setIsDragging(draggingState);
+    }
+
     const dismissDrag = (e: MouseEvent) => {
         // sometimes there are glitches, so if the user did not have the washitape released,
         // force click to release it
         // this will not interfere with the desired mousedown event, because the event trigger sequence is:
         // mousedown -> mouseup -> click, so isDragging will only be dismissed after the mouse is released
-        if (data.isDragging) {
-            data.setIsDragging(false);
+        if (localIsDragging) {
+            syncIsDragging(false);
             return;
         }
     }
@@ -47,14 +53,14 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 x: (e.clientX - rect.left) / zoom,  // using rect instead of offset, since the state variable might not be update here immediately
                 y: (e.clientY - rect.top) / zoom,
             });
-            data.setIsDragging(true);
+            syncIsDragging(true);
             e.stopPropagation();
             e.preventDefault();
         }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-        if (!data.isDragging) return;
+        if (!localIsDragging) return;
         console.log((e.target as HTMLElement).classList);
 
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
@@ -62,7 +68,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             return;
         }
         console.log("from window: mouse move");
-        if (data.isDragging) {
+        if (localIsDragging) {
             const zoom = reactFlow.getZoom();
 
             setPosition({
@@ -80,11 +86,14 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         console.log("washi tape dropped, current position, x: " + e.clientX + ", y: " + e.clientY);
         setPosition({ x: 0, y: 0 });
         setOffset({ x: 0, y: 0 });
-        data.setIsDragging(false);
+        syncIsDragging(false);
         e.stopPropagation();
     };
 
     useEffect(() => {
+
+        // initialize local isDragging
+        if (!localIsDragging) setLocalIsDragging(data.isDragging);
 
         // if the user clicks on the rest of the screen, dismiss the drag
         // this will not interfere with the desired mousedown event, because the event trigger sequence is:
@@ -111,7 +120,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             }
             if (draggedNode) setdraggedElementWidth(0);
         };
-    }, [data.isDragging]);
+    }, [localIsDragging, data]);
 
     return (
         <div ref={nodeRef} className="relative max-w-md mx-auto my-8">
@@ -137,7 +146,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                     </div>
                 </div>
             </div>
-            {data.isDragging && (
+            {localIsDragging && (
                 <div
                     className="fixed z-5000 pointer-events-none"
                     ref={draggedRef}
@@ -159,7 +168,8 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                         />
                     </div>
                 </div>
-            )}
+            )
+            }
 
         </div >
     );

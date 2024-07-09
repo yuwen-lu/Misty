@@ -144,6 +144,12 @@ const App: React.FC = () => {
     console.log("openai api response updated: " + response);
   }, [response])
 
+
+  // TODO Remove this test log
+  useEffect(() => {
+    console.log("App tsx is dragging changed: " + isDragging);
+  }, [isDragging])
+
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [],
