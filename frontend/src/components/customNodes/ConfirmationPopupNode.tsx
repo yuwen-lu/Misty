@@ -26,6 +26,11 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
         console.log("Final selection: " + selectedOptions);
     };
 
+    const cancelBlend = () => {
+        console.log("blend canceled");
+        // TODO dismiss this popup
+    }
+
     useEffect(() => {
 
         const handleClick = (e: MouseEvent) => {
@@ -65,8 +70,8 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
                 >
                     <button
                         className={`relative flex items-center m-2 shadow-md rounded-md p-3 w-48 transition duration-200 ease-in-out ${selectedOptions.includes(option.title)
-                                ? 'bg-slate-800/70 text-white'
-                                : 'bg-white text-gray-800 hover:bg-blue-100'
+                            ? 'bg-slate-800/70 text-white'
+                            : 'bg-white text-gray-800 hover:bg-blue-100'
                             }`}
                         data-title={option.title}
                     >
@@ -83,12 +88,20 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
                     </button>
                 </div>
             ))}
-            <button
-                className="mt-5 px-5 py-3 bg-sky-500 hover:bg-sky-900 rounded-lg text-white font-semibold transition-colors"
-                onClick={handleBlend}
-            >
-                Blend
-            </button>
+            <div className='flex w-full justify-around'>
+                <button
+                    className="mt-5 px-5 py-3 bg-sky-500 hover:bg-sky-900 rounded-lg text-white font-semibold transition-colors"
+                    onClick={cancelBlend}
+                >
+                    Cancel
+                </button>
+                <button
+                    className={`mt-5 px-5 py-3  rounded-lg text-white font-semibold transition-colors ${selectedOptions.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
+                    onClick={handleBlend}
+                >
+                    Blend
+                </button>
+            </div>
         </div>
 
     );
