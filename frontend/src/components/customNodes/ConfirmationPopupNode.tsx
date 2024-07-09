@@ -78,7 +78,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
     return (
         <div 
             ref={popupRef}
-            className="flex flex-col fixed bg-white rounded-full shadow-lg p-2 flex items-center transition-all duration-300 ease-in-out"
+            className="flex flex-col bg-white rounded-full shadow-lg p-2 flex items-center transition-all duration-300 ease-in-out"
             style={{ top: data.position.y, left: data.position.x }}
         >
             {options.map((option) => (

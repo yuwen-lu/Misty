@@ -47,4 +47,5 @@ code {
 
 .highlight {
   animation: breathing 2s ease-in-out infinite;
+  border-radius: 0.25rem;
 }
