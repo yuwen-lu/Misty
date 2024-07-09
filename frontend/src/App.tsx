@@ -56,6 +56,7 @@ const initialNodes: Node[] = [
   {
     id: '3',
     type: 'confirmationPopupNode',
+    draggable: true,
     position: { x: 1550, y: 100 },
     // TODO deal with this data later
     data: { position: { x: 0, y: 0 }, setConfirmationSelection: (selection: string) => console.log("Here is the selection: " + selection) },

@@ -18,38 +18,33 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
         } else {
             setSelectedOptions([...selectedOptions, selection]);
         }
-        console.log("clicked and toggled: " + selection);
     };
 
     const handleBlend = () => {
         data.setConfirmationSelection(selectedOptions);
+        setSelectedOptions([]);
         console.log("Final selection: " + selectedOptions);
     };
 
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            e.stopPropagation();
-        };
 
         const handleClick = (e: MouseEvent) => {
-            e.stopPropagation();
             const target = e.target as HTMLElement;
             const optionTitle = target.getAttribute('data-title');
             if (optionTitle) {
                 handleSelection(optionTitle);
+                e.stopPropagation();
             }
         };
 
         const currentPopup = popupRef.current;
         if (currentPopup) {
             currentPopup.addEventListener('mousedown', handleClick);
-            currentPopup.addEventListener('mousemove', handleMouseMove);
         }
 
         return () => {
             if (currentPopup) {
                 currentPopup.removeEventListener('mousedown', handleClick);
-                currentPopup.removeEventListener('mousemove', handleMouseMove);
             }
         };
     }, [selectedOptions]);
@@ -57,7 +52,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
     return (
         <div
             ref={popupRef}
-            className="flex flex-col items-center p-5 text-white bg-blue-900/80 rounded-lg shadow-lg transition-all duration-200 ease-in-out"
+            className="flex flex-col items-center p-5 text-white bg-blue-900/80 shadow-lg transition-all duration-200 ease-in-out"
             style={{ top: data.position.y, left: data.position.x }}
         >
             <div className="font-semibold text-l mb-5">
@@ -70,7 +65,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
                 >
                     <button
                         className={`relative flex items-center m-2 shadow-md rounded-md p-3 w-48 transition duration-200 ease-in-out ${selectedOptions.includes(option.title)
-                                ? 'bg-slate-800/30 text-white'
+                                ? 'bg-slate-800/70 text-white'
                                 : 'bg-white text-gray-800 hover:bg-blue-100'
                             }`}
                         data-title={option.title}
