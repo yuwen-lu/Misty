@@ -14,6 +14,7 @@ import ReactFlow, {
   NodeTypes,
   DefaultEdgeOptions,
 } from 'reactflow';
+import ConfirmationPopup from './components/customNodes/ConfirmationPopup';
 import ImageDisplayNode from './components/customNodes/ImageDisplayNode';
 import ImageUploadNode from './components/customNodes/ImageUploadNode';
 import ExplanationNode from './components/customNodes/ExplanationNode';
@@ -295,6 +296,7 @@ const App: React.FC = () => {
         nodeDragThreshold={4}
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
+        <ConfirmationPopup position={ {x: 100, y: 100} } setConfirmationSelection={(selection) => console.log("selection: " + selection)} />
         <Controls />
         {memoizedCodeEditorPanel}
       </ReactFlow>

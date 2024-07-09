@@ -6,9 +6,9 @@ import "../../index.css";
 
 const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string }> = ({ isMobile, code }) => {
     
-    // useEffect(() => {
-    //     console.log("adapted code: \n" + addEventHandlersToCode(code));
-    // }, [code]);
+    useEffect(() => {
+        console.log("Updated code: " + addEventHandlersToCode(code));
+    }, [code]);
 
     return (
         <div

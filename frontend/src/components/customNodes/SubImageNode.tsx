@@ -124,8 +124,8 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                     <div className="w-full h-1 p-4 border-transparent border-4 react-flow-drag-handle cursor-move flex items-center justify-center">
                         <LuEqual className="react-flow-drag-handle" size={24} />
                     </div>
-                    <div className='text-l font-semibold mb-3 flex justify-center w-full items-center'>
-                        <span>Selected Section</span>
+                    <div className='react-flow-drag-handle cursor-move text-l font-semibold mb-3 flex justify-center w-full items-center'>
+                        <span className='react-flow-drag-handle'>Selected Section</span>
                     </div>
                     <div className="w-full h-64 flex items-center justify-center overflow-hidden">
                         <img
