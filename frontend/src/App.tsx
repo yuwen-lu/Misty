@@ -14,12 +14,12 @@ import ReactFlow, {
   NodeTypes,
   DefaultEdgeOptions,
 } from 'reactflow';
-import ConfirmationPopup from './components/customNodes/ConfirmationPopup';
 import ImageDisplayNode from './components/customNodes/ImageDisplayNode';
 import ImageUploadNode from './components/customNodes/ImageUploadNode';
 import ExplanationNode from './components/customNodes/ExplanationNode';
 import CodeRenderNode from './components/customNodes/CodeRenderNode';
 import SubImageNode from './components/customNodes/SubImageNode';
+import ConfirmationPopupNode from './components/customNodes/ConfirmationPopupNode';
 import CodeEditorPanel from './components/CodeEditorPanel';
 import { FidelityNaturalHeader } from './components/renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
@@ -29,6 +29,16 @@ import { addEventHandlersToCode } from './util';
 interface OpenAIResponse {
   response: string;
 }
+
+
+const nodeTypes: NodeTypes = {
+  imageUploadNode: ImageUploadNode,
+  imageDisplayNode: ImageDisplayNode,
+  subimageNode: SubImageNode,
+  explanationNode: ExplanationNode,
+  codeRenderNode: CodeRenderNode,
+  confirmationPopupNode: ConfirmationPopupNode,
+};
 
 const initialNodes: Node[] = [
   {
@@ -42,6 +52,13 @@ const initialNodes: Node[] = [
     type: 'codeRenderNode',
     position: { x: 750, y: 100 },
     data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
+  },
+  {
+    id: '3',
+    type: 'confirmationPopupNode',
+    position: { x: 1550, y: 100 },
+    // TODO deal with this data later
+    data: { position: { x: 0, y: 0 }, setConfirmationSelection: (selection: string) => console.log("Here is the selection: " + selection) },
   }
 ];
 
@@ -52,13 +69,6 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
   animated: true,
 };
 
-const nodeTypes: NodeTypes = {
-  imageUploadNode: ImageUploadNode,
-  imageDisplayNode: ImageDisplayNode,
-  subimageNode: SubImageNode,
-  explanationNode: ExplanationNode,
-  codeRenderNode: CodeRenderNode,
-};
 
 const App: React.FC = () => {
 
@@ -107,7 +117,7 @@ const App: React.FC = () => {
   }
 
 
-  const addExplanationsNode = (explanations : string) => {
+  const addExplanationsNode = (explanations: string) => {
     setNodes((nds) => {
       return nds.concat(
         {
@@ -271,7 +281,6 @@ const App: React.FC = () => {
     />
   ), [renderCode, setRenderCode, codePanelVisible, setCodePanelVisible]);
 
-
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
       <ReactFlow
@@ -296,7 +305,6 @@ const App: React.FC = () => {
         nodeDragThreshold={4}
         defaultEdgeOptions={defaultEdgeOptions}>
         <Background />
-        <ConfirmationPopup position={ {x: 100, y: 100} } setConfirmationSelection={(selection) => console.log("selection: " + selection)} />
         <Controls />
         {memoizedCodeEditorPanel}
       </ReactFlow>
