@@ -5,7 +5,7 @@ import 'reactflow/dist/style.css';
 import '../../index.css';
 
 const SubImageNode: React.FC<NodeProps> = ({ data }) => {
-    const [isDragging, setIsDragging] = useState(false);
+    
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const nodeRef = useRef<HTMLDivElement>(null);
@@ -19,8 +19,8 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         // force click to release it
         // this will not interfere with the desired mousedown event, because the event trigger sequence is:
         // mousedown -> mouseup -> click, so isDragging will only be dismissed after the mouse is released
-        if (isDragging) {
-            setIsDragging(false);
+        if (data.isDragging) {
+            data.setIsDragging(false);
             return;
         }
     }
@@ -47,14 +47,14 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 x: (e.clientX - rect.left) / zoom,  // using rect instead of offset, since the state variable might not be update here immediately
                 y: (e.clientY - rect.top) / zoom,
             });
-            setIsDragging(true);
+            data.setIsDragging(true);
             e.stopPropagation();
             e.preventDefault();
         }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-        if (!isDragging) return;
+        if (!data.isDragging) return;
         console.log((e.target as HTMLElement).classList);
 
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
@@ -62,7 +62,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             return;
         }
         console.log("from window: mouse move");
-        if (isDragging) {
+        if (data.isDragging) {
             const zoom = reactFlow.getZoom();
 
             setPosition({
@@ -80,7 +80,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         console.log("washi tape dropped, current position, x: " + e.clientX + ", y: " + e.clientY);
         setPosition({ x: 0, y: 0 });
         setOffset({ x: 0, y: 0 });
-        setIsDragging(false);
+        data.setIsDragging(false);
         e.stopPropagation();
     };
 
@@ -111,7 +111,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             }
             if (draggedNode) setdraggedElementWidth(0);
         };
-    }, [isDragging]);
+    }, [data.isDragging]);
 
     return (
         <div ref={nodeRef} className="relative max-w-md mx-auto my-8">
@@ -126,7 +126,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                         <LuEqual className="react-flow-drag-handle" size={24} />
                     </div>
                     <div className='react-flow-drag-handle cursor-move text-l font-semibold mb-3 flex justify-center w-full items-center'>
-                        <span className='react-flow-drag-handle'>Selected Section</span>
+                        <span className='react-flow-drag-handle'>Drag & Drop to Target</span>
                     </div>
                     <div className="w-full h-64 flex items-center justify-center overflow-hidden">
                         <img
@@ -137,7 +137,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                     </div>
                 </div>
             </div>
-            {isDragging && (
+            {data.isDragging && (
                 <div
                     className="fixed z-5000 pointer-events-none"
                     ref={draggedRef}
@@ -159,8 +159,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                         />
                     </div>
                 </div>
-            )
-            }
+            )}
 
         </div >
     );

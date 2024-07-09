@@ -143,3 +143,14 @@ export function addEventHandlersToCode(code: string): string {
     }
   });
 }
+
+export function parseResponse(response: string): string[] {
+  const index = response.indexOf("() =>");
+  if (index !== -1) {
+    response = response.slice(index);
+  } else {
+    console.log("error: cannot find the code prefix for generated result")
+  }
+  const splitResponse = response.replace('```', '').split("Explanations:");
+  return splitResponse;
+}

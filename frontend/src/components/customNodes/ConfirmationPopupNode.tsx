@@ -7,9 +7,9 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
     const popupRef = useRef<HTMLDivElement>(null);
 
     const options = [
-        { icon: Paintbrush, title: 'Style', description: 'Apply colors and visual styles' },
+        { icon: Plus, title: 'Addition', description: 'Add the selected UI elements' },
+        { icon: Paintbrush, title: 'Color', description: 'Apply the colors to your design' },
         { icon: LayoutList, title: 'Layout', description: 'Arrange and structure your design elements' },
-        { icon: Plus, title: 'Addition', description: 'Add new UI elements to your design' },
     ];
 
     const handleSelection = (selection: string) => {
@@ -61,7 +61,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
             style={{ top: data.position.y, left: data.position.x }}
         >
             <div className="font-semibold text-l mb-5">
-                Confirm Blending Options
+                Blending Options
             </div>
             {options.map((option) => (
                 <div
@@ -96,7 +96,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
                     Cancel
                 </button>
                 <button
-                    className={`mt-5 px-5 py-3  rounded-lg text-white font-semibold transition-colors ${selectedOptions.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
+                    className={`mt-5 px-5 py-3  rounded-lg text-white font-semibold transition-colors ${selectedOptions.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400 cursor-auto"}`}
                     onClick={handleBlend}
                 >
                     Blend

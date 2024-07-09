@@ -24,7 +24,7 @@ import CodeEditorPanel from './components/CodeEditorPanel';
 import { FidelityNaturalHeader } from './components/renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import './index.css';
-import { addEventHandlersToCode } from './util';
+import { parseResponse } from './util';
 
 interface OpenAIResponse {
   response: string;
@@ -75,6 +75,7 @@ const App: React.FC = () => {
 
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [isDragging, setIsDragging] = useState(false);
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
   const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
 
@@ -105,18 +106,6 @@ const App: React.FC = () => {
     const data: OpenAIResponse = await response.json();
     return data.response;
   };
-
-  function parseResponse(response: string): string[] {
-    const index = response.indexOf("() =>");
-    if (index !== -1) {
-      response = response.slice(index);
-    } else {
-      console.log("error: cannot find the code prefix for generated result")
-    }
-    const splitResponse = response.replace('```', '').split("Explanations:");
-    return splitResponse;
-  }
-
 
   const addExplanationsNode = (explanations: string) => {
     setNodes((nds) => {
@@ -222,7 +211,7 @@ const App: React.FC = () => {
               type: 'subimageNode',
               draggable: true,
               position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
-              data: { image: imageUrl },
+              data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging },
             }
           );
         });
