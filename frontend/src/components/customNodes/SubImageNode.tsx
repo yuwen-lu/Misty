@@ -82,13 +82,16 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         // e.stopPropagation();
     };
 
+    // TODO only handle this when the mouse is over code render frame, maybe do something with the event listener
     const handleMouseUp = (e: MouseEvent) => {
         if (!localIsDragging) return;
         console.log("washi tape dropped, current position, x: " + e.clientX + ", y: " + e.clientY);
         // send this back to App.tsx to show the blending options popup
         // we just use the view port default position
         const mousePosition = { x: e.clientX, y: e.clientY };
-        data.setBlendingOptionPosition(mousePosition);
+
+        if (isWithinAnyCodeREnder(mousePosition.x, mousePosition.y)) 
+            data.setBlendingOptionPosition(mousePosition);
         
         // reset states to default
         setPosition({ x: 0, y: 0 });
@@ -96,6 +99,17 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         syncIsDragging(false);
         e.stopPropagation();
     };
+
+    const isWithinAnyCodeREnder = (x: number, y: number): boolean => {
+        const containers = document.querySelectorAll('.code-render-container');
+        for (const container of containers) {
+          const rect = container.getBoundingClientRect();
+          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+            return true;
+          }
+        }
+        return false;
+      };
 
     useEffect(() => {
 

@@ -122,28 +122,6 @@ export const draw = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2
   });
 };
 
-export function addEventHandlersToCode(code: string): string {
-  const handleMouseOver = `onMouseOver={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.add('highlight'); }}`;
-  const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
-  const handleClick = `onClick={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); console.log('Clicked element:', e.target); }}`;
-
-  return code.replace(/<(\w+)([^>]*?)(\/?)>/g, (match, p1, p2, p3) => {
-    // If the tag is self-closing, add a space before the closing slash
-    const isSelfClosing = p3 === '/';
-
-    // Skip elements that already have event handlers
-    if (p2.includes('onMouseOver') || p2.includes('onMouseOut') || p2.includes('onClick')) {
-      return match;
-    }
-
-    if (isSelfClosing) {
-      return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleClick} />`;
-    } else {
-      return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleClick}>`;
-    }
-  });
-}
-
 export function parseResponse(response: string): string[] {
   const index = response.indexOf("() =>");
   if (index !== -1) {

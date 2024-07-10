@@ -234,7 +234,7 @@ const FlowComponent: React.FC = () => {
 
     const showBlendingConfirmationPopup = (popUpPosition: popUpPositionType, viewportX: number, viewportY: number, zoom: number) => {
 
-        const posX = (popUpPosition.x - viewportX) / zoom;  // adjust for window zoom for react flow
+        const posX = (popUpPosition.x - viewportX) / zoom;  // adjust for window transform and zoom for react flow
         const posY = (popUpPosition.y - viewportY) / zoom;
         console.log("current zoom: " + zoom);
         console.log("adjusted for zoom pos: x: " + posX + ", y: " + posY);
@@ -321,7 +321,7 @@ const FlowComponent: React.FC = () => {
                     } else if (node.type === 'codeRenderNode') {
                         return {
                             ...node,
-                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible }
+                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging }
                         }
                     } else {
                         return node;
