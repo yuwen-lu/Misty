@@ -3,7 +3,7 @@ import { Paintbrush, LayoutList, Plus } from 'lucide-react';
 import { NodeProps } from 'reactflow';
 import "../../index.css";
 
-const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
+const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const popupRef = useRef<HTMLDivElement>(null);
 
@@ -25,11 +25,13 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
         data.setConfirmationSelection(selectedOptions);
         setSelectedOptions([]);
         console.log("Final selection: " + selectedOptions);
+        // TODO handle the prompt
+        data.removeNode(id);
     };
 
     const cancelBlend = () => {
         console.log("blend canceled");
-        // TODO dismiss this popup
+        data.removeNode(id);
     }
     
     useEffect(() => {

@@ -15,58 +15,58 @@ import ReactFlow, {
     DefaultEdgeOptions,
     useReactFlow,
     useViewport
-  } from 'reactflow';
-  import ImageDisplayNode from './customNodes/ImageDisplayNode';
-  import ImageUploadNode from './customNodes/ImageUploadNode';
-  import ExplanationNode from './customNodes/ExplanationNode';
-  import CodeRenderNode from './customNodes/CodeRenderNode';
-  import SubImageNode from './customNodes/SubImageNode';
-  import ConfirmationPopupNode from './customNodes/ConfirmationPopupNode';
-  import CodeEditorPanel from './CodeEditorPanel';
-  import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
-  import 'reactflow/dist/style.css';
-  import '../index.css';
-  import { parseResponse } from '../util';
-  
-  interface OpenAIResponse {
+} from 'reactflow';
+import ImageDisplayNode from './customNodes/ImageDisplayNode';
+import ImageUploadNode from './customNodes/ImageUploadNode';
+import ExplanationNode from './customNodes/ExplanationNode';
+import CodeRenderNode from './customNodes/CodeRenderNode';
+import SubImageNode from './customNodes/SubImageNode';
+import ConfirmationPopupNode from './customNodes/ConfirmationPopupNode';
+import CodeEditorPanel from './CodeEditorPanel';
+import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
+import 'reactflow/dist/style.css';
+import '../index.css';
+import { parseResponse } from '../util';
+
+interface OpenAIResponse {
     response: string;
-  }
-  
-  interface popUpPositionType {
+}
+
+interface popUpPositionType {
     x: number,
     y: number,
-  }
-  
-  const nodeTypes: NodeTypes = {
+}
+
+const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
     imageDisplayNode: ImageDisplayNode,
     subimageNode: SubImageNode,
     explanationNode: ExplanationNode,
     codeRenderNode: CodeRenderNode,
     confirmationPopupNode: ConfirmationPopupNode,
-  };
-  
-  const initialNodes: Node[] = [
+};
+
+const initialNodes: Node[] = [
     {
-      id: '1',
-      type: 'imageUploadNode',
-      position: { x: 250, y: 100 },
-      data: { onUpload: () => { } },
+        id: '1',
+        type: 'imageUploadNode',
+        position: { x: 250, y: 100 },
+        data: { onUpload: () => { } },
     },
     {
-      id: '2',
-      type: 'codeRenderNode',
-      position: { x: 2050, y: 100 },
-      data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
+        id: '2',
+        type: 'codeRenderNode',
+        position: { x: 2050, y: 100 },
+        data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
     }
-  ];
-  
-  const initialEdges: Edge[] = [
-  ];
-  
-  const defaultEdgeOptions: DefaultEdgeOptions = {
+];
+
+const initialEdges: Edge[] = [
+];
+
+const defaultEdgeOptions: DefaultEdgeOptions = {
     animated: true,
-  };
+};
 
 const FlowComponent: React.FC = () => {
 
@@ -228,8 +228,12 @@ const FlowComponent: React.FC = () => {
         });
     }
 
+    const removeNode = (id: string) => {
+        setNodes((nds) => nds.filter(node => node.id !== id));
+    }
+
     const showBlendingConfirmationPopup = (popUpPosition: popUpPositionType, viewportX: number, viewportY: number, zoom: number) => {
-        
+
         const posX = (popUpPosition.x - viewportX) / zoom;  // adjust for window zoom for react flow
         const posY = (popUpPosition.y - viewportY) / zoom;
         console.log("current zoom: " + zoom);
@@ -246,7 +250,11 @@ const FlowComponent: React.FC = () => {
                         type: 'confirmationPopupNode',
                         draggable: true,
                         position: { x: posX, y: posY },
-                        data: { position: popUpPosition, setConfirmationSelection: (selectedOptions: string[]) => console.log("selected: " + selectedOptions.join(", ")) },  // TODO Change this function
+                        data: {
+                            position: popUpPosition,
+                            removeNode: removeNode,
+                            setConfirmationSelection: (selectedOptions: string[]) => console.log("selected: " + selectedOptions.join(", "))
+                        },  // TODO Change this function
                     }
                 );
             });
