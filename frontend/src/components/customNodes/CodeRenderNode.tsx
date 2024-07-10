@@ -14,7 +14,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
     }
 
     return (
-        <div className="flex flex-col items-center px-20 py-5 text-white bg-purple-900/70 rounded-lg border-2 border-stone-400 w-full h-full">
+        <div className={`flex flex-col items-center px-20 py-5 text-white bg-purple-900/70 rounded-lg border-2 border-stone-400 w-full h-full ${data.isDragging ? "swing" : ""}`}>
             <div className='w-full flex relative items-center mb-5'>
                 <div className='absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl'>
                     Source Code Render

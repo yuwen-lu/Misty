@@ -82,7 +82,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         // e.stopPropagation();
     };
 
-    // TODO only handle this when the mouse is over code render frame, maybe do something with the event listener
+    // only handle this when the mouse is over code render frame, maybe do something with the event listener
     const handleMouseUp = (e: MouseEvent) => {
         if (!localIsDragging) return;
         console.log("washi tape dropped, current position, x: " + e.clientX + ", y: " + e.clientY);

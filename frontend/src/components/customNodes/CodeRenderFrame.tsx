@@ -27,16 +27,16 @@ function addEventHandlersToCode(code: string): string {
 
 const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string, isDragging: boolean }> = ({ isMobile, code, isDragging }) => {
 
-    // useEffect(() => {
-    //     console.log("Updated code: " + addEventHandlersToCode(code));
-    // }, [code]);
-
     return (
         <div
-            className={"code-render-container grow w-full overflow-auto " + (isMobile ? "max-w-md" : "max-w-screen-md")}
+            className={`code-render-container grow w-full overflow-auto 
+            ${isMobile ? "max-w-md" : "max-w-screen-md"} 
+            ${isDragging ? "flash" : ""}`}
             style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
         >
-            <LiveProvider code={isDragging ? addEventHandlersToCode(code) : code} scope={{ React, useState, ...LuIcons }}>
+            <LiveProvider
+                code={isDragging ? addEventHandlersToCode(code) : code} scope={{ React, useState, ...LuIcons }}
+            >
                 <LivePreview />
                 <LiveError />
             </LiveProvider>

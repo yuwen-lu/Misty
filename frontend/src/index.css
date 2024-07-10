@@ -71,3 +71,26 @@ code {
   from { transform: scale(0) translate(-50%, -50%); }
   to { transform: scale(1) translate(-50%, -50%); }
 }
+
+.swing {
+	transform-origin: top center;
+	animation: swing 700ms ease forwards;
+}
+@keyframes swing {
+	20% { transform: rotate(2deg); }	
+	40% { transform: rotate(-2deg); }
+	60% { transform: rotate(0.5deg); }	
+	80% { transform: rotate(-0.5deg); }	
+	100% { transform: rotate(0deg); }
+}
+
+.flash {
+  animation: flash 700ms ease forwards;
+}
+@keyframes flash {
+	from, to { opacity: 1; }	
+	25% { opacity: 0.75; }
+  50% { opacity: 1; }
+  75% { opacity: 0.75; }
+  100% { opacity: 1; }
+}
