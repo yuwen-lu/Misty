@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Paintbrush, LayoutList, Plus } from 'lucide-react';
 import { NodeProps } from 'reactflow';
+import "../../index.css";
 
 const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -30,7 +31,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
         console.log("blend canceled");
         // TODO dismiss this popup
     }
-
+    
     useEffect(() => {
 
         const handleClick = (e: MouseEvent) => {
@@ -57,11 +58,11 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ data }) => {
     return (
         <div
             ref={popupRef}
-            className="flex flex-col items-center p-5 text-white bg-blue-900/80 shadow-lg transition-all duration-200 ease-in-out"
-            // style={{ top: data.position.y, left: data.position.x }}
+            className="flex flex-col items-center p-5 text-white bg-blue-900/80 shadow-lg transition-all duration-200 ease-in-out grow-animation"
+            // style={{ top: data.position.y , left: data.position.x }}
         >
             <div className="font-semibold text-l mb-5">
-                Blending Options
+                Pick A Blending Option
             </div>
             {options.map((option) => (
                 <div

@@ -13,6 +13,7 @@ import ReactFlow, {
   OnConnect,
   NodeTypes,
   DefaultEdgeOptions,
+  useReactFlow,
 } from 'reactflow';
 import ImageDisplayNode from './components/customNodes/ImageDisplayNode';
 import ImageUploadNode from './components/customNodes/ImageUploadNode';
@@ -76,6 +77,7 @@ const App: React.FC = () => {
   const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
   const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
 
+  const [zoom, setZoom] = useState<number>(1);
   const [response, setResponse] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);  // TODO render code using this loading status
@@ -214,7 +216,7 @@ const App: React.FC = () => {
               type: 'subimageNode',
               draggable: true,
               position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
-              data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging, setBlendingOptionPosition: setBlendingOptionPosition },
+              data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging, setBlendingOptionPosition: setBlendingOptionPosition, setZoom: setZoom },
             }
           );
         });
@@ -231,8 +233,8 @@ const App: React.FC = () => {
   }
 
   const showBlendingConfirmationPopup = (popUpPosition: popUpPositionType) => {
-    const posX = popUpPosition.x;
-    const posY = popUpPosition.y;
+    const posX = popUpPosition.x / zoom;  // adjust for window zoom for react flow
+    const posY = popUpPosition.y / zoom;
 
     if (posX !== 0 && posY !== 0) {
 
@@ -244,8 +246,8 @@ const App: React.FC = () => {
             id: newNodeId.toString(),
             type: 'confirmationPopupNode',
             draggable: true,
-            position: { x: posX, y: posY },
-            data: { setConfirmationSelection: (selectedOptions: string[]) => console.log("selected: " + selectedOptions.join(", ")) },  // TODO Change this function
+            position: { x: posX , y: posY },
+            data: { position: popUpPosition, setConfirmationSelection: (selectedOptions: string[]) => console.log("selected: " + selectedOptions.join(", ")) },  // TODO Change this function
           }
         );
       });
