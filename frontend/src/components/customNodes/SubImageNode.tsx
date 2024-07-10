@@ -5,7 +5,7 @@ import 'reactflow/dist/style.css';
 import '../../index.css';
 
 const SubImageNode: React.FC<NodeProps> = ({ data }) => {
-    const [localIsDragging, setLocalIsDragging] = useState< boolean | null>(null);
+    const [localIsDragging, setLocalIsDragging] = useState<boolean | null>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const nodeRef = useRef<HTMLDivElement>(null);
@@ -90,9 +90,9 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         // we just use the view port default position
         const mousePosition = { x: e.clientX, y: e.clientY };
 
-        if (isWithinAnyCodeREnder(mousePosition.x, mousePosition.y)) 
+        if (isWithinAnyCodeRender(mousePosition.x, mousePosition.y))
             data.setBlendingOptionPosition(mousePosition);
-        
+
         // reset states to default
         setPosition({ x: 0, y: 0 });
         setOffset({ x: 0, y: 0 });
@@ -100,16 +100,16 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         e.stopPropagation();
     };
 
-    const isWithinAnyCodeREnder = (x: number, y: number): boolean => {
+    const isWithinAnyCodeRender = (x: number, y: number): boolean => {
         const containers = document.querySelectorAll('.code-render-container');
         for (const container of containers) {
-          const rect = container.getBoundingClientRect();
-          if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-            return true;
-          }
+            const rect = container.getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                return true;
+            }
         }
         return false;
-      };
+    };
 
     useEffect(() => {
 

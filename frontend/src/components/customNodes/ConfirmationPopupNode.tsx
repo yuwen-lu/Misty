@@ -22,18 +22,22 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     };
 
     const handleBlend = () => {
-        data.setConfirmationSelection(selectedOptions);
-        setSelectedOptions([]);
-        console.log("Final selection: " + selectedOptions);
-        // TODO handle the prompt
-        data.removeNode(id);
+        // if nothing is selected, we don't do anything
+        if (selectedOptions.length > 0) {
+            data.setConfirmationSelection(selectedOptions);
+            setSelectedOptions([]);
+            console.log("Final selection: " + selectedOptions);
+            // TODO handle the prompt
+            data.removeNode(id);
+        } 
+
     };
 
     const cancelBlend = () => {
         console.log("blend canceled");
         data.removeNode(id);
     }
-    
+
     useEffect(() => {
 
         const handleClick = (e: MouseEvent) => {
@@ -61,7 +65,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
         <div
             ref={popupRef}
             className="flex flex-col items-center p-5 text-white bg-blue-900/80 shadow-lg transition-all duration-200 ease-in-out grow-animation"
-            // style={{ top: data.position.y , left: data.position.x }}
+        // style={{ top: data.position.y , left: data.position.x }}
         >
             <div className="font-semibold text-l mb-5">
                 Pick A Blending Option

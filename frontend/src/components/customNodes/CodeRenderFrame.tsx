@@ -3,10 +3,10 @@ import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 import * as LuIcons from 'react-icons/lu';
 import "../../index.css";
 
-function addEventHandlersToCode(code: string): string {
+const addEventHandlersToCode = (code: string) => {
     const handleMouseOver = `onMouseOver={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.add('highlight'); }}`;
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
-    const handleClick = `onClick={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); console.log('Clicked element:', e.target); }}`;
+    const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { setTargetCodeDropped(e.target); console.log('mouse up from element:', e.target); }}`;
 
     return code.replace(/<(\w+)([^>]*?)(\/?)>/g, (match, p1, p2, p3) => {
         // If the tag is self-closing, add a space before the closing slash
@@ -18,14 +18,14 @@ function addEventHandlersToCode(code: string): string {
         }
 
         if (isSelfClosing) {
-            return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleClick} />`;
+            return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleMouseUp} />`;
         } else {
-            return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleClick}>`;
+            return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleMouseUp}>`;
         }
     });
 }
 
-const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string, isDragging: boolean }> = ({ isMobile, code, isDragging }) => {
+const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string, isDragging: boolean, setTargetCodeDropped: Function }> = ({ isMobile, code, isDragging, setTargetCodeDropped }) => {
 
     return (
         <div
@@ -35,7 +35,7 @@ const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string, isDragging: b
             style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
         >
             <LiveProvider
-                code={isDragging ? addEventHandlersToCode(code) : code} scope={{ React, useState, ...LuIcons }}
+                code={isDragging ? addEventHandlersToCode(code) : code} scope={{ React, useState, ...LuIcons, setTargetCodeDropped }}
             >
                 <LivePreview />
                 <LiveError />

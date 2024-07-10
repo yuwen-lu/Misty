@@ -76,6 +76,7 @@ const FlowComponent: React.FC = () => {
     const [blendingOptionPosition, setBlendingOptionPosition] = useState({ x: 0, y: 0 });
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
     const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
+    const [targetCodeDropped, setTargetCodeDropped] = useState<string>("");
 
 
     const { x, y, zoom } = useViewport();
@@ -167,7 +168,9 @@ const FlowComponent: React.FC = () => {
           
           ${renderCode}. 
           
-          Help me blend the prominent color of the reference image into the react code. a few rules:
+          Help me blend the prominent color of the reference image into ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}`}
+          
+          A few rules:
 
           1. return the updated component code only;
           2. only use tailwind, react, and react icons. Follow the current code structure, do not include any export or import statements, just use a simple component definition () => {}
@@ -267,6 +270,10 @@ const FlowComponent: React.FC = () => {
         showBlendingConfirmationPopup(blendingOptionPosition, x, y, zoom);
     }, [blendingOptionPosition]);
 
+    useEffect(() => {
+        console.log("the target dropped code updated: " + targetCodeDropped);
+    },[targetCodeDropped])
+
     const importImage = (id: string, imageUrl: string) => {
         setNodes((nds) =>
             nds.map((node) =>
@@ -321,7 +328,7 @@ const FlowComponent: React.FC = () => {
                     } else if (node.type === 'codeRenderNode') {
                         return {
                             ...node,
-                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging }
+                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped }
                         }
                     } else {
                         return node;
