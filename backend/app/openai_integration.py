@@ -12,7 +12,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 MODEL = "gpt-4o"
     
-def get_openai_response(text_message, base64_image=None):
+def get_openai_response(text_message, base64_image=None, json_mode=False):
     
     # construct the message body based on whether there are images sent
     # start with the system prompt
@@ -43,6 +43,7 @@ def get_openai_response(text_message, base64_image=None):
         model=MODEL,
         messages=user_message_body,
         stream=True,
+        response_format= {"type": "json_object"} if json_mode else {},
     )
 
     response = ""

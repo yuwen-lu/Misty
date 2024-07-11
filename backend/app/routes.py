@@ -10,6 +10,7 @@ def chat():
     data = request.json  # Get the JSON data from the request
     message = data.get('message')
     image = data.get('image')
+    json_mode = data.get('json_mode')
     # strip the prefix of the base64 image
     image = image.split("base64,")[-1]
     
@@ -22,7 +23,7 @@ def chat():
         print("no image received.")
 
     # Call your OpenAI function or any other processing
-    response = get_openai_response(message, image)  # Assuming get_openai_response processes the text and returns a response
+    response = get_openai_response(message, image, json_mode)  # Assuming get_openai_response processes the text and returns a response
 
     return jsonify({"response": response})
 
