@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Paintbrush, LayoutList, Plus } from 'lucide-react';
 import { NodeProps } from 'reactflow';
 import "../../index.css";
+import { constructTextPrompt } from '../../prompts';
 
 const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -24,10 +25,13 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     const handleBlend = () => {
         // if nothing is selected, we don't do anything
         if (selectedOptions.length > 0) {
-            data.setConfirmationSelection(selectedOptions);
-            setSelectedOptions([]);
             console.log("Final selection: " + selectedOptions);
-            // TODO handle the prompt
+            // handle the prompt
+            const textPrompt = constructTextPrompt(data.renderCode, data.targetCodeDropped, selectedOptions);
+            data.callOpenAI(textPrompt, data.subImageScreenshot);
+
+            // dismiss the node
+            setSelectedOptions([]);
             data.removeNode(id);
         } 
 

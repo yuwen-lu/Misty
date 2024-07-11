@@ -90,8 +90,15 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
         // we just use the view port default position
         const mousePosition = { x: e.clientX, y: e.clientY };
 
-        if (isWithinAnyCodeRender(mousePosition.x, mousePosition.y))
-            data.setBlendingOptionPosition(mousePosition);
+        if (isWithinAnyCodeRender(mousePosition.x, mousePosition.y)) {
+            // we need this object because we need both the mouse position (to position the pop up)
+            // and the subimagescreenshot (to construct the prompt when the popup is dismissed)
+            const newConfirmationPopupNodeDataPackage = {
+                mousePosition: mousePosition,
+                subImageScreenshot: data.image,
+            }
+            data.setNewConfirmationPopupNodeDataPackage(newConfirmationPopupNodeDataPackage);
+        }
 
         // reset states to default
         setPosition({ x: 0, y: 0 });

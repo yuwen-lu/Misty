@@ -6,7 +6,7 @@ import "../../index.css";
 const addEventHandlersToCode = (code: string) => {
     const handleMouseOver = `onMouseOver={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.add('highlight'); }}`;
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
-    const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { setTargetCodeDropped(e.target); console.log('mouse up from element:', e.target); }}`;
+    const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { setTargetCodeDropped(e.target.outerHTML); console.log('mouse up from element:', e.target); }}`;
 
     return code.replace(/<(\w+)([^>]*?)(\/?)>/g, (match, p1, p2, p3) => {
         // If the tag is self-closing, add a space before the closing slash

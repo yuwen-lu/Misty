@@ -27,6 +27,7 @@ import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
 import { parseResponse } from '../util';
+import { constructTextPrompt } from '../prompts';
 
 interface OpenAIResponse {
     response: string;
@@ -64,6 +65,14 @@ const initialNodes: Node[] = [
 const initialEdges: Edge[] = [
 ];
 
+const initialConfirmationPopupNodeDataPackage = {
+    mousePosition: {
+        x: 0,
+        y: 0,
+    },
+    subImageScreenshot: ""
+}
+
 const defaultEdgeOptions: DefaultEdgeOptions = {
     animated: true,
 };
@@ -73,15 +82,13 @@ const FlowComponent: React.FC = () => {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
-    const [blendingOptionPosition, setBlendingOptionPosition] = useState({ x: 0, y: 0 });
+    const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
     const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
     const [targetCodeDropped, setTargetCodeDropped] = useState<string>("");
 
-
     const { x, y, zoom } = useViewport();
     const [response, setResponse] = useState('');
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);  // TODO render code using this loading status
 
     // code block to handle API calls
@@ -124,7 +131,6 @@ const FlowComponent: React.FC = () => {
 
     const handleFetchResponse = async (textPrompt = "test", base64Image = "") => {
         setLoading(true);
-        setError("");
         try {
             const response = await getOpenAIResponse(textPrompt, base64Image);
             console.log("raw response:" + response);
@@ -133,7 +139,7 @@ const FlowComponent: React.FC = () => {
             setRenderCode(responseCode);
             addExplanationsNode(changeExplanations);
         } catch (err) {
-            setError('Error fetching response from OpenAI API');
+            console.error('Error fetching response from OpenAI API');
             console.log("error openai api call: " + err);
         } finally {
             setLoading(false);
@@ -164,20 +170,9 @@ const FlowComponent: React.FC = () => {
             const sourceNode = nodes.find((node) => node.id === connection.source);
             if (sourceNode) {
                 const referenceImageBase64 = sourceNode.data.image;
-                const textPrompt = `Here is my react and tailwind code: 
-          
-          ${renderCode}. 
-          
-          Help me blend the prominent color of the reference image into ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}`}
-          
-          A few rules:
-
-          1. return the updated component code only;
-          2. only use tailwind, react, and react icons. Follow the current code structure, do not include any export or import statements, just use a simple component definition () => {}
-          3. Explain what you changed. In your response, use the format "Explanations:" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"
-          
-          `
-                console.log("source node confirmed. here is the image: " + referenceImageBase64);
+                const textPrompt = constructTextPrompt(renderCode, targetCodeDropped);
+                console.log("sending the prompt, target code: \n" + targetCodeDropped);
+                // console.log("source node confirmed. here is the image: " + referenceImageBase64);
                 handleFetchResponse(textPrompt, referenceImageBase64);
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
@@ -215,7 +210,7 @@ const FlowComponent: React.FC = () => {
                             type: 'subimageNode',
                             draggable: true,
                             position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
-                            data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging, setBlendingOptionPosition: setBlendingOptionPosition },
+                            data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging, setNewConfirmationPopupNodeDataPackage: setNewConfirmationPopupNodeDataPackage },
                         }
                     );
                 });
@@ -235,7 +230,7 @@ const FlowComponent: React.FC = () => {
         setNodes((nds) => nds.filter(node => node.id !== id));
     }
 
-    const showBlendingConfirmationPopup = (popUpPosition: popUpPositionType, viewportX: number, viewportY: number, zoom: number) => {
+    const showBlendingConfirmationPopup = (popUpPosition: popUpPositionType, viewportX: number, viewportY: number, zoom: number, subImageScreenshot: string) => {
 
         const posX = (popUpPosition.x - viewportX) / zoom;  // adjust for window transform and zoom for react flow
         const posY = (popUpPosition.y - viewportY) / zoom;
@@ -256,8 +251,11 @@ const FlowComponent: React.FC = () => {
                         data: {
                             position: popUpPosition,
                             removeNode: removeNode,
-                            setConfirmationSelection: (selectedOptions: string[]) => console.log("selected: " + selectedOptions.join(", "))
-                        },  // TODO Change this function
+                            renderCode: renderCode,
+                            targetCodeDropped: targetCodeDropped,
+                            callOpenAI: handleFetchResponse,
+                            subImageScreenshot: subImageScreenshot,
+                        }, 
                     }
                 );
             });
@@ -267,12 +265,13 @@ const FlowComponent: React.FC = () => {
 
     // when the blendingOptionPosition changes, that means we can show the popup
     useEffect(() => {
-        showBlendingConfirmationPopup(blendingOptionPosition, x, y, zoom);
-    }, [blendingOptionPosition]);
+        showBlendingConfirmationPopup(newConfirmationPopupNodeDataPackage.mousePosition, x, y, zoom, newConfirmationPopupNodeDataPackage.subImageScreenshot);
+
+    }, [newConfirmationPopupNodeDataPackage]);
 
     useEffect(() => {
         console.log("the target dropped code updated: " + targetCodeDropped);
-    },[targetCodeDropped])
+    }, [targetCodeDropped])
 
     const importImage = (id: string, imageUrl: string) => {
         setNodes((nds) =>
