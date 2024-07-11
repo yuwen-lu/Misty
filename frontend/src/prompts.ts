@@ -28,6 +28,18 @@ export const constructTextPrompt = (renderCode: string, targetCodeDropped: strin
         `;
 };
 
+
+export function parseResponse(response: string): string[] {
+    const index = response.indexOf("() =>");
+    if (index !== -1) {
+        response = response.slice(index);
+    } else {
+        console.log("error: cannot find the code prefix for generated result")
+    }
+    const splitResponse = response.replace('```', '').split("Explanations:");
+    return splitResponse;
+}
+
 export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = [""]) => {
 
     return `
@@ -49,17 +61,47 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
         Return result as a JSON in the following format:
 
         {
-            {
-                "original code": // original code piece
-                "replacement code": // replacement code
-            }
-            // ...
-            // add more if needed
+            "codeChanges": [{
+                "originalCode": // original code piece
+                "replacementCode": // replacement code
+                }
+                // ...
+                // add more if needed
+            ] // always put this in a list
             
-            "explanations": // explanantion summary of the changes, only once
+            "explanations": // explanantion summary of the changes, just one string
         }
 
         I will do sourceCode.replace(original_code, replacement_code) in my code, so make sure I can directly replace them and have the code still running.
 
         `;
 };
+
+export interface CodeChange {
+    originalCode: string;
+    replacementCode: string;
+}
+
+export interface ParsedData {
+    codeChanges: CodeChange[];
+    explanations: string;
+}
+
+export function parseJsonResponse(jsonString: string): ParsedData {
+    // Parse the input JSON string
+    const data = JSON.parse(jsonString);
+
+    // Extract code changes and map them into the desired format
+    const codeChangesList: CodeChange[] = data.codeChanges.map((change: { originalCode: string; replacementCode: string }) => ({
+        originalCode: change.originalCode,
+        replacementCode: change.replacementCode
+    }));
+
+    // Extract the explanations string
+    const explanationsString: string = data.explanations;
+
+    return {
+        codeChanges: codeChangesList,
+        explanations: explanationsString
+    };
+}

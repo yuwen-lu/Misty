@@ -122,13 +122,11 @@ export const draw = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2
   });
 };
 
-export function parseResponse(response: string): string[] {
-  const index = response.indexOf("() =>");
-  if (index !== -1) {
-    response = response.slice(index);
-  } else {
-    console.log("error: cannot find the code prefix for generated result")
-  }
-  const splitResponse = response.replace('```', '').split("Explanations:");
-  return splitResponse;
+// used in api responses
+export function removeEscapedChars(apiResponse: string): string {
+  console.log("handling escape characters: " + apiResponse);
+  // Regular expression to match escaped characters
+  const escapedCharsRegex = /\\./g;
+  // Replace all matches with an empty string
+  return apiResponse.replace(escapedCharsRegex, '');
 }

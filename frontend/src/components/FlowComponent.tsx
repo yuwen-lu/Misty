@@ -26,8 +26,8 @@ import CodeEditorPanel from './CodeEditorPanel';
 import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { parseResponse } from '../util';
-import { constructTextPrompt } from '../prompts';
+import { removeEscapedChars } from "../util";
+import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 
 interface OpenAIResponse {
     response: string;
@@ -132,19 +132,47 @@ const FlowComponent: React.FC = () => {
 
     const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false) => {
         setLoading(true);
-        try {
+        // try {
             const response = await getOpenAIResponse(textPrompt, base64Image, jsonMode);
             console.log("raw response:" + response);
             setResponse(response);
-            const [responseCode, changeExplanations] = parseResponse(response);
-            setRenderCode(responseCode);
-            addExplanationsNode(changeExplanations);
-        } catch (err) {
-            console.error('Error fetching response from OpenAI API');
-            console.log("error openai api call: " + err);
-        } finally {
-            setLoading(false);
-        }
+
+            if (jsonMode) {
+                // 1. fetch the parsed Result
+                const parsedData: ParsedData = parseJsonResponse(response);
+                console.log("type of codechangelist: " + typeof(parsedData.codeChanges));
+                const codeChangeList: CodeChange[] = parsedData.codeChanges;
+
+                // 2. replace the code pieces from the render code
+                for (const codeChange of codeChangeList) {
+                    const originalCodePiece = removeEscapedChars(codeChange.originalCode);
+                    const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
+
+                    console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece );
+
+                    if (!renderCode.includes(originalCodePiece)) {
+                        console.log("Cannot find this piece in source code. Error in api response?\n" + codeChange.originalCode)
+                    } else {
+                        // replace and update the state
+                        setRenderCode(renderCode.replace(originalCodePiece, replacementCodePiece));
+                    }
+                }
+
+                // 3. add explanations
+                const explanations: string = parsedData.explanations;
+                addExplanationsNode(explanations);
+            } else {
+                const [responseCode, changeExplanations] = parseResponse(response);
+                setRenderCode(responseCode);
+                addExplanationsNode(changeExplanations);
+            }
+
+        // } catch (err) {
+        //     console.error('Error fetching response from OpenAI API');
+        //     console.log("error openai api call: " + err);
+        // } finally {
+        //     setLoading(false);
+        // }
     };
 
 
@@ -256,7 +284,7 @@ const FlowComponent: React.FC = () => {
                             targetCodeDropped: targetCodeDropped,
                             callOpenAI: handleFetchResponse,
                             subImageScreenshot: subImageScreenshot,
-                        }, 
+                        },
                     }
                 );
             });
