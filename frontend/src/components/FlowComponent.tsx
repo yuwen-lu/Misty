@@ -150,12 +150,17 @@ const FlowComponent: React.FC = () => {
 
                 console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
 
+                const escapeRegex = (str: string): string => {
+                    // Escape special regex characters
+                    return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                };
+
                 // Create a regex pattern that matches the target code, allowing for whitespace and newlines
-                const pattern = originalCodePiece.replace(/\s+/g, '\\s*');
+                const pattern = escapeRegex(originalCodePiece).replace(/\s+/g, '\\s*');
                 const regexOriginalCode = new RegExp(pattern, 'g');
 
                 if (!regexOriginalCode.test(renderCode)) {  // basically the regex version of .includes
-                    console.log("Cannot find this piece in source code. Error in api response?\n" + codeChange.originalCode)
+                    console.log("Cannot find this piece in source code. Error in api response?\n" + originalCodePiece);
                 } else {
                     // replace and update the state
                     setRenderCode(renderCode.replace(regexOriginalCode, replacementCodePiece));
