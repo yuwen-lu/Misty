@@ -87,7 +87,7 @@ export interface ParsedData {
     explanations: string;
 }
 
-export function parseJsonResponse(jsonString: string): ParsedData {
+export function parseJsonResponse(jsonString: string): ParsedData { 
     // Parse the input JSON string
     const data = JSON.parse(jsonString);
 
