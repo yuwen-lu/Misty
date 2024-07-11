@@ -6,9 +6,20 @@ type ParsedItem = {
     changes: string[];
 };
 
-const parseString = (input: string): string[] => {
-    // Split the input string by the list item numbers
-    return input.split(/\d+\.\s+/).filter(item => item.trim() !== '');
+const parseString = (input: string | string[]): string[] => {
+    const processString = (str: string): string[] => {
+        // Split the string by the list item numbers
+        return str.split(/\d+\.\s+/).filter(item => item.trim() !== '');
+    };
+
+    if (typeof input === 'string') {
+        return processString(input);
+    } else if (Array.isArray(input)) {
+        // Process each string in the array and flatten the result
+        return input.flatMap(processString);
+    } else {
+        throw new Error('Input must be a string or an array of strings');
+    }
 };
 
 

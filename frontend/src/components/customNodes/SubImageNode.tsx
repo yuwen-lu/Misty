@@ -42,6 +42,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
 
 
         if (nodeRef.current) {
+
             const rect = nodeRef.current.getBoundingClientRect();
             setOffset({
                 x: rect.left,

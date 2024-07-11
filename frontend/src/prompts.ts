@@ -57,6 +57,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
         1. Return (1) the piece(s) of the original source code you are changing (please refer to the original source code and I can simply use string.replace to find the original code section), and (2) the updated code pieces;
         2. only use tailwind, react, and react icons. Do not include any import or export statements;
         3. Give an explanation summary of the original code piece you changed and the updated code piece in the returned result. In your response, use the field "explanations" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple". Categorize all changes of the same type (color, layout, etc.) under one bullet point.
+        4. Try to make colors consistent throughout the component.
 
         Return result as a JSON in the following format:
 

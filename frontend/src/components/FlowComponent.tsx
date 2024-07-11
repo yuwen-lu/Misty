@@ -133,39 +133,43 @@ const FlowComponent: React.FC = () => {
     const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false) => {
         setLoading(true);
         // try {
-            const response = await getOpenAIResponse(textPrompt, base64Image, jsonMode);
-            console.log("raw response:" + response);
-            setResponse(response);
+        const response = await getOpenAIResponse(textPrompt, base64Image, jsonMode);
+        console.log("raw response:" + response);
+        setResponse(response);
 
-            if (jsonMode) {
-                // 1. fetch the parsed Result
-                const parsedData: ParsedData = parseJsonResponse(response);
-                console.log("type of codechangelist: " + typeof(parsedData.codeChanges));
-                const codeChangeList: CodeChange[] = parsedData.codeChanges;
+        if (jsonMode) {
+            // 1. fetch the parsed Result
+            const parsedData: ParsedData = parseJsonResponse(response);
+            console.log("type of codechangelist: " + typeof (parsedData.codeChanges));
+            const codeChangeList: CodeChange[] = parsedData.codeChanges;
 
-                // 2. replace the code pieces from the render code
-                for (const codeChange of codeChangeList) {
-                    const originalCodePiece = removeEscapedChars(codeChange.originalCode);
-                    const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
+            // 2. replace the code pieces from the render code
+            for (const codeChange of codeChangeList) {
+                const originalCodePiece = removeEscapedChars(codeChange.originalCode);
+                const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
-                    console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece );
+                console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
 
-                    if (!renderCode.includes(originalCodePiece)) {
-                        console.log("Cannot find this piece in source code. Error in api response?\n" + codeChange.originalCode)
-                    } else {
-                        // replace and update the state
-                        setRenderCode(renderCode.replace(originalCodePiece, replacementCodePiece));
-                    }
+                // Create a regex pattern that matches the target code, allowing for whitespace and newlines
+                const pattern = originalCodePiece.replace(/\s+/g, '\\s*');
+                const regexOriginalCode = new RegExp(pattern, 'g');
+
+                if (!regexOriginalCode.test(renderCode)) {  // basically the regex version of .includes
+                    console.log("Cannot find this piece in source code. Error in api response?\n" + codeChange.originalCode)
+                } else {
+                    // replace and update the state
+                    setRenderCode(renderCode.replace(regexOriginalCode, replacementCodePiece));
                 }
-
-                // 3. add explanations
-                const explanations: string = parsedData.explanations;
-                addExplanationsNode(explanations);
-            } else {
-                const [responseCode, changeExplanations] = parseResponse(response);
-                setRenderCode(responseCode);
-                addExplanationsNode(changeExplanations);
             }
+
+            // 3. add explanations
+            const explanations: string = parsedData.explanations;
+            addExplanationsNode(explanations);
+        } else {
+            const [responseCode, changeExplanations] = parseResponse(response);
+            setRenderCode(responseCode);
+            addExplanationsNode(changeExplanations);
+        }
 
         // } catch (err) {
         //     console.error('Error fetching response from OpenAI API');

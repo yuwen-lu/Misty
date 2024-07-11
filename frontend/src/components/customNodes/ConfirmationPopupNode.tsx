@@ -68,7 +68,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     return (
         <div
             ref={popupRef}
-            className="flex flex-col items-center p-5 text-white bg-blue-900/80 shadow-lg transition-all duration-200 ease-in-out grow-animation"
+            className="flex flex-col z-2000 items-center p-5 text-white bg-blue-900/80 shadow-lg transition-all duration-200 ease-in-out grow-animation"
         // style={{ top: data.position.y , left: data.position.x }}
         >
             <div className="font-semibold text-l mb-5">
