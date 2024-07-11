@@ -12,6 +12,13 @@ export type BoundingBox = {
   height: number;
 };
 
+export interface coordinatePositionType {
+  x: number,
+  y: number,
+}
+
+export const defaultBoundingBox: BoundingBox = { x: 1500, y: 100, width: 200, height: 600 };
+
 // Check if two bounding boxes overlap
 export function doBoxesOverlap(box1: BoundingBox, box2: BoundingBox): boolean {
   return (

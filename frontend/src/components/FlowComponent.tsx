@@ -26,17 +26,13 @@ import CodeEditorPanel from './CodeEditorPanel';
 import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { removeEscapedChars } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 
 interface OpenAIResponse {
     response: string;
 }
 
-interface popUpPositionType {
-    x: number,
-    y: number,
-}
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -57,7 +53,7 @@ const initialNodes: Node[] = [
     {
         id: '2',
         type: 'codeRenderNode',
-        position: { x: 2050, y: 100 },
+        position: { x: 2050, y: 100 },  // TODO set Position dynamically
         data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
     }
 ];
@@ -86,6 +82,7 @@ const FlowComponent: React.FC = () => {
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
     const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
     const [targetCodeDropped, setTargetCodeDropped] = useState<string>("");
+    const [targetRenderCodeNodeBbox, setTargetRenderCodeNodeBbox] = useState<BoundingBox | null>(null);
 
     const { x, y, zoom } = useViewport();
     const [response, setResponse] = useState('');
@@ -116,72 +113,72 @@ const FlowComponent: React.FC = () => {
         return data.response;
     };
 
-    const addExplanationsNode = (explanations: string) => {
+    const addExplanationsNode = (explanations: string, renderCodeNodeBoundingBox: BoundingBox) => {
         setNodes((nds) => {
             return nds.concat(
                 {
                     id: String(nds.length + 1),
                     type: 'explanationNode',
                     draggable: true,
-                    position: { x: 200, y: 500 },
+                    position: { x: renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200, y: renderCodeNodeBoundingBox.y },
                     data: { text: explanations },
                 }
             );
         });
     }
 
-    const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false) => {
+    const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox) => {
         setLoading(true);
-        // try {
-        const response = await getOpenAIResponse(textPrompt, base64Image, jsonMode);
-        console.log("raw response:" + response);
-        setResponse(response);
+        try {
+            const response = await getOpenAIResponse(textPrompt, base64Image, jsonMode);
+            console.log("raw response:" + response);
+            setResponse(response);
 
-        if (jsonMode) {
-            // 1. fetch the parsed Result
-            const parsedData: ParsedData = parseJsonResponse(response);
-            console.log("type of codechangelist: " + typeof (parsedData.codeChanges));
-            const codeChangeList: CodeChange[] = parsedData.codeChanges;
+            if (jsonMode) {
+                // 1. fetch the parsed Result
+                const parsedData: ParsedData = parseJsonResponse(response);
+                console.log("type of codechangelist: " + typeof (parsedData.codeChanges));
+                const codeChangeList: CodeChange[] = parsedData.codeChanges;
 
-            // 2. replace the code pieces from the render code
-            for (const codeChange of codeChangeList) {
-                const originalCodePiece = removeEscapedChars(codeChange.originalCode);
-                const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
+                // 2. replace the code pieces from the render code
+                for (const codeChange of codeChangeList) {
+                    const originalCodePiece = removeEscapedChars(codeChange.originalCode);
+                    const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
-                console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
+                    console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
 
-                const escapeRegex = (str: string): string => {
-                    // Escape special regex characters
-                    return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                };
+                    const escapeRegex = (str: string): string => {
+                        // Escape special regex characters
+                        return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    };
 
-                // Create a regex pattern that matches the target code, allowing for whitespace and newlines
-                const pattern = escapeRegex(originalCodePiece).replace(/\s+/g, '\\s*');
-                const regexOriginalCode = new RegExp(pattern, 'g');
+                    // Create a regex pattern that matches the target code, allowing for whitespace and newlines
+                    const pattern = escapeRegex(originalCodePiece).replace(/\s+/g, '\\s*');
+                    const regexOriginalCode = new RegExp(pattern, 'g');
 
-                if (!regexOriginalCode.test(renderCode)) {  // basically the regex version of .includes
-                    console.log("Cannot find this piece in source code. Error in api response?\n" + originalCodePiece);
-                } else {
-                    // replace and update the state
-                    setRenderCode(renderCode.replace(regexOriginalCode, replacementCodePiece));
+                    if (!regexOriginalCode.test(renderCode)) {  // basically the regex version of .includes
+                        console.log("Cannot find this piece in source code. Error in api response?\n" + originalCodePiece);
+                    } else {
+                        // replace and update the state
+                        setRenderCode(renderCode.replace(regexOriginalCode, replacementCodePiece));
+                    }
                 }
+
+                // 3. add explanations
+                const explanations: string = parsedData.explanations;
+                addExplanationsNode(explanations, renderCodeBoundingBox);
+            } else {
+                const [responseCode, changeExplanations] = parseResponse(response);
+                setRenderCode(responseCode);
+                addExplanationsNode(changeExplanations, renderCodeBoundingBox);
             }
 
-            // 3. add explanations
-            const explanations: string = parsedData.explanations;
-            addExplanationsNode(explanations);
-        } else {
-            const [responseCode, changeExplanations] = parseResponse(response);
-            setRenderCode(responseCode);
-            addExplanationsNode(changeExplanations);
+        } catch (err) {
+            console.error('Error fetching response from OpenAI API');
+            console.log("error openai api call: " + err);
+        } finally {
+            setLoading(false);
         }
-
-        // } catch (err) {
-        //     console.error('Error fetching response from OpenAI API');
-        //     console.log("error openai api call: " + err);
-        // } finally {
-        //     setLoading(false);
-        // }
     };
 
 
@@ -211,7 +208,7 @@ const FlowComponent: React.FC = () => {
                 const textPrompt = constructTextPrompt(renderCode, targetCodeDropped);
                 console.log("sending the prompt, target code: \n" + targetCodeDropped);
                 // console.log("source node confirmed. here is the image: " + referenceImageBase64);
-                handleFetchResponse(textPrompt, referenceImageBase64);
+                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox );  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
@@ -268,7 +265,7 @@ const FlowComponent: React.FC = () => {
         setNodes((nds) => nds.filter(node => node.id !== id));
     }
 
-    const showBlendingConfirmationPopup = (popUpPosition: popUpPositionType, viewportX: number, viewportY: number, zoom: number, subImageScreenshot: string) => {
+    const showBlendingConfirmationPopup = (popUpPosition: coordinatePositionType, viewportX: number, viewportY: number, zoom: number, subImageScreenshot: string) => {
 
         const posX = (popUpPosition.x - viewportX) / zoom;  // adjust for window transform and zoom for react flow
         const posY = (popUpPosition.y - viewportY) / zoom;
@@ -365,7 +362,7 @@ const FlowComponent: React.FC = () => {
                     } else if (node.type === 'codeRenderNode') {
                         return {
                             ...node,
-                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped }
+                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox }
                         }
                     } else {
                         return node;
