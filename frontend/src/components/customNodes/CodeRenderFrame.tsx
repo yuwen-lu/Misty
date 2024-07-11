@@ -6,7 +6,7 @@ import "../../index.css";
 const addEventHandlersToCode = (code: string) => {
     const handleMouseOver = `onMouseOver={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.add('highlight'); }}`;
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
-    const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { setTargetCodeDropped(getSVGElementParent(e.target.outerHTML)); console.log('mouse up from element:', e.target); }}`;
+    const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { setTargetCodeDropped(processHTMLElement(e.target).outerHTML); console.log('mouse up from element:', e.target); }}`;
 
     return code.replace(/<(\w+)([^>]*?)(\/?)>/g, (match, p1, p2, p3) => {
         // If the tag is self-closing, add a space before the closing slash
@@ -25,12 +25,18 @@ const addEventHandlersToCode = (code: string) => {
     });
 }
 
-const getSVGElementParent = (htmlElement: HTMLElement): HTMLElement | undefined => {
+const processHTMLElement = (htmlElement: HTMLElement): HTMLElement | undefined => {
+
     if (!htmlElement) return undefined;
-    
+
+    if (htmlElement.classList && htmlElement.classList.contains("highlight")) {
+        htmlElement.classList.remove("highlight");
+    }
+
+    // process if it's svg rendered, because it's hard to identify the source code with the rendered svg
     if (htmlElement.tagName === "path" || htmlElement.tagName === "circle") {
         if (htmlElement.parentElement) {
-            return getSVGElementParent(htmlElement.parentElement);
+            return processHTMLElement(htmlElement.parentElement);
         }
     }
     
@@ -47,7 +53,7 @@ const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string, isDragging: b
             style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
         >
             <LiveProvider
-                code={isDragging ? addEventHandlersToCode(code) : code} scope={{ React, useState, ...LuIcons, setTargetCodeDropped, getSVGElementParent }}
+                code={isDragging ? addEventHandlersToCode(code) : code} scope={{ React, useState, ...LuIcons, setTargetCodeDropped, processHTMLElement }}
             >
                 <LivePreview />
                 <LiveError />
