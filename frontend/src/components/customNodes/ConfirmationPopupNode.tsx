@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Paintbrush, LayoutList, Plus } from 'lucide-react';
 import { NodeProps } from 'reactflow';
 import "../../index.css";
-import { constructTextPrompt } from '../../prompts';
+import { constructCodeReplacementPrompt } from '../../prompts';
 
 const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -27,8 +27,8 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
         if (selectedOptions.length > 0) {
             console.log("Final selection: " + selectedOptions);
             // handle the prompt
-            const textPrompt = constructTextPrompt(data.renderCode, data.targetCodeDropped, selectedOptions);
-            data.callOpenAI(textPrompt, data.subImageScreenshot);
+            const textPrompt = constructCodeReplacementPrompt(data.renderCode, data.targetCodeDropped, selectedOptions);
+            data.callOpenAI(textPrompt, data.subImageScreenshot, true); // true for json mode
 
             // dismiss the node
             setSelectedOptions([]);

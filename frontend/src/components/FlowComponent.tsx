@@ -93,10 +93,11 @@ const FlowComponent: React.FC = () => {
 
     // code block to handle API calls
     // Async function to fetch data from the API
-    const getOpenAIResponse = async (textPrompt: string, base64Image: string): Promise<string> => {
+    const getOpenAIResponse = async (textPrompt: string, base64Image: string, jsonMode = false): Promise<string> => {
         const messageData = {
             message: textPrompt,
             image: base64Image,
+            json_mode: jsonMode
         };
 
         const response = await fetch('http://127.0.0.1:5000/api/chat', {
@@ -129,10 +130,10 @@ const FlowComponent: React.FC = () => {
         });
     }
 
-    const handleFetchResponse = async (textPrompt = "test", base64Image = "") => {
+    const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false) => {
         setLoading(true);
         try {
-            const response = await getOpenAIResponse(textPrompt, base64Image);
+            const response = await getOpenAIResponse(textPrompt, base64Image, jsonMode);
             console.log("raw response:" + response);
             setResponse(response);
             const [responseCode, changeExplanations] = parseResponse(response);
