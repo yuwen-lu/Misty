@@ -13,6 +13,11 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
         setIsMobile(!isMobile);
     };
 
+    // TODO test remove
+    useEffect( () => {
+        if (nodeRef.current) console.log("parent node ref width: " + nodeRef.current.getBoundingClientRect().width);
+    }, []);
+
     return (
         <div
             className={`flex flex-col items-center px-20 py-5 text-white bg-purple-900/70 rounded-lg border-2 border-stone-400 w-full h-full `}

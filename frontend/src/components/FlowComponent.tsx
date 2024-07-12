@@ -113,14 +113,22 @@ const FlowComponent: React.FC = () => {
         return data.response;
     };
 
+    useEffect( () => {
+        console.log("from flowcomponent, targetrendercode node bbox changed: " + JSON.stringify(setTargetRenderCodeNodeBbox));
+    }, [targetRenderCodeNodeBbox]);
+
     const addExplanationsNode = (explanations: string, renderCodeNodeBoundingBox: BoundingBox) => {
+
+        console.log("Received bbox in flowcomponent: " + JSON.stringify(renderCodeNodeBoundingBox));
+        const newXPos = renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200;
+        console.log("newXPos: " + newXPos);
         setNodes((nds) => {
             return nds.concat(
                 {
                     id: String(nds.length + 1),
                     type: 'explanationNode',
                     draggable: true,
-                    position: { x: renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200, y: renderCodeNodeBoundingBox.y },
+                    position: { x: newXPos, y: renderCodeNodeBoundingBox.y },
                     data: { text: explanations },
                 }
             );

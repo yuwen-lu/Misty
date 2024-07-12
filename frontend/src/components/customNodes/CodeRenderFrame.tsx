@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useViewport } from 'reactflow';
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 import * as LuIcons from 'react-icons/lu';
 import { BoundingBox, defaultBoundingBox } from '../../util';
@@ -8,7 +9,7 @@ const addEventHandlersToCode = (code: string) => {
     const handleMouseOver = `onMouseOver={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.add('highlight'); }}`;
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
     const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { 
-        setTargetRenderCodeNodeBbox();
+        setCurrentBbox();
         setTargetCodeDropped(processHTMLElement(e.target).outerHTML); 
         console.log('mouse up from element:', e.target); }}`;
 
@@ -43,7 +44,7 @@ const processHTMLElement = (htmlElement: HTMLElement): HTMLElement | undefined =
             return processHTMLElement(htmlElement.parentElement);
         }
     }
-    
+
     return htmlElement;
 };
 
@@ -53,30 +54,33 @@ interface CodeRenderFrameProps {
     isDragging: boolean;
     setTargetCodeDropped: (html: string) => void;
     setTargetRenderCodeNodeBbox: (bbox: BoundingBox) => void;
-    codeRenderNodeRef: React.RefObject<HTMLDivElement>; 
+    codeRenderNodeRef: React.RefObject<HTMLDivElement>;
 }
 
 const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDragging, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef }) => {
+    
+    const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
+    useEffect( () => {
+        if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
+    }, []);
 
-const getCurrentBbox = (e: MouseEvent) => {
-    const node = codeRenderNodeRef.current;
-    if (node) {
-        const bboxClientRect = node.getBoundingClientRect();
-        // TODO need to offset and zoom based on current react flow setup
-        const nodeClientBbox: BoundingBox = {
-            x: bboxClientRect.x,
-            y: bboxClientRect.y,
-            width: bboxClientRect.width,
-            height: bboxClientRect.height
+    const setCurrentBbox = () => {
+        if (codeRenderNodeRect) {
+            const nodeClientBbox: BoundingBox = {
+                x: codeRenderNodeRect.x,
+                y: codeRenderNodeRect.y,
+                width: codeRenderNodeRect.width,
+                height: codeRenderNodeRect.height
+            }
+            setTargetRenderCodeNodeBbox(nodeClientBbox);
+            console.log("setting current box: " + JSON.stringify(nodeClientBbox));
+        } else {
+            console.log("using default bbox");
+            setTargetRenderCodeNodeBbox(defaultBoundingBox);
         }
-        setTargetRenderCodeNodeBbox(nodeClientBbox);
-        console.log("setting current box: " + JSON.stringify(nodeClientBbox));
-    } else {
-        setTargetRenderCodeNodeBbox(defaultBoundingBox);
-    }
 
-}
+    }
 
     return (
         <div
@@ -86,14 +90,16 @@ const getCurrentBbox = (e: MouseEvent) => {
             style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
         >
             <LiveProvider
-                code={isDragging ? addEventHandlersToCode(code) : code} 
-                scope={{ React, useState, ...LuIcons, 
-                        setTargetCodeDropped, 
-                        setTargetRenderCodeNodeBbox, 
-                        processHTMLElement, 
-                        codeRenderNodeRef,
-                        getCurrentBbox,
-                        defaultBoundingBox }}
+                code={isDragging ? addEventHandlersToCode(code) : code}
+                scope={{
+                    React, useState, ...LuIcons,
+                    setTargetCodeDropped,
+                    setTargetRenderCodeNodeBbox,
+                    processHTMLElement,
+                    setCurrentBbox,
+                    defaultBoundingBox,
+                    codeRenderNodeRect
+                }}
             >
                 <LivePreview />
                 <LiveError />

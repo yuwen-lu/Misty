@@ -131,7 +131,7 @@ export const draw = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2
 
 // used in api responses
 export function removeEscapedChars(apiResponse: string): string {
-  console.log("handling escape characters: " + apiResponse);
+  // console.log("handling escape characters: " + apiResponse);
   // Regular expression to match escaped characters
   const escapedCharsRegex = /\\./g;
   // Replace all matches with an empty string
