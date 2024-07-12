@@ -199,10 +199,14 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
 
   return (
-    <div className="image-display-node flex flex-col items-center p-5 text-white bg-blue-900/80">
+    <div className={`image-display-node flex flex-col items-center 
+                      px-20 py-5 
+                      text-white bg-blue-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
+                      border-t-8 border-t-blue-900
+                      w-full h-full`}>
 
-      <div className='font-semibold text-l mb-5'>
-        Scribble Elements
+      <div className='font-semibold text-blue-900 text-xl mb-5'>
+        Scribble To Select
       </div>
 
       <div className='image-display-section relative'>
@@ -211,7 +215,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           className='rounded-md cursor-text'
           src={data.image}
           alt="Uploaded"
-          style={{ maxWidth: '30vw', maxHeight: '40vh' }}
+          style={{ maxWidth: '30rem', maxHeight: '40rem' }}
         />
         <canvas ref={canvasRef} className='absolute top-0 left-0 z-10'></canvas>
       </div>

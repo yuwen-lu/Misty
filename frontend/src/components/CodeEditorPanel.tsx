@@ -5,8 +5,8 @@ import { basicSetup } from 'codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { indentUnit } from "@codemirror/language";
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
-import { vscodeDark } from '@uiw/codemirror-theme-vscode';
-import { LuCheck, LuEqual, LuSave } from 'react-icons/lu';
+import { xcodeLight, xcodeDark } from '@uiw/codemirror-theme-xcode';
+import { LuCheck, LuEqual, LuMoon, LuSave, LuSun } from 'react-icons/lu';
 
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
@@ -44,6 +44,7 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
     const [panelWidth, setPanelWidth] = useState('45vw');
     const [isResizing, setIsResizing] = useState(false);
     const [showSavePopup, setShowSavePopup] = useState(false);
+    const [darkMode, setDarkMode] = useState<boolean>(false);
 
     const debouncedSetCode = useCallback(
         debounce((newCode: string) => {
@@ -69,7 +70,7 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
                 extensions: [
                     basicSetup,
                     javascript(),
-                    vscodeDark,
+                    darkMode ? xcodeDark : xcodeLight,
                     EditorState.changeFilter.of((tr) => {
                         if (tr.docChanged) {
                             const newCode = tr.newDoc.toString();
@@ -115,7 +116,7 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
                 viewRef.current = null;
             };
         }
-    }, []);
+    }, [darkMode]);
 
     // Update the editor content when code prop changes
     useEffect(() => {
@@ -161,12 +162,28 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
 
     return (
         <div
-            className={`${isVisible ? "visible translate-x-0" : "invisible translate-x-full"} code-editor-side-panel transition-transform duration-300 ease-in-out absolute right-0 h-full z-10 flex flex-col rounded-sm items-center p-5 text-black bg-purple-900/70 border-2 border-stone-400`}
+            className={`${isVisible ? "visible translate-x-0" : "invisible translate-x-full"} code-editor-side-panel transition-transform duration-300 ease-in-out absolute right-0 h-full z-10 flex flex-col rounded-sm items-center p-5 text-black bg-purple-900/20 backdrop-filter backdrop-blur-lg border-2 border-stone-400/30`}
             style={{ width: panelWidth }}
         >
-            <div className='font-semibold text-white text-xl mb-5'>
-                Code Editor
+            <div className='w-full flex relative items-center mb-5'>
+                <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl'>
+                    Code Editor
+                </div>
+
+                <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="ml-auto flex items-center justify-center px-1 py-1 bg-stone-200 rounded-full border border-stone-300 hover:bg-stone-100"
+                >
+                    <div className={`px-0.5 py-0.5 rounded-full ${darkMode ? "bg-stone-300" : ""}`}>
+                        <LuMoon size={24} className={`transition-opacity duration-300 mx-2 my-1 ${darkMode ? 'opacity-100' : 'opacity-50'}`} />
+                    </div>
+                    <div className={`px-0.5 py-0.5 rounded-full ${!darkMode ? "bg-stone-300" : ""}`}>
+                        <LuSun size={24} className={`transition-opacity duration-300 mx-2 my-1 ${darkMode ? 'opacity-50' : 'opacity-100'}`} />
+                    </div>
+                </button>
+
             </div>
+
 
             <div
                 ref={editorRef}
@@ -187,7 +204,7 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
                 }}
             >
                 <div className='origin-center rotate-90 ml-2'>
-                    <LuEqual size={20} color='#ddd' />
+                    <LuEqual size={20} color='#000033' />
                 </div>
             </div>
 

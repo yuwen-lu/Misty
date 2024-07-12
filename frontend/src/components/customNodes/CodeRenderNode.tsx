@@ -20,12 +20,16 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
 
     return (
         <div
-            className={`flex flex-col items-center px-20 py-5 text-white bg-purple-900/70 rounded-lg border-2 border-stone-400 w-full h-full `}
+            className={`flex flex-col items-center 
+            px-20 py-5 
+            text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
+            border-t-8 border-t-purple-900
+            w-full h-full `}
             ref={nodeRef}
         >
             <div className='w-full flex relative items-center mb-5'>
-                <div className='absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl'>
-                    Source Code Render
+                <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl'>
+                    Code Render
                 </div>
                 <button
                     onClick={handleToggle}
