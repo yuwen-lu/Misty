@@ -175,10 +175,10 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
                     className="ml-auto flex items-center justify-center px-1 py-1 bg-stone-200 rounded-full border border-stone-300 hover:bg-stone-100"
                 >
                     <div className={`px-0.5 py-0.5 rounded-full ${darkMode ? "bg-stone-300" : ""}`}>
-                        <LuMoon size={24} className={`transition-opacity duration-300 mx-2 my-1 ${darkMode ? 'opacity-100' : 'opacity-50'}`} />
+                        <LuMoon size={24} className={`transition-opacity duration-300 mx-2 my-1 ${darkMode ? 'opacity-100 text-purple-900' : 'opacity-50'}`} />
                     </div>
                     <div className={`px-0.5 py-0.5 rounded-full ${!darkMode ? "bg-stone-300" : ""}`}>
-                        <LuSun size={24} className={`transition-opacity duration-300 mx-2 my-1 ${darkMode ? 'opacity-50' : 'opacity-100'}`} />
+                        <LuSun size={24} className={`transition-opacity duration-300 mx-2 my-1 ${darkMode ? 'opacity-50' : 'opacity-100 text-purple-900'}`} />
                     </div>
                 </button>
 
