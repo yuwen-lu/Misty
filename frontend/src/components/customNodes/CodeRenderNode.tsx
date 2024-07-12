@@ -1,49 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Node, NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
-import { BoundingBox, defaultBoundingBox } from '../../util';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
 
     const [isMobile, setIsMobile] = useState<boolean>(true);
-    const [handledNodes, setHandledNodes] = useState<Node>();
-
     const nodeRef = useRef<HTMLDivElement>(null);
 
 
     const handleToggle = () => {
         setIsMobile(!isMobile);
     };
-
-    const getCurrentBbox = (e: MouseEvent) => {
-        const node = nodeRef.current;
-        if (node) {
-            const bboxClientRect = node.getBoundingClientRect();
-            const nodeClientBbox: BoundingBox = {
-                x: bboxClientRect.x,
-                y: bboxClientRect.y,
-                width: bboxClientRect.width,
-                height: bboxClientRect.height
-            }
-            data.setTargetRenderCodeNodeBbox(nodeClientBbox);
-        } else {
-            data.setTargetRenderCodeNodeBbox(defaultBoundingBox);
-        }
-
-    }
-
-    useEffect(() => {
-        // set the boundingbox of the code render node, so we can dynamically attach the explanations summary node
-        const node = nodeRef.current;
-        if (node) {
-            node.addEventListener('mouseup', getCurrentBbox);
-        } 
-        return () => {
-            if (node) node.removeEventListener('mouseup', getCurrentBbox);
-        };
-
-    }, [data]);
 
     return (
         <div
@@ -67,7 +35,13 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                 </button>
 
             </div>
-            <CodeRenderFrame isMobile={isMobile} code={data.code} isDragging={data.isDragging} setTargetCodeDropped={data.setTargetCodeDropped} />
+            <CodeRenderFrame
+                isMobile={isMobile}
+                code={data.code}
+                isDragging={data.isDragging}
+                setTargetCodeDropped={data.setTargetCodeDropped}
+                setTargetRenderCodeNodeBbox={data.setTargetRenderCodeNodeBbox}
+                codeRenderNodeRef={nodeRef} />
             <div className='flex flex-row'>
                 <button
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}

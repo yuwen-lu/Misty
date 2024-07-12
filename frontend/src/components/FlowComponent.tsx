@@ -290,6 +290,7 @@ const FlowComponent: React.FC = () => {
                             targetCodeDropped: targetCodeDropped,
                             callOpenAI: handleFetchResponse,
                             subImageScreenshot: subImageScreenshot,
+                            targetRenderCodeNodeBbox: targetRenderCodeNodeBbox,
                         },
                     }
                 );

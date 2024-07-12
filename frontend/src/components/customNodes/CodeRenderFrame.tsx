@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
 import * as LuIcons from 'react-icons/lu';
+import { BoundingBox, defaultBoundingBox } from '../../util';
 import "../../index.css";
 
 const addEventHandlersToCode = (code: string) => {
     const handleMouseOver = `onMouseOver={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.add('highlight'); }}`;
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
-    const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { setTargetCodeDropped(processHTMLElement(e.target).outerHTML); console.log('mouse up from element:', e.target); }}`;
+    const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { 
+        setTargetRenderCodeNodeBbox();
+        setTargetCodeDropped(processHTMLElement(e.target).outerHTML); 
+        console.log('mouse up from element:', e.target); }}`;
 
     return code.replace(/<(\w+)([^>]*?)(\/?)>/g, (match, p1, p2, p3) => {
         // If the tag is self-closing, add a space before the closing slash
         const isSelfClosing = p3 === '/';
 
         // Skip elements that already have event handlers
-        if (p2.includes('onMouseOver') || p2.includes('onMouseOut') || p2.includes('onClick')) {
+        if (p2.includes('onMouseOver') || p2.includes('onMouseOut') || p2.includes('onMouseUp')) {
             return match;
         }
 
@@ -43,7 +47,36 @@ const processHTMLElement = (htmlElement: HTMLElement): HTMLElement | undefined =
     return htmlElement;
 };
 
-const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string, isDragging: boolean, setTargetCodeDropped: Function }> = ({ isMobile, code, isDragging, setTargetCodeDropped }) => {
+interface CodeRenderFrameProps {
+    isMobile: boolean;
+    code: string;
+    isDragging: boolean;
+    setTargetCodeDropped: (html: string) => void;
+    setTargetRenderCodeNodeBbox: (bbox: BoundingBox) => void;
+    codeRenderNodeRef: React.RefObject<HTMLDivElement>; 
+}
+
+const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDragging, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef }) => {
+
+
+const getCurrentBbox = (e: MouseEvent) => {
+    const node = codeRenderNodeRef.current;
+    if (node) {
+        const bboxClientRect = node.getBoundingClientRect();
+        // TODO need to offset and zoom based on current react flow setup
+        const nodeClientBbox: BoundingBox = {
+            x: bboxClientRect.x,
+            y: bboxClientRect.y,
+            width: bboxClientRect.width,
+            height: bboxClientRect.height
+        }
+        setTargetRenderCodeNodeBbox(nodeClientBbox);
+        console.log("setting current box: " + JSON.stringify(nodeClientBbox));
+    } else {
+        setTargetRenderCodeNodeBbox(defaultBoundingBox);
+    }
+
+}
 
     return (
         <div
@@ -53,7 +86,14 @@ const CodeRenderFrame: React.FC<{ isMobile: boolean, code: string, isDragging: b
             style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
         >
             <LiveProvider
-                code={isDragging ? addEventHandlersToCode(code) : code} scope={{ React, useState, ...LuIcons, setTargetCodeDropped, processHTMLElement }}
+                code={isDragging ? addEventHandlersToCode(code) : code} 
+                scope={{ React, useState, ...LuIcons, 
+                        setTargetCodeDropped, 
+                        setTargetRenderCodeNodeBbox, 
+                        processHTMLElement, 
+                        codeRenderNodeRef,
+                        getCurrentBbox,
+                        defaultBoundingBox }}
             >
                 <LivePreview />
                 <LiveError />
