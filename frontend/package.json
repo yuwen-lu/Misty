@@ -22,6 +22,7 @@
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
     "codemirror": "^6.0.1",
+    "fuzzball": "^2.1.2",
     "lucide": "^0.406.0",
     "lucide-react": "^0.406.0",
     "openai": "^4.52.2",

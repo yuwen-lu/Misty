@@ -1,7 +1,5 @@
 export const constructTextPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = [""]) => {
 
-    // TODO handle blendMode
-
     return `Here is my react and tailwind code: 
                 
         ${renderCode}. 
@@ -38,9 +36,32 @@ export function parseResponse(response: string): string[] {
     }
     const splitResponse = response.replace('```', '').split("Explanations:");
     return splitResponse;
-}
+};
+const getPromptForBlendMode = (blendModes: string[]): string => {
+    if (blendModes.length === 0) {
+        return "Please provide at least one blend mode.";
+    }
 
-export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = [""]) => {
+    const blendModeDescriptions: { [key: string]: string } = {
+        "Color": "blend the prominent color of the reference image into",
+        "Layout": "blend the layout of the reference image into",
+        "Addition": "add the content of the reference image to"
+    };
+
+    let promptText = "Help me ";
+
+    if (blendModes.length === 1) {
+        promptText += blendModeDescriptions[blendModes[0]];
+    } else {
+        promptText += blendModes.map(mode => blendModeDescriptions[mode]).join(" and ");
+    }
+
+    promptText += " the code we have. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout.";
+
+    return promptText;
+};
+
+export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = ["Color"]) => {
 
     return `
 
@@ -48,7 +69,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
                 
         ${renderCode}. 
 
-        Help me blend the prominent color of the reference image into ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}. Change only the source code corresponding to this, and no other sections.`}
+        ${getPromptForBlendMode(blendMode)} ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}. Change only the source code corresponding to this, and no other sections.`}
 
         Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
 
@@ -88,7 +109,7 @@ export interface ParsedData {
     explanations: string;
 }
 
-export function parseJsonResponse(jsonString: string): ParsedData { 
+export function parseJsonResponse(jsonString: string): ParsedData {
     // Parse the input JSON string
     const data = JSON.parse(jsonString);
 

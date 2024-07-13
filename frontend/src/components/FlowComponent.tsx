@@ -26,6 +26,7 @@ import CodeEditorPanel from './CodeEditorPanel';
 import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
+import { extract, partial_ratio } from 'fuzzball';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 
@@ -113,7 +114,7 @@ const FlowComponent: React.FC = () => {
         return data.response;
     };
 
-    useEffect( () => {
+    useEffect(() => {
         console.log("from flowcomponent, targetrendercode node bbox changed: " + JSON.stringify(setTargetRenderCodeNodeBbox));
     }, [targetRenderCodeNodeBbox]);
 
@@ -147,28 +148,67 @@ const FlowComponent: React.FC = () => {
                 const parsedData: ParsedData = parseJsonResponse(response);
                 console.log("type of codechangelist: " + typeof (parsedData.codeChanges));
                 const codeChangeList: CodeChange[] = parsedData.codeChanges;
+                // Function to strip all whitespace and normalize quotes
+                const stripWhitespaceAndNormalizeQuotes = (str: string): string => {
+                    return str.replace(/\s+/g, '').replace(/"/g, "'");
+                };
 
-                // 2. replace the code pieces from the render code
+                // Function to escape regex special characters
+                const escapeRegex = (str: string): string => {
+                    return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                };
+
+                // 2. Replace the code pieces from the render code
                 for (const codeChange of codeChangeList) {
                     const originalCodePiece = removeEscapedChars(codeChange.originalCode);
                     const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
                     console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
 
-                    const escapeRegex = (str: string): string => {
-                        // Escape special regex characters
-                        return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                    };
+                    // Strip whitespace and normalize quotes for comparison
+                    const strippedOriginalCodePiece = stripWhitespaceAndNormalizeQuotes(originalCodePiece);
+                    const strippedRenderCode = stripWhitespaceAndNormalizeQuotes(renderCode);
 
-                    // Create a regex pattern that matches the target code, allowing for whitespace and newlines
-                    const pattern = escapeRegex(originalCodePiece).replace(/\s+/g, '\\s*');
-                    const regexOriginalCode = new RegExp(pattern, 'g');
+                    console.log("strippedOriginalCodePiece: ", strippedOriginalCodePiece);
+                    console.log("strippedRenderCode: ", strippedRenderCode);
 
-                    if (!regexOriginalCode.test(renderCode)) {  // basically the regex version of .includes
-                        console.log("Cannot find this piece in source code. Error in api response?\n" + originalCodePiece);
+                    // Fuzzy matching to find similar segments
+                    const matches = extract(strippedOriginalCodePiece, [strippedRenderCode], { scorer: partial_ratio, limit: 1 });
+
+                    if (matches.length === 0 || matches[0][1] < 90) {  // Adjust the threshold as needed
+                        console.log("Original code piece not found in the stripped renderCode.");
+
+                        // Print more debug information
+                        const index = renderCode.indexOf(originalCodePiece);
+                        if (index !== -1) {
+                            const segmentFromRenderCode = renderCode.slice(index, index + originalCodePiece.length);
+                            console.log("Expected segment in renderCode: " + segmentFromRenderCode);
+                            console.log("Original code piece: " + originalCodePiece);
+                        } else {
+                            console.log("Original code piece not found in the renderCode at all.");
+                        }
                     } else {
-                        // replace and update the state
-                        setRenderCode(renderCode.replace(regexOriginalCode, replacementCodePiece));
+                        console.log("Original code piece found in the stripped renderCode.");
+
+                        const match = matches[0];
+                        const matchedText = match[0];
+                        const matchedIndex = renderCode.indexOf(matchedText);
+
+                        console.log("Found similar segment in renderCode: " + matchedText);
+                        console.log("Original code piece: " + originalCodePiece);
+
+                        // Create a regex pattern that matches the target code, allowing for whitespace and newlines
+                        const pattern = escapeRegex(originalCodePiece).replace(/\s+/g, '\\s*');
+                        const regexOriginalCode = new RegExp(pattern, 'g');
+
+                        if (!regexOriginalCode.test(renderCode)) {  // basically the regex version of .includes
+                            console.log("Cannot find this piece in the render code. Error in API response?\n" + originalCodePiece);
+                        } else {
+                            // Replace and update the state using the original render code
+                            const updatedRenderCode = renderCode.replace(regexOriginalCode, replacementCodePiece);
+                            console.log("updatedRenderCode: ", updatedRenderCode);
+                            setRenderCode(updatedRenderCode);
+                        }
                     }
                 }
 
@@ -216,7 +256,7 @@ const FlowComponent: React.FC = () => {
                 const textPrompt = constructTextPrompt(renderCode, targetCodeDropped);
                 console.log("sending the prompt, target code: \n" + targetCodeDropped);
                 // console.log("source node confirmed. here is the image: " + referenceImageBase64);
-                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox );  // TODO Add the bbox of rendercode node
+                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox);  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
