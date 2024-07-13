@@ -1,3 +1,5 @@
+// TODO give some images for the model to use
+
 export const constructTextPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = [""]) => {
 
     return `Here is my react and tailwind code: 
@@ -52,6 +54,9 @@ const getPromptForBlendMode = (blendModes: string[]): string => {
 
     if (blendModes.length === 1) {
         promptText += blendModeDescriptions[blendModes[0]];
+        if (blendModes[0] === "Layout") {
+            promptText += " You do not need to consider the color, just worry about the layout."
+        }
     } else {
         promptText += blendModes.map(mode => blendModeDescriptions[mode]).join(" and ");
     }

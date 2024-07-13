@@ -137,3 +137,12 @@ export function removeEscapedChars(apiResponse: string): string {
   // Replace all matches with an empty string
   return apiResponse.replace(escapedCharsRegex, '');
 }
+// Function to strip all whitespace and normalize quotes
+export const stripWhitespaceAndNormalizeQuotes = (str: string): string => {
+  return str.replace(/\s+/g, '').replace(/"/g, "'");
+};
+
+// Function to escape regex special characters
+export const escapeRegex = (str: string): string => {
+  return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+};

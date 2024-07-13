@@ -27,7 +27,7 @@ import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
 import { extract, partial_ratio } from 'fuzzball';
-import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 
 interface OpenAIResponse {
@@ -148,15 +148,7 @@ const FlowComponent: React.FC = () => {
                 const parsedData: ParsedData = parseJsonResponse(response);
                 console.log("type of codechangelist: " + typeof (parsedData.codeChanges));
                 const codeChangeList: CodeChange[] = parsedData.codeChanges;
-                // Function to strip all whitespace and normalize quotes
-                const stripWhitespaceAndNormalizeQuotes = (str: string): string => {
-                    return str.replace(/\s+/g, '').replace(/"/g, "'");
-                };
-
-                // Function to escape regex special characters
-                const escapeRegex = (str: string): string => {
-                    return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-                };
+                
 
                 // 2. Replace the code pieces from the render code
                 for (const codeChange of codeChangeList) {
@@ -175,7 +167,7 @@ const FlowComponent: React.FC = () => {
                     // Fuzzy matching to find similar segments
                     const matches = extract(strippedOriginalCodePiece, [strippedRenderCode], { scorer: partial_ratio, limit: 1 });
 
-                    if (matches.length === 0 || matches[0][1] < 90) {  // Adjust the threshold as needed
+                    if (matches.length === 0 || matches[0][1] < 80) {  // Adjust the threshold as needed
                         console.log("Original code piece not found in the stripped renderCode.");
 
                         // Print more debug information
