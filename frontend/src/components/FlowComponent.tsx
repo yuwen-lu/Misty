@@ -26,7 +26,7 @@ import CodeEditorPanel from './CodeEditorPanel';
 import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { extract, partial_ratio } from 'fuzzball';
+import { extract, ratio } from 'fuzzball';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 
@@ -152,10 +152,12 @@ const FlowComponent: React.FC = () => {
 
                 // 2. Replace the code pieces from the render code
                 for (const codeChange of codeChangeList) {
+
+                    // TODO A lot of the code here is not necessary
                     const originalCodePiece = removeEscapedChars(codeChange.originalCode);
                     const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
-                    console.log("escaped: original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
+                    console.log("escaped chars removed, original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
 
                     // Strip whitespace and normalize quotes for comparison
                     const strippedOriginalCodePiece = stripWhitespaceAndNormalizeQuotes(originalCodePiece);
@@ -164,39 +166,34 @@ const FlowComponent: React.FC = () => {
                     console.log("strippedOriginalCodePiece: ", strippedOriginalCodePiece);
                     console.log("strippedRenderCode: ", strippedRenderCode);
 
-                    // Fuzzy matching to find similar segments
-                    const matches = extract(strippedOriginalCodePiece, [strippedRenderCode], { scorer: partial_ratio, limit: 1 });
+                    const escapeRegExp = (str: string) => {
+                        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                    };
 
-                    if (matches.length === 0 || matches[0][1] < 80) {  // Adjust the threshold as needed
-                        console.log("Original code piece not found in the stripped renderCode.");
+                    // Create a regular expression to match the specific section
+                    const createFlexiblePattern = (str: string) => {
+                        const escapedStr = escapeRegExp(str);
+                        return escapedStr
+                            .replace(/[\s\n\r]+/g, '\\s*') // Handle varying whitespace, newlines, and carriage returns
+                            .replace(/<\//g, '<\\/?')      // Make closing slashes optional
+                            .replace(/\/>/g, '\\/?\\>')    // Make self-closing slashes optional
+                            .replace(/>/g, '>\\s*')        // Allow optional whitespace after closing angle brackets
+                            .replace(/</g, '\\s*<');       // Allow optional whitespace before opening angle brackets
 
-                        // Print more debug information
-                        const index = renderCode.indexOf(originalCodePiece);
-                        if (index !== -1) {
-                            const segmentFromRenderCode = renderCode.slice(index, index + originalCodePiece.length);
-                            console.log("Expected segment in renderCode: " + segmentFromRenderCode);
-                            console.log("Original code piece: " + originalCodePiece);
-                        } else {
-                            console.log("Original code piece not found in the renderCode at all.");
-                        }
-                    } else if (matches[0][0] === strippedRenderCode) {
-                        console.log("The whole thing is matched??");
-                    } else {
-                        console.log("Original code piece found in the stripped renderCode.");
+                    };
 
-                        const match = matches[0];
-                        const matchedText = match[0];
-                        const matchedIndex = renderCode.indexOf(matchedText);
-
-                        console.log("Found similar segment in renderCode: " + matchedText);
-                        console.log("Original code piece: " + originalCodePiece);
+                    const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
 
 
+                    if (searchPattern.test(renderCode)) {
                         // Replace and update the state using the original render code
-                        const updatedRenderCode = renderCode.replace(matchedText, replacementCodePiece);
+                        const updatedRenderCode = renderCode.replace(searchPattern, replacementCodePiece);
                         console.log("updatedRenderCode: ", updatedRenderCode);
                         setRenderCode(updatedRenderCode);
+                    } else {
+                        console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
                     }
+
                 }
 
 
