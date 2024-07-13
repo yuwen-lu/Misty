@@ -154,17 +154,17 @@ const FlowComponent: React.FC = () => {
                 for (const codeChange of codeChangeList) {
 
                     // TODO A lot of the code here is not necessary
-                    const originalCodePiece = removeEscapedChars(codeChange.originalCode);
+                    const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
                     const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
                     console.log("escaped chars removed, original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
 
-                    // Strip whitespace and normalize quotes for comparison
-                    const strippedOriginalCodePiece = stripWhitespaceAndNormalizeQuotes(originalCodePiece);
-                    const strippedRenderCode = stripWhitespaceAndNormalizeQuotes(renderCode);
+                    // // Strip whitespace and normalize quotes for comparison
+                    // const strippedOriginalCodePiece = stripWhitespaceAndNormalizeQuotes(originalCodePiece);
+                    // const strippedRenderCode = stripWhitespaceAndNormalizeQuotes(renderCode);
 
-                    console.log("strippedOriginalCodePiece: ", strippedOriginalCodePiece);
-                    console.log("strippedRenderCode: ", strippedRenderCode);
+                    // console.log("strippedOriginalCodePiece: ", strippedOriginalCodePiece);
+                    // console.log("strippedRenderCode: ", strippedRenderCode);
 
                     const escapeRegExp = (str: string) => {
                         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -185,9 +185,9 @@ const FlowComponent: React.FC = () => {
                     const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
 
 
-                    if (searchPattern.test(renderCode)) {
+                    if (searchPattern.test(renderCode.replaceAll("'", "\""))) {
                         // Replace and update the state using the original render code
-                        const updatedRenderCode = renderCode.replace(searchPattern, replacementCodePiece);
+                        const updatedRenderCode = renderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodePiece);
                         console.log("updatedRenderCode: ", updatedRenderCode);
                         setRenderCode(updatedRenderCode);
                     } else {
