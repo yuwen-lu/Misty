@@ -148,7 +148,7 @@ const FlowComponent: React.FC = () => {
                 const parsedData: ParsedData = parseJsonResponse(response);
                 console.log("type of codechangelist: " + typeof (parsedData.codeChanges));
                 const codeChangeList: CodeChange[] = parsedData.codeChanges;
-                
+
 
                 // 2. Replace the code pieces from the render code
                 for (const codeChange of codeChangeList) {
@@ -179,6 +179,8 @@ const FlowComponent: React.FC = () => {
                         } else {
                             console.log("Original code piece not found in the renderCode at all.");
                         }
+                    } else if (matches[0][0] === strippedRenderCode) {
+                        console.log("The whole thing is matched??");
                     } else {
                         console.log("Original code piece found in the stripped renderCode.");
 
@@ -189,20 +191,14 @@ const FlowComponent: React.FC = () => {
                         console.log("Found similar segment in renderCode: " + matchedText);
                         console.log("Original code piece: " + originalCodePiece);
 
-                        // Create a regex pattern that matches the target code, allowing for whitespace and newlines
-                        const pattern = escapeRegex(originalCodePiece).replace(/\s+/g, '\\s*');
-                        const regexOriginalCode = new RegExp(pattern, 'g');
 
-                        if (!regexOriginalCode.test(renderCode)) {  // basically the regex version of .includes
-                            console.log("Cannot find this piece in the render code. Error in API response?\n" + originalCodePiece);
-                        } else {
-                            // Replace and update the state using the original render code
-                            const updatedRenderCode = renderCode.replace(regexOriginalCode, replacementCodePiece);
-                            console.log("updatedRenderCode: ", updatedRenderCode);
-                            setRenderCode(updatedRenderCode);
-                        }
+                        // Replace and update the state using the original render code
+                        const updatedRenderCode = renderCode.replace(matchedText, replacementCodePiece);
+                        console.log("updatedRenderCode: ", updatedRenderCode);
+                        setRenderCode(updatedRenderCode);
                     }
                 }
+
 
                 // 3. add explanations
                 const explanations: string = parsedData.explanations;
