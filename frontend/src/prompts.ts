@@ -1,4 +1,5 @@
 // TODO give some images for the model to use
+import clarinet from 'clarinet';
 
 export const constructTextPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = [""]) => {
 
