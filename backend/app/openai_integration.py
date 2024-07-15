@@ -3,7 +3,6 @@ from openai import OpenAI
 import base64
 from dotenv import load_dotenv
 import os
-import markdown
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -49,8 +48,10 @@ def get_openai_response(text_message, base64_image=None, json_mode=False):
     response = ""
     for chunk in stream:
         if chunk.choices[0].delta.content is not None:
-            response += chunk.choices[0].delta.content
-    print("Here is the response: " + response)
+            content = chunk.choices[0].delta.content
+            if content:
+                yield content
+    # print("Here is the response: " + response)
     # response = markdown.markdown(response)
     # print("Markdown processed response: " + response)
-    return response
+    # return response
