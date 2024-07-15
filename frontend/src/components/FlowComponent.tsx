@@ -26,7 +26,6 @@ import CodeEditorPanel from './CodeEditorPanel';
 import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { extract, ratio } from 'fuzzball';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 
@@ -87,7 +86,7 @@ const FlowComponent: React.FC = () => {
 
     const { x, y, zoom } = useViewport();
     const [response, setResponse] = useState('');
-    const [loading, setLoading] = useState(false);  // TODO render code using this loading status
+    const [loading, setLoading] = useState(false);
 
     // code block to handle API calls
     // Async function to fetch data from the API
@@ -174,11 +173,11 @@ const FlowComponent: React.FC = () => {
                     const createFlexiblePattern = (str: string) => {
                         const escapedStr = escapeRegExp(str);
                         return escapedStr
-                            .replace(/[\s\n\r]+/g, '\\s*') // Handle varying whitespace, newlines, and carriage returns
-                            .replace(/<\//g, '<\\/?')      // Make closing slashes optional
-                            .replace(/\/>/g, '\\s*\\/?>')  // Make self-closing slashes optional and allow optional whitespace before />
-                            .replace(/>/g, '>\\s*')        // Allow optional whitespace after closing angle brackets
-                            .replace(/</g, '\\s*<');       // Allow optional whitespace before opening angle brackets
+                            .replace(/[\s\n\r]+/g, '\\s*')    // Handle varying whitespace, newlines, and carriage returns
+                            .replace(/<\//g, '<\\/\\s*')      // Make closing slashes optional with optional whitespace
+                            .replace(/\/>/g, '\\s*\\/\\s*>')  // Make self-closing slashes optional with optional whitespace
+                            .replace(/>/g, '>\\s*')           // Allow optional whitespace after closing angle brackets
+                            .replace(/</g, '\\s*<');          // Allow optional whitespace before opening angle brackets
                     };
 
                     const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
@@ -396,7 +395,7 @@ const FlowComponent: React.FC = () => {
                     } else if (node.type === 'codeRenderNode') {
                         return {
                             ...node,
-                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox }
+                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, loading: loading }
                         }
                     } else {
                         return node;

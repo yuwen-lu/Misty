@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Node, NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection } from 'reactflow';
+import { NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 
@@ -50,7 +50,8 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                 isDragging={data.isDragging}
                 setTargetCodeDropped={data.setTargetCodeDropped}
                 setTargetRenderCodeNodeBbox={data.setTargetRenderCodeNodeBbox}
-                codeRenderNodeRef={nodeRef} />
+                codeRenderNodeRef={nodeRef}
+                loading={data.loading} />
             <div className='flex flex-row'>
                 <button
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}

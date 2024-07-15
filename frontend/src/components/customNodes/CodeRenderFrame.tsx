@@ -55,13 +55,14 @@ interface CodeRenderFrameProps {
     setTargetCodeDropped: (html: string) => void;
     setTargetRenderCodeNodeBbox: (bbox: BoundingBox) => void;
     codeRenderNodeRef: React.RefObject<HTMLDivElement>;
+    loading: boolean;
 }
 
-const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDragging, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef }) => {
-    
+const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDragging, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loading }) => {
+
     const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
-    useEffect( () => {
+    useEffect(() => {
         if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
     }, []);
 
@@ -89,7 +90,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDra
             ${isDragging ? "flash" : ""}`}
             style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
         >
-            <LiveProvider
+            {loading ? <div className='spinner'></div> : <LiveProvider
                 code={isDragging ? addEventHandlersToCode(code) : code}
                 scope={{
                     React, useState, ...LuIcons,
@@ -103,7 +104,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDra
             >
                 <LivePreview />
                 <LiveError />
-            </LiveProvider>
+            </LiveProvider>}
         </div>
     );
 };
