@@ -88,9 +88,7 @@ const FlowComponent: React.FC = () => {
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // code block to handle API calls
-    // Async function to fetch data from the API
-    const getOpenAIResponse = async (textPrompt: string, base64Image: string, jsonMode = false): Promise<string> => {
+    const sendOpenAIRequest = async (textPrompt: string, base64Image: string, jsonMode: boolean) => {
         const messageData = {
             message: textPrompt,
             image: base64Image,
@@ -109,13 +107,94 @@ const FlowComponent: React.FC = () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data: OpenAIResponse = await response.json();
-        return data.response;
+        // Here we start prepping for the streaming response
+        if (response.body) {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            const loopRunner = true;
+
+            while (loopRunner) {
+                // Here we start reading the stream, until its done.
+                const { value, done } = await reader.read();
+                if (done) {
+                    break;
+                }
+                const decodedChunk = decoder.decode(value, { stream: true });
+                console.log("new chunk: " + decodedChunk);
+                setResponse(prevResponse => prevResponse + decodedChunk); // update state with new chunk
+            }
+        }
     };
+
+
+    // code block to handle API calls
+    const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox) => {
+        setLoading(true);
+        setResponse('');
+        try {
+            await sendOpenAIRequest(textPrompt, base64Image, jsonMode);
+
+            // if (jsonMode) {
+            //     // 1. fetch the parsed Result
+            //     const parsedData: ParsedData = parseJsonResponse(data);
+            //     const codeChangeList: CodeChange[] = parsedData.codeChanges;
+
+            //     // 2. Replace the code pieces from the render code
+            //     for (const codeChange of codeChangeList) {
+
+            //         const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
+            //         const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
+
+            //         const escapeRegExp = (str: string) => {
+            //             return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+            //         };
+
+            //         const createFlexiblePattern = (str: string) => {
+            //             const escapedStr = escapeRegExp(str);
+            //             return escapedStr
+            //                 .replace(/[\s\n\r]+/g, '\\s*')    // Handle varying whitespace, newlines, and carriage returns
+            //                 .replace(/<\//g, '<\\/\\s*')      // Make closing slashes optional with optional whitespace
+            //                 .replace(/\/>/g, '\\s*\\/\\s*>')  // Make self-closing slashes optional with optional whitespace
+            //                 .replace(/>/g, '>\\s*')           // Allow optional whitespace after closing angle brackets
+            //                 .replace(/</g, '\\s*<');          // Allow optional whitespace before opening angle brackets
+            //         };
+
+            //         const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
+
+            //         if (searchPattern.test(renderCode.replaceAll("'", "\""))) {
+            //             // Replace and update the state using the original render code
+            //             const updatedRenderCode = renderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodePiece);
+            //             setRenderCode(updatedRenderCode);
+            //         } else {
+            //             console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
+            //         }
+            //     }
+
+            //     // 3. add explanations
+            //     const explanations: string = parsedData.explanations;
+            //     addExplanationsNode(explanations, renderCodeBoundingBox);
+            // } else {
+            //     const [responseCode, changeExplanations] = parseResponse(data);
+            //     setRenderCode(responseCode);
+            //     addExplanationsNode(changeExplanations, renderCodeBoundingBox);
+            // }
+
+        } catch (err) {
+            console.error('Error fetching response from OpenAI API');
+            console.log("error openai api call: " + err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
         console.log("from flowcomponent, targetrendercode node bbox changed: " + JSON.stringify(setTargetRenderCodeNodeBbox));
     }, [targetRenderCodeNodeBbox]);
+
+    useEffect(() => {
+        console.log("api response update: " + response);
+    }, [response]);
 
     const addExplanationsNode = (explanations: string, renderCodeNodeBoundingBox: BoundingBox) => {
 
@@ -135,83 +214,6 @@ const FlowComponent: React.FC = () => {
         });
     }
 
-    const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox) => {
-        setLoading(true);
-        try {
-            const response = await getOpenAIResponse(textPrompt, base64Image, jsonMode);
-            console.log("raw response:" + response);
-            setResponse(response);
-
-            if (jsonMode) {
-                // 1. fetch the parsed Result
-                const parsedData: ParsedData = parseJsonResponse(response);
-                console.log("type of codechangelist: " + typeof (parsedData.codeChanges));
-                const codeChangeList: CodeChange[] = parsedData.codeChanges;
-
-
-                // 2. Replace the code pieces from the render code
-                for (const codeChange of codeChangeList) {
-
-                    // TODO A lot of the code here is not necessary
-                    const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
-                    const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
-
-                    console.log("escaped chars removed, original:  " + originalCodePiece + ", replacement: " + replacementCodePiece);
-
-                    // // Strip whitespace and normalize quotes for comparison
-                    // const strippedOriginalCodePiece = stripWhitespaceAndNormalizeQuotes(originalCodePiece);
-                    // const strippedRenderCode = stripWhitespaceAndNormalizeQuotes(renderCode);
-
-                    // console.log("strippedOriginalCodePiece: ", strippedOriginalCodePiece);
-                    // console.log("strippedRenderCode: ", strippedRenderCode);
-
-                    const escapeRegExp = (str: string) => {
-                        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-                    };
-
-                    // Create a regular expression to match the specific section
-                    const createFlexiblePattern = (str: string) => {
-                        const escapedStr = escapeRegExp(str);
-                        return escapedStr
-                            .replace(/[\s\n\r]+/g, '\\s*')    // Handle varying whitespace, newlines, and carriage returns
-                            .replace(/<\//g, '<\\/\\s*')      // Make closing slashes optional with optional whitespace
-                            .replace(/\/>/g, '\\s*\\/\\s*>')  // Make self-closing slashes optional with optional whitespace
-                            .replace(/>/g, '>\\s*')           // Allow optional whitespace after closing angle brackets
-                            .replace(/</g, '\\s*<');          // Allow optional whitespace before opening angle brackets
-                    };
-
-                    const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
-
-
-                    if (searchPattern.test(renderCode.replaceAll("'", "\""))) {
-                        // Replace and update the state using the original render code
-                        const updatedRenderCode = renderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodePiece);
-                        console.log("updatedRenderCode: ", updatedRenderCode);
-                        setRenderCode(updatedRenderCode);
-                    } else {
-                        console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
-
-                    }
-
-                }
-
-
-                // 3. add explanations
-                const explanations: string = parsedData.explanations;
-                addExplanationsNode(explanations, renderCodeBoundingBox);
-            } else {
-                const [responseCode, changeExplanations] = parseResponse(response);
-                setRenderCode(responseCode);
-                addExplanationsNode(changeExplanations, renderCodeBoundingBox);
-            }
-
-        } catch (err) {
-            console.error('Error fetching response from OpenAI API');
-            console.log("error openai api call: " + err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
 
     useEffect(() => {
