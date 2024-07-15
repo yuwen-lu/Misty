@@ -176,10 +176,9 @@ const FlowComponent: React.FC = () => {
                         return escapedStr
                             .replace(/[\s\n\r]+/g, '\\s*') // Handle varying whitespace, newlines, and carriage returns
                             .replace(/<\//g, '<\\/?')      // Make closing slashes optional
-                            .replace(/\/>/g, '\\/?\\>')    // Make self-closing slashes optional
+                            .replace(/\/>/g, '\\s*\\/?>')  // Make self-closing slashes optional and allow optional whitespace before />
                             .replace(/>/g, '>\\s*')        // Allow optional whitespace after closing angle brackets
                             .replace(/</g, '\\s*<');       // Allow optional whitespace before opening angle brackets
-
                     };
 
                     const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
@@ -192,6 +191,7 @@ const FlowComponent: React.FC = () => {
                         setRenderCode(updatedRenderCode);
                     } else {
                         console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
+
                     }
 
                 }
