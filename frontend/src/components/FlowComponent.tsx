@@ -101,6 +101,12 @@ const FlowComponent: React.FC = () => {
             const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
             const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
+            const replacementCodeWithComment = `
+            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} edited code beginnning */}
+            ${replacementCodePiece}
+            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} edited code end */}
+            `
+
             const escapeRegExp = (str: string) => {
                 return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
             };
@@ -111,7 +117,7 @@ const FlowComponent: React.FC = () => {
                     .replace(/[\s\n\r]+/g, '\\s*')    // Handle varying whitespace, newlines, and carriage returns
                     .replace(/<\//g, '<\\/?\\s*')     // Make closing slashes optional with optional whitespace
                     .replace(/\/>/g, '\\s*\\/?\\s*>') // Make self-closing slashes optional with optional whitespace
-                    .replace(/>/g, '>\\s*')           // Allow optional whitespace after closing angle brackets
+                    .replace(/>/g, '\\s*\\/?>\\s*')           // Allow optional whitespace after closing angle brackets
                     .replace(/</g, '\\s*<');          // Allow optional whitespace before opening angle brackets
             };
 
@@ -119,7 +125,7 @@ const FlowComponent: React.FC = () => {
 
             if (searchPattern.test(renderCode.replaceAll("'", "\""))) {
                 // Replace and update the state using the original render code
-                const updatedRenderCode = renderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodePiece);
+                const updatedRenderCode = renderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
                 setRenderCode(updatedRenderCode);
             } else {
                 console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);

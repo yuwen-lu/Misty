@@ -1,6 +1,4 @@
 // TODO give some images for the model to use
-import clarinet from 'clarinet';
-
 export const constructTextPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = [""]) => {
 
     return `Here is my react and tailwind code: 
