@@ -2,7 +2,6 @@ import * as prettier from 'prettier/standalone';
 import * as parserBabel from 'prettier/parser-babel';
 import * as prettierPluginEstree from "prettier/plugins/estree";
 
-
 export const formatContent = (text: string) => {
   return text
     .split('\n\n')
@@ -160,4 +159,82 @@ export const formatCode = async (code: string): Promise<string> => {
   });
   console.log("formattedCode: " + formattedCode);
   return formattedCode;
+}
+
+/**
+ * Converts a base64-encoded image into an outline image and returns the processed base64 string.
+ * @param base64Image - The base64-encoded image string.
+ * @returns A promise that resolves with the base64-encoded outline image string.
+ */
+export async function convertToOutline(base64Image: string): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const img = new Image();
+    img.src = base64Image;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        return reject(new Error('Failed to get 2D context'));
+      }
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      // Get the image data
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+
+      // Convert to grayscale and detect edges
+      for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = avg;
+        data[i + 1] = avg;
+        data[i + 2] = avg;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      const edgeData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const threshold = 128;
+      const outlineData = new Uint8ClampedArray(edgeData.length);
+
+      for (let y = 1; y < canvas.height - 1; y++) {
+        for (let x = 1; x < canvas.width - 1; x++) {
+          const idx = (y * canvas.width + x) * 4;
+          const gx =
+            (-1 * data[idx - 4 - canvas.width * 4]) +
+            (1 * data[idx + 4 - canvas.width * 4]) +
+            (-2 * data[idx - 4]) +
+            (2 * data[idx + 4]) +
+            (-1 * data[idx - 4 + canvas.width * 4]) +
+            (1 * data[idx + 4 + canvas.width * 4]);
+
+          const gy =
+            (-1 * data[idx - 4 - canvas.width * 4]) +
+            (-2 * data[idx - canvas.width * 4]) +
+            (-1 * data[idx + 4 - canvas.width * 4]) +
+            (1 * data[idx - 4 + canvas.width * 4]) +
+            (2 * data[idx + canvas.width * 4]) +
+            (1 * data[idx + 4 + canvas.width * 4]);
+
+          const g = Math.sqrt(gx * gx + gy * gy);
+          const value = g > threshold ? 255 : 0;
+          outlineData[idx] = outlineData[idx + 1] = outlineData[idx + 2] = value;
+          outlineData[idx + 3] = 255; // alpha
+        }
+      }
+
+      ctx.putImageData(new ImageData(outlineData, canvas.width, canvas.height), 0, 0);
+
+      const outlineBase64 = canvas.toDataURL();
+      resolve(outlineBase64);
+    };
+
+    img.onerror = (err) => {
+      reject(err);
+    };
+  });
 }

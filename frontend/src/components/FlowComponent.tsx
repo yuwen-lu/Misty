@@ -105,9 +105,9 @@ const FlowComponent: React.FC = () => {
             {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code beginnning */}
             {/* ${originalCodePiece} */}
             {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code end */}
-            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} edited code beginnning */}
+            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code beginnning */}
             ${replacementCodePiece}
-            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} edited code end */}
+            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code end */}
             `
 
             const escapeRegExp = (str: string) => {
@@ -129,8 +129,14 @@ const FlowComponent: React.FC = () => {
             if (searchPattern.test(renderCode.replaceAll("'", "\""))) {
                 // Replace and update the state using the original render code
                 const updatedRenderCode = renderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
-                const updatedRenderCodeFormatted = await formatCode(updatedRenderCode);
-                setRenderCode(updatedRenderCodeFormatted);
+                try {
+                    const updatedRenderCodeFormatted = await formatCode(updatedRenderCode);
+                    setRenderCode(updatedRenderCodeFormatted);
+                } catch (err) {
+                    console.log("error in format code: " + err);
+                    setRenderCode(updatedRenderCode);
+                }
+                
             } else {
                 console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
             }

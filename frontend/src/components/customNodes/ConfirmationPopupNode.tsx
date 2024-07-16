@@ -3,7 +3,7 @@ import { Paintbrush, LayoutList, Plus } from 'lucide-react';
 import { NodeProps } from 'reactflow';
 import "../../index.css";
 import { constructCodeReplacementPrompt } from '../../prompts';
-import { defaultBoundingBox } from '../../util';
+import { convertToOutline, defaultBoundingBox } from '../../util';
 
 const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -29,12 +29,25 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
             console.log("Final selection: " + selectedOptions);
             // handle the prompt
             const textPrompt = constructCodeReplacementPrompt(data.renderCode, data.targetCodeDropped, selectedOptions);
-            data.callOpenAI(textPrompt, data.subImageScreenshot, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox); // true for json mode
+
+            if (selectedOptions.length === 1 && selectedOptions[0] === "Layout") {
+                convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
+                    console.log("processed outline for the subimage: " + outlineBase64); // Processed base64-encoded outline image
+                    // send the outline image to openai
+                    data.callOpenAI(textPrompt, outlineBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox); // true for json mode
+                }).catch((err) => {
+                    console.error(err);
+                });
+            } else {
+                data.callOpenAI(textPrompt, data.subImageScreenshot, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox); // true for json mode
+            }
+
+            
 
             // dismiss the node
             setSelectedOptions([]);
             data.removeNode(id);
-        } 
+        }
 
     };
 
