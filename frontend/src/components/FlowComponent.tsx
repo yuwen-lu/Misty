@@ -26,7 +26,7 @@ import CodeEditorPanel from './CodeEditorPanel';
 import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 
 interface OpenAIResponse {
@@ -88,7 +88,7 @@ const FlowComponent: React.FC = () => {
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const processResponse = (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
+    const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
         // when reposne is updated from the api call, we post process it
 
         // 1. fetch the parsed Result
@@ -100,10 +100,12 @@ const FlowComponent: React.FC = () => {
 
             const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
             const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
+            console.log("formatting code: " + replacementCodePiece);
+            const replacementCodePieceFormatted = await formatCode(replacementCodePiece);
 
             const replacementCodeWithComment = `
             {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} edited code beginnning */}
-            ${replacementCodePiece}
+            ${replacementCodePieceFormatted}
             {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} edited code end */}
             `
 

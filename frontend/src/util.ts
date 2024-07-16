@@ -1,3 +1,8 @@
+import * as prettier from 'prettier/standalone';
+import * as parserBabel from 'prettier/parser-babel';
+import * as prettierPluginEstree from "prettier/plugins/estree";
+
+
 export const formatContent = (text: string) => {
   return text
     .split('\n\n')
@@ -146,3 +151,13 @@ export const stripWhitespaceAndNormalizeQuotes = (str: string): string => {
 export const escapeRegex = (str: string): string => {
   return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 };
+
+export const formatCode = async (code: string): Promise<string> => {
+  const formattedCode = prettier.format(code, {
+    parser: "babel",
+    tabWidth: 4,
+    plugins: [parserBabel, prettierPluginEstree]
+  });
+  console.log("formattedCode: " + formattedCode);
+  return formattedCode;
+}
