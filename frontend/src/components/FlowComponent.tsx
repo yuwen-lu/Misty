@@ -88,11 +88,11 @@ const FlowComponent: React.FC = () => {
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const processResponse = (renderCodeBoundingBox: BoundingBox) => {
+    const processResponse = (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
         // when reposne is updated from the api call, we post process it
         
         // 1. fetch the parsed Result
-        const parsedData: ParsedData = parseJsonResponse(response); // TODO if we do the realtime parsing stream thing, parseJsonResponse will handle partial json
+        const parsedData: ParsedData = parseJsonResponse(finishedResponse); // TODO if we do the realtime parsing stream thing, parseJsonResponse will handle partial json
         const codeChangeList: CodeChange[] = parsedData.codeChanges;
 
         // 2. Replace the code pieces from the render code
@@ -165,9 +165,12 @@ const FlowComponent: React.FC = () => {
                     // Here we start reading the stream, until its done.
                     const { value, done } = await reader.read();
                     if (done) {
-                        // we only parse when it's done streaming
+                        // we only parse when it's done streaming. we use setResponse to make sure it's the latest version
                         // TODO we can visualize as the response streams in
-                        processResponse(renderCodeBoundingBox);
+                        setResponse((finishedResponse) => {
+                            processResponse(finishedResponse, renderCodeBoundingBox);
+                            return finishedResponse;
+                        })
                         break;
                     }
                     const decodedChunk = decoder.decode(value, { stream: true });

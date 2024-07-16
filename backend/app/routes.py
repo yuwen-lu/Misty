@@ -59,8 +59,8 @@ def chat():
         )
 
         for chunk in stream:
-            print(chunk.choices[0].delta.content)
             if chunk.choices[0].delta.content is not None:
+                print(chunk.choices[0].delta.content)
                 yield chunk.choices[0].delta.content
         
 
