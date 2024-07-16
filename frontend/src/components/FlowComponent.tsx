@@ -90,7 +90,7 @@ const FlowComponent: React.FC = () => {
 
     const processResponse = (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
         // when reposne is updated from the api call, we post process it
-        
+
         // 1. fetch the parsed Result
         const parsedData: ParsedData = parseJsonResponse(finishedResponse); // TODO if we do the realtime parsing stream thing, parseJsonResponse will handle partial json
         const codeChangeList: CodeChange[] = parsedData.codeChanges;
@@ -109,8 +109,8 @@ const FlowComponent: React.FC = () => {
                 const escapedStr = escapeRegExp(str);
                 return escapedStr
                     .replace(/[\s\n\r]+/g, '\\s*')    // Handle varying whitespace, newlines, and carriage returns
-                    .replace(/<\//g, '<\\/\\s*')      // Make closing slashes optional with optional whitespace
-                    .replace(/\/>/g, '\\s*\\/\\s*>')  // Make self-closing slashes optional with optional whitespace
+                    .replace(/<\//g, '<\\/?\\s*')     // Make closing slashes optional with optional whitespace
+                    .replace(/\/>/g, '\\s*\\/?\\s*>') // Make self-closing slashes optional with optional whitespace
                     .replace(/>/g, '>\\s*')           // Allow optional whitespace after closing angle brackets
                     .replace(/</g, '\\s*<');          // Allow optional whitespace before opening angle brackets
             };
@@ -179,7 +179,7 @@ const FlowComponent: React.FC = () => {
                     setResponse((prevResponse) => {
                         const newChunk = prevResponse + decodedChunk;
                         return newChunk;
-                    }); 
+                    });
 
                 }
             }
