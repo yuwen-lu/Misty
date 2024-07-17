@@ -1,6 +1,6 @@
 export const FidelityNaturalHeader: string = `() => {
     return (
-        <div className="min-h-screen h-full bg-white text-black font-sans relative">
+        <div className="h-full bg-white text-black font-sans relative">
             <header className="flex justify-between items-center p-4 bg-white shadow-md">
                 <div className="font-bold text-lg flex items-center">
                     <img src='/fidelity.png' className='w-6 mr-2' alt="Fidelity Logo" />
