@@ -1,48 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { LuTrash2, LuUndo2, LuCheck, LuTrash } from 'react-icons/lu';
-import { formatContent, draw, scribbleStrokeWidth, BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../../util";
+import { LuTrash2, LuUndo2, LuCheck } from 'react-icons/lu';
+import { BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../../util";
 import 'reactflow/dist/style.css';
 import '../../index.css';
 
 const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
-
-
   const [response, setResponse] = useState<string>('');
   const [isDrawing, setIsDrawing] = useState(false);
-  const [lastPoint, setLastPoint] = useState({ x: 0, y: 0 });
-  const [paths, setPaths] = useState<{ x: number, y: number }[][]>([]); // record the paths of scribble
-  const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]); // record bounding box to cut image
+  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+  const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
+  const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]);
   const [subImageList, setSubImageList] = useState<string[]>([]);
   const [resizeRatio, setResizeRatio] = useState<number>(0);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasButtonRef = useRef<HTMLButtonElement>(null);
-  const canvasClearButtonRef = useRef<HTMLButtonElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // get bounding box based on a scribble path, to cut the image
-  const getBoundingBox = (path: { x: number, y: number }[]) => {
-    if (path.length === 0) return null;
+  const getBoundingBoxFromPoints = (start: { x: number, y: number }, end: { x: number, y: number }) => {
+    const x = Math.min(start.x, end.x);
+    const y = Math.min(start.y, end.y);
+    const width = Math.abs(start.x - end.x);
+    const height = Math.abs(start.y - end.y);
 
-    let minX = path[0].x;
-    let minY = path[0].y;
-    let maxX = path[0].x;
-    let maxY = path[0].y;
-
-    path.forEach(point => {
-      if (point.x < minX) minX = point.x;
-      if (point.y < minY) minY = point.y;
-      if (point.x > maxX) maxX = point.x;
-      if (point.y > maxY) maxY = point.y;
-    });
-
-    // account for resizing of the image in the bbox values
     return {
-      x: minX * resizeRatio,
-      y: (minY - scribbleStrokeWidth / 2) * resizeRatio,  // account for the thickness of the stroke in scribbling
-      width: (maxX - minX) * resizeRatio,
-      height: (maxY - minY + scribbleStrokeWidth) * resizeRatio,
+      x: x * resizeRatio,
+      y: y * resizeRatio,
+      width: width * resizeRatio,
+      height: height * resizeRatio,
     };
   };
 
@@ -54,7 +40,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         canvas.width = img.width;
         canvas.height = img.height;
 
-        // Also, set the resize ratio so that we can more easily crop the image
         setResizeRatio(img.naturalWidth / img.width);
         console.log("resize ratio: " + img.naturalWidth / img.width);
       }
@@ -72,16 +57,14 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
   }, []);
 
-  // whenever the paths are updated, update canvas drawing too
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
     if (!context) return;
-    draw(canvas, context, paths);
-  }, [paths])
+    drawBoundingBoxes(canvas, context, boundingBoxes, startPoint, endPoint, isDrawing);
+  }, [boundingBoxes, startPoint, endPoint, isDrawing]);
 
-  // using useEffect to handle the draw operations
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -89,46 +72,34 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
     const handleMouseDown = (e: MouseEvent) => {
       setIsDrawing(true);
       const { offsetX, offsetY } = e;
-      setPaths((prevPaths) => [...prevPaths, [{ x: offsetX, y: offsetY }]]);
-      e.stopPropagation(); // Prevent ReactFlow from handling this event
+      setStartPoint({ x: offsetX, y: offsetY });
+      setEndPoint({ x: offsetX, y: offsetY });
+      e.stopPropagation();
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDrawing) return;
 
       const { offsetX, offsetY } = e;
-      setPaths((prevPaths) => {
-        const newPaths = [...prevPaths];
-        newPaths[newPaths.length - 1].push({ x: offsetX, y: offsetY });
-        return newPaths;
-      });
-      e.stopPropagation(); // Prevent ReactFlow from handling this event
+      setEndPoint({ x: offsetX, y: offsetY });
+      e.stopPropagation();
     };
 
-    // when mouse moves up, add the new path as a bounding box to the state variable.
-    // we will process them together once a user confirms the selection (see func getMergedSubImages)
     const handleMouseUp = (e: MouseEvent) => {
       if (isDrawing) {
         setIsDrawing(false);
-        const newPaths = paths[paths.length - 1];
-        const newBox = getBoundingBox(newPaths);
-
+        const newBox = getBoundingBoxFromPoints(startPoint, endPoint);
         if (newBox) {
-          setBoundingBoxes((prevBoxes) => {
-            const newBoxes = [...prevBoxes];
-            newBoxes.push(newBox);
-            return newBoxes;
-          });
+          setBoundingBoxes((prevBoxes) => [...prevBoxes, newBox]);
         }
       }
-      e.stopPropagation(); // Prevent ReactFlow from handling this event
+      e.stopPropagation();
     };
 
     const handleMouseLeave = (e: MouseEvent) => {
       setIsDrawing(false);
-      e.stopPropagation(); // Prevent ReactFlow from handling this event
+      e.stopPropagation();
     };
-
 
     canvas.addEventListener('mousedown', handleMouseDown);
     canvas.addEventListener('mousemove', handleMouseMove);
@@ -141,61 +112,72 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       canvas.removeEventListener('mouseup', handleMouseUp);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [isDrawing, lastPoint]);
+  }, [isDrawing, startPoint, endPoint]);
 
   const getMergedSubImages = () => {
-    // first, merge all of the bounding boxes if there are overlaps
     const mergedBoxes = mergeOverlappingBoundingBoxes(boundingBoxes);
-    // then get the corresponding sub images as base64 encoded strings
     (async () => {
       try {
         const croppedImages = await Promise.all(mergedBoxes.map(bbox => cropImage(data.image, bbox)));
-        console.log(croppedImages); // Array of cropped base64 images
-        setSubImageList((prevSubImageList) => {
-          const newSubImageList = [...prevSubImageList];
-
-          // add the new sub-image data to the list
-          newSubImageList.push(...croppedImages);
-          return newSubImageList;
-        });
+        console.log(croppedImages);
+        setSubImageList((prevSubImageList) => [...prevSubImageList, ...croppedImages]);
       } catch (error) {
         console.error(error);
       }
     })();
-  }
+  };
 
-  // when subImageList is updated, which happens in batch once Done button is pressed, send it to App.tsx
   useEffect(() => {
     if (subImageList.length > 0) {
       data.onSubImageConfirmed(id, subImageList);
       clearCanvas();
-      setSubImageList([]);  // refresh the subimage list
+      setSubImageList([]);
     }
-  }, [subImageList])
+  }, [subImageList]);
 
-  // clear canvas
   const clearCanvas = () => {
-    // clear the paths, the useEffect for paths will take care of re-draw
-    setPaths([]);
-    // clear the bounding boxes too
     setBoundingBoxes([]);
-  }
+  };
 
   const undoCanvas = () => {
-
-    // remove the last added path
-    setPaths((prevPaths) => {
-      const newPaths = [...prevPaths];
-      newPaths.pop();
-      return newPaths;
-    });
-    // remove the associated last bounding box
     setBoundingBoxes((prevBoxes) => {
       const newBoxes = [...prevBoxes];
       newBoxes.pop();
       return newBoxes;
     });
-  }
+  };
+
+  const drawBoundingBoxes = (
+    canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
+    boxes: { x: number, y: number, width: number, height: number }[],
+    startPoint: { x: number, y: number },
+    endPoint: { x: number, y: number },
+    isDrawing: boolean
+  ) => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.strokeStyle = 'rgb(92, 131, 242)';
+    context.setLineDash([5, 3]);
+    context.lineWidth = 2;
+
+    // Draw fixed bounding boxes
+    boxes.forEach(box => {
+      context.strokeRect(box.x / resizeRatio, box.y / resizeRatio, box.width / resizeRatio, box.height / resizeRatio);
+      // Apply the breathing effect
+      context.fillStyle = 'rgba(29, 78, 216, 0.2)';
+      context.fillRect(box.x / resizeRatio, box.y / resizeRatio, box.width / resizeRatio, box.height / resizeRatio);
+    });
+
+    // Draw the current bounding box with breathing effect if drawing
+    if (isDrawing) {
+      const currentBox = getBoundingBoxFromPoints(startPoint, endPoint);
+      context.strokeStyle = 'rgb(92, 131, 242)';
+      context.strokeRect(currentBox.x / resizeRatio, currentBox.y / resizeRatio, currentBox.width / resizeRatio, currentBox.height / resizeRatio);
+  
+    }
+
+    context.setLineDash([]); // Reset to solid line for fixed boxes
+  };
 
 
   return (
@@ -206,13 +188,13 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
                       w-full h-full`}>
 
       <div className='font-semibold text-blue-900 text-xl mb-5'>
-        Scribble To Select
+        Drag To Select
       </div>
 
       <div className='image-display-section relative'>
         <img
           ref={imgRef}
-          className='rounded-md cursor-text'
+          className='rounded-md cursor-crosshair'
           src={data.image}
           alt="Uploaded"
           style={{ maxWidth: '30rem', maxHeight: '40rem' }}
@@ -221,30 +203,27 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
       </div>
 
       <div className='flex flex-row'>
-        <button
-          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
+        {/* <button
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${boundingBoxes.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           onClick={clearCanvas}
-          disabled={paths.length === 0}
+          disabled={boundingBoxes.length === 0}
         >
           <LuTrash2 />
           <span className='ml-2'>Clear</span>
         </button>
         <button
-          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${boundingBoxes.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           onClick={undoCanvas}
-          disabled={paths.length === 0}
+          disabled={boundingBoxes.length === 0}
         >
           <LuUndo2 />
           <span className='ml-2'>Undo</span>
-        </button>
+        </button> */}
         <button
-          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${paths.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${boundingBoxes.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           ref={canvasButtonRef}
-          disabled={paths.length === 0}
-          // onClick={() => dissectImage(data.image)}
-          onClick={() => {
-            getMergedSubImages();
-          }}
+          disabled={boundingBoxes.length === 0}
+          onClick={getMergedSubImages}
         >
           <LuCheck />
           <span className='ml-2'>Done</span>
@@ -255,7 +234,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         type="source"
         position={Position.Right}
         id="b"
-        // style={{ bottom: 10, top: 'auto', background: '#555' }}
         isConnectable={true}
       />
     </div>
