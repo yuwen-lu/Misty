@@ -72,6 +72,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
 
     const handleMouseDown = (e: MouseEvent) => {
       setIsDrawing(true);
+      setBoundingBox(null); // remove the previous box
       const { offsetX, offsetY } = e;
       setStartPoint({ x: offsetX, y: offsetY });
       setEndPoint({ x: offsetX, y: offsetY });
@@ -187,7 +188,7 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         Drag To Select
       </div>
 
-      <div className='image-display-section relative'>
+      <div className='image-display-section relative cursor-crosshair'>
         <img
           ref={imgRef}
           className='rounded-md cursor-crosshair'
