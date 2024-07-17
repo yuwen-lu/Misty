@@ -93,7 +93,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
                 // add more if needed
             ] // always put this in a list
             
-            "explanations": // explanantion summary of the changes, just one string
+            "explanations": // explanantion summary of the changes, just return one string
         }
 
         I will do sourceCode.replace(original_code, replacement_code) in my code, so make sure I can directly replace them and have the code still running.
@@ -111,6 +111,23 @@ export interface ParsedData {
     explanations: string;
 }
 
+function collectDeepestStrings(value: any, results: string[] = []): string[] {
+    if (typeof value === 'string') {
+        results.push(value);
+    } else if (Array.isArray(value)) {
+        for (const item of value) {
+            collectDeepestStrings(item, results);
+        }
+    } else if (typeof value === 'object' && value !== null) {
+        for (const key in value) {
+            if (value.hasOwnProperty(key)) {
+                collectDeepestStrings(value[key], results);
+            }
+        }
+    }
+    return results;
+}
+
 export function parseJsonResponse(jsonString: string): ParsedData {
     // Parse the input JSON string
     const data = JSON.parse(jsonString);
@@ -121,8 +138,9 @@ export function parseJsonResponse(jsonString: string): ParsedData {
         replacementCode: change.replacementCode
     }));
 
-    // Extract the explanations string
-    const explanationsString: string = data.explanations;
+    // Extract the explanations string and concatenate the results
+    const explanationsArray: string[] = collectDeepestStrings(data.explanations);
+    const explanationsString: string = explanationsArray.join(' ');
 
     return {
         codeChanges: codeChangesList,

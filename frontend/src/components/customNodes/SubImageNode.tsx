@@ -166,7 +166,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                     <div className='react-flow-drag-handle cursor-move text-l font-semibold mb-3 flex justify-center w-full items-center'>
                         <span className='react-flow-drag-handle'>Drag & Drop to Target</span>
                     </div>
-                    <div className="w-full h-64 flex items-center justify-center overflow-hidden">
+                    <div className="w-full max-h-128 flex items-center justify-center overflow-hidden">
                         <img
                             className='rounded-md object-contain max-w-full max-h-full'
                             src={data.image}
