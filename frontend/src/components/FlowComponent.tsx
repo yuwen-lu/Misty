@@ -95,6 +95,7 @@ const FlowComponent: React.FC = () => {
         const parsedData: ParsedData = parseJsonResponse(finishedResponse); // TODO if we do the realtime parsing stream thing, parseJsonResponse will handle partial json
         const codeChangeList: CodeChange[] = parsedData.codeChanges;
 
+        let currentRenderCode = renderCode;    // we keep a local copy of the code and only update the state at the end
         // 2. Replace the code pieces from the render code
         for (const codeChange of codeChangeList) {
 
@@ -126,21 +127,24 @@ const FlowComponent: React.FC = () => {
 
             const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
 
-            if (searchPattern.test(renderCode.replaceAll("'", "\""))) {
+            // TODO NEED TO MAKE SURE EVERYTIME THE CHANGE IS PRESERVED TO THE NEXT ITERATION
+            if (searchPattern.test(currentRenderCode.replaceAll("'", "\""))) {
+                console.log("replacing code: " + originalCodePiece + ", search pattern: " + searchPattern);
                 // Replace and update the state using the original render code
-                const updatedRenderCode = renderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
+                const updatedRenderCode = currentRenderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
                 try {
-                    const updatedRenderCodeFormatted = await formatCode(updatedRenderCode);
-                    setRenderCode(updatedRenderCodeFormatted);
+                    console.log("Code replaced: " + updatedRenderCode);
+                    currentRenderCode = await formatCode(updatedRenderCode);
                 } catch (err) {
                     console.log("error in format code: " + err);
-                    setRenderCode(updatedRenderCode);
                 }
-                
+
             } else {
                 console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
             }
         }
+
+        setRenderCode(currentRenderCode);   // update the state only after everything is replaced
 
         // 3. add explanations
         const explanations: string = parsedData.explanations;
@@ -190,6 +194,7 @@ const FlowComponent: React.FC = () => {
                         break;
                     }
                     const decodedChunk = decoder.decode(value, { stream: true });
+                    // TODO sometimes it just returns empty string indefinitely, we want to break after a certain point
                     console.log("new chunk: " + decodedChunk);
                     // update state with new chunk
                     setResponse((prevResponse) => {

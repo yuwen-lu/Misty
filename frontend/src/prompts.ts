@@ -80,7 +80,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
         2. only use tailwind, react, and react icons. Do not include any import or export statements;
         3. Give an explanation summary of the original code piece you changed and the updated code piece in the returned result. In your response, use the field "explanations" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple". Categorize all changes of the same type (color, layout, etc.) under one bullet point.
         4. Try to make colors and styles consistent and harmonious with the rest of the component.
-        5. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you add content to the source code, generate content based on the context of the source code.
+        5. Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
 
         Return result as a JSON in the following format:
 

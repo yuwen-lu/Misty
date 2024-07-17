@@ -83,6 +83,10 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDra
 
     }
 
+    useEffect(() => {
+        console.log("highlighted code: \n" + addEventHandlersToCode(code));
+    
+    }, [isDragging])
     return (
         <div
             className={`code-render-container grow w-full overflow-auto 
