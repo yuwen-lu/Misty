@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { LuTrash2, LuUndo2, LuCheck } from 'react-icons/lu';
-import { BoundingBox, mergeOverlappingBoundingBoxes, cropImage } from "../../util";
+import { BoundingBox, cropImage } from "../../util";
 import 'reactflow/dist/style.css';
 import '../../index.css';
 
@@ -10,7 +10,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
-  const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]);
+  // const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]);
+  const [boundingBox, setBoundingBox] = useState<BoundingBox | null>();
   const [subImageList, setSubImageList] = useState<string[]>([]);
   const [resizeRatio, setResizeRatio] = useState<number>(0);
 
@@ -62,8 +63,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
     if (!canvas) return;
     const context = canvas.getContext('2d');
     if (!context) return;
-    drawBoundingBoxes(canvas, context, boundingBoxes, startPoint, endPoint, isDrawing);
-  }, [boundingBoxes, startPoint, endPoint, isDrawing]);
+    drawBoundingBoxes(canvas, context, boundingBox, startPoint, endPoint, isDrawing);
+  }, [boundingBox, startPoint, endPoint, isDrawing]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,7 +91,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         setIsDrawing(false);
         const newBox = getBoundingBoxFromPoints(startPoint, endPoint);
         if (newBox) {
-          setBoundingBoxes((prevBoxes) => [...prevBoxes, newBox]);
+          // setBoundingBoxes((prevBoxes) => [...prevBoxes, newBox]);
+          setBoundingBox(newBox);
         }
       }
       e.stopPropagation();
@@ -114,18 +116,18 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
     };
   }, [isDrawing, startPoint, endPoint]);
 
-  const getMergedSubImages = () => {
-    const mergedBoxes = mergeOverlappingBoundingBoxes(boundingBoxes);
-    (async () => {
-      try {
-        const croppedImages = await Promise.all(mergedBoxes.map(bbox => cropImage(data.image, bbox)));
-        console.log(croppedImages);
-        setSubImageList((prevSubImageList) => [...prevSubImageList, ...croppedImages]);
-      } catch (error) {
-        console.error(error);
+  const getMergedSubImages = async () => {
+    try {
+      if (boundingBox) {
+        const croppedImage = await cropImage(data.image, boundingBox);
+        console.log(croppedImage);
+        setSubImageList((prevSubImageList) => [...prevSubImageList, croppedImage]);
       }
-    })();
+    } catch (error) {
+      console.error(error);
+    }
   };
+
 
   useEffect(() => {
     if (subImageList.length > 0) {
@@ -136,21 +138,18 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
   }, [subImageList]);
 
   const clearCanvas = () => {
-    setBoundingBoxes([]);
+    setBoundingBox(null);
   };
 
   const undoCanvas = () => {
-    setBoundingBoxes((prevBoxes) => {
-      const newBoxes = [...prevBoxes];
-      newBoxes.pop();
-      return newBoxes;
-    });
+    setBoundingBox(null);
   };
 
   const drawBoundingBoxes = (
     canvas: HTMLCanvasElement,
     context: CanvasRenderingContext2D,
-    boxes: { x: number, y: number, width: number, height: number }[],
+    // boxes: { x: number, y: number, width: number, height: number }[],
+    box: BoundingBox | null | undefined,
     startPoint: { x: number, y: number },
     endPoint: { x: number, y: number },
     isDrawing: boolean
@@ -160,23 +159,20 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
     context.setLineDash([5, 3]);
     context.lineWidth = 2;
 
-    // Draw fixed bounding boxes
-    boxes.forEach(box => {
+    // Draw bounding boxes
+    if (box) {
       context.strokeRect(box.x / resizeRatio, box.y / resizeRatio, box.width / resizeRatio, box.height / resizeRatio);
       // Apply the breathing effect
       context.fillStyle = 'rgba(29, 78, 216, 0.2)';
       context.fillRect(box.x / resizeRatio, box.y / resizeRatio, box.width / resizeRatio, box.height / resizeRatio);
-    });
-
+    }
     // Draw the current bounding box with breathing effect if drawing
     if (isDrawing) {
       const currentBox = getBoundingBoxFromPoints(startPoint, endPoint);
       context.strokeStyle = 'rgb(92, 131, 242)';
       context.strokeRect(currentBox.x / resizeRatio, currentBox.y / resizeRatio, currentBox.width / resizeRatio, currentBox.height / resizeRatio);
-  
-    }
 
-    context.setLineDash([]); // Reset to solid line for fixed boxes
+    }
   };
 
 
@@ -210,19 +206,19 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
         >
           <LuTrash2 />
           <span className='ml-2'>Clear</span>
-        </button>
+        </button> */}
         <button
-          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${boundingBoxes.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${boundingBox ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           onClick={undoCanvas}
-          disabled={boundingBoxes.length === 0}
+          disabled={!boundingBox}
         >
           <LuUndo2 />
           <span className='ml-2'>Undo</span>
-        </button> */}
+        </button>
         <button
-          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${boundingBoxes.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
+          className={`flex items-center rounded-lg transition-colors mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none ${boundingBox ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400"}`}
           ref={canvasButtonRef}
-          disabled={boundingBoxes.length === 0}
+          disabled={!boundingBox}
           onClick={getMergedSubImages}
         >
           <LuCheck />

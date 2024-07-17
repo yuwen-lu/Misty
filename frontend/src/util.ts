@@ -49,59 +49,62 @@ export function mergeBoundingBoxes(box1: BoundingBox, box2: BoundingBox): Boundi
 }
 
 // Merge overlapping bounding boxes in a list
-export function mergeOverlappingBoundingBoxes(boxes: BoundingBox[]): BoundingBox[] {
-  let mergedBoxes: BoundingBox[] = [];
+// export function mergeOverlappingBoundingBoxes(boxes: BoundingBox[]): BoundingBox[] {
+//   let mergedBoxes: BoundingBox[] = [];
 
-  for (let i = 0; i < boxes.length; i++) {
-    let merged = false;
-    for (let j = 0; j < mergedBoxes.length; j++) {
-      if (doBoxesOverlap(boxes[i], mergedBoxes[j])) {
-        mergedBoxes[j] = mergeBoundingBoxes(boxes[i], mergedBoxes[j]);
-        merged = true;
-        break;
-      }
-    }
-    if (!merged) {
-      mergedBoxes.push(boxes[i]);
-    }
-  }
+//   for (let i = 0; i < boxes.length; i++) {
+//     let merged = false;
+//     for (let j = 0; j < mergedBoxes.length; j++) {
+//       if (doBoxesOverlap(boxes[i], mergedBoxes[j])) {
+//         mergedBoxes[j] = mergeBoundingBoxes(boxes[i], mergedBoxes[j]);
+//         merged = true;
+//         break;
+//       }
+//     }
+//     if (!merged) {
+//       mergedBoxes.push(boxes[i]);
+//     }
+//   }
 
-  console.log("Result of box merge: " + mergedBoxes.map((box) => { return "width: " + box.width.toString() + ", height: " + box.height.toString() }))
-  return mergedBoxes;
-}
-
+//   console.log("Result of box merge: " + mergedBoxes.map((box) => { return "width: " + box.width.toString() + ", height: " + box.height.toString() }))
+//   return mergedBoxes;
+// }
 // Crop a base64 encoded image based on a bounding box and return the cropped image as a base64 string
 export async function cropImage(base64Image: string, bbox: BoundingBox): Promise<string> {
-  const image = new Image();
-  image.src = base64Image;
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.src = base64Image;
 
-  await new Promise((resolve, reject) => {
-    image.onload = resolve;
-    image.onerror = reject;
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = bbox.width;
+      canvas.height = bbox.height;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        reject(new Error("Could not get canvas context"));
+        return;
+      }
+
+      ctx.drawImage(
+        image,
+        bbox.x,
+        bbox.y,
+        bbox.width,
+        bbox.height,
+        0,
+        0,
+        bbox.width,
+        bbox.height
+      );
+
+      resolve(canvas.toDataURL());
+    };
+
+    image.onerror = () => {
+      reject(new Error("Failed to load image"));
+    };
   });
-
-  const canvas = document.createElement("canvas");
-  canvas.width = bbox.width;
-  canvas.height = bbox.height;
-  const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    throw new Error("Could not get canvas context");
-  }
-
-  ctx.drawImage(
-    image,
-    bbox.x,
-    bbox.y,
-    bbox.width,
-    bbox.height,
-    0,
-    0,
-    bbox.width,
-    bbox.height
-  );
-
-  return canvas.toDataURL();
 }
 
 export const scribbleStrokeWidth = 10;
