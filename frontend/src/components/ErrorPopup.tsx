@@ -3,11 +3,10 @@ import { Frown } from 'lucide-react';
 
 interface ErrorPopupProps {
     message: string;
-    duration?: number;
-    onClose: () => void;
+    duration?: number
 }
 
-const ErrorPopup: React.FC<ErrorPopupProps> = ({ message, duration = 3500, onClose }) => {
+const ErrorPopup: React.FC<ErrorPopupProps> = ({ message, duration = 3500 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
 
@@ -18,7 +17,6 @@ const ErrorPopup: React.FC<ErrorPopupProps> = ({ message, duration = 3500, onClo
             setIsVisible(false);
             const disappearTimer = setTimeout(() => {
                 setShouldRender(false);
-                onClose();
             }, 300); // matches transition duration
             return () => clearTimeout(disappearTimer);
         }, duration);
@@ -27,7 +25,7 @@ const ErrorPopup: React.FC<ErrorPopupProps> = ({ message, duration = 3500, onClo
             clearTimeout(appearTimer);
             clearTimeout(durationTimer);
         };
-    }, [duration, onClose]);
+    }, [duration]);
 
     if (!shouldRender) return null;
 

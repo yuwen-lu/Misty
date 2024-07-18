@@ -88,7 +88,7 @@ const FlowComponent: React.FC = () => {
     const { x, y, zoom } = useViewport();
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showError, setShowError] = useState(true);
+    const [showError, setShowError] = useState(false);
 
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
@@ -139,7 +139,7 @@ const FlowComponent: React.FC = () => {
                         currentRenderCode = await formatCode(updatedRenderCode);
                     } catch (err) {
                         console.log("error in format code: " + err);
-                        setShowError(true);
+                        currentRenderCode = updatedRenderCode;  // we just update without formatting it
                     }
 
                 } else {
@@ -187,30 +187,23 @@ const FlowComponent: React.FC = () => {
             if (response.body) {
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
-                const loopRunner = true;
+                let loopRunner = true;
+                let finalResponse = '';
 
                 while (loopRunner) {
-                    // Here we start reading the stream, until its done.
                     const { value, done } = await reader.read();
                     if (done) {
-                        // we only parse when it's done streaming. we use setResponse to make sure it's the latest version
-                        // TODO we can visualize as the response streams in
-                        setResponse((finishedResponse) => {
-                            processResponse(finishedResponse, renderCodeBoundingBox);
-                            return finishedResponse;
-                        })
+                        console.log("aaaa done!");
+                        loopRunner = false;
                         break;
                     }
                     const decodedChunk = decoder.decode(value, { stream: true });
-                    // TODO sometimes it just returns empty string indefinitely, we want to break after a certain point
                     console.log("new chunk: " + decodedChunk);
-                    // update state with new chunk
-                    setResponse((prevResponse) => {
-                        const newChunk = prevResponse + decodedChunk;
-                        return newChunk;
-                    });
-
+                    finalResponse += decodedChunk;
+                    setResponse((prevResponse) => prevResponse + decodedChunk);
                 }
+
+                processResponse(finalResponse, renderCodeBoundingBox);
             }
         } catch (err) {
             console.error('Error fetching response from OpenAI API');
@@ -225,6 +218,7 @@ const FlowComponent: React.FC = () => {
 
         console.log("Received bbox in flowcomponent: " + JSON.stringify(renderCodeNodeBoundingBox));
         const newXPos = renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200;
+        // const newYPos = renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200; // TODO calculate y position based on count of explanationNode
         console.log("newXPos: " + newXPos);
         setNodes((nds) => {
             return nds.concat(
@@ -445,8 +439,7 @@ const FlowComponent: React.FC = () => {
                 <div>
                     {showError && (
                         <ErrorPopup
-                            message="Oops! Something went wrong. Try that again?"
-                            onClose={() => setShowError(false)}
+                            message="Oops! That did not work as planned. Try again?"
                         />
                     )}
                 </div>
