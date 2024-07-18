@@ -133,7 +133,7 @@ const FlowComponent: React.FC = () => {
                 const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
 
                 if (searchPattern.test(currentRenderCode.replaceAll("'", "\""))) {
-                    console.log("replacing code: " + originalCodePiece + ", search pattern: " + searchPattern);
+                    // console.log("replacing code: " + originalCodePiece + ", search pattern: " + searchPattern);
                     // Replace and update the state using the original render code
                     const updatedRenderCode = currentRenderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
                     try {
@@ -198,7 +198,7 @@ const FlowComponent: React.FC = () => {
                         break;
                     }
                     const decodedChunk = decoder.decode(value, { stream: true });
-                    console.log("new chunk: " + decodedChunk);
+                    // console.log("new chunk: " + decodedChunk);
                     finalResponse += decodedChunk;
                     setResponse((prevResponse) => prevResponse + decodedChunk);
                 }
