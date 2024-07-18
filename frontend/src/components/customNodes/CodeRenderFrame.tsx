@@ -83,33 +83,37 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDra
 
     }
 
-    useEffect(() => {
-        console.log("highlighted code: \n" + addEventHandlersToCode(code));
-    
-    }, [isDragging])
     return (
-        <div
-            className={`code-render-container grow w-full overflow-auto 
-            ${isMobile ? "max-w-md" : "max-w-screen-md"} 
-            ${isDragging ? "flash" : ""}`}
-            style={{ width: '100%', height: '100%', minWidth: '345px', minHeight: '740px', border: 'none' }}
-        >
-            {loading ? <div className='spinner'></div> : <LiveProvider
-                code={isDragging ? addEventHandlersToCode(code) : code}
-                scope={{
-                    React, useState, ...LuIcons,
-                    setTargetCodeDropped,
-                    setTargetRenderCodeNodeBbox,
-                    processHTMLElement,
-                    setCurrentBbox,
-                    defaultBoundingBox,
-                    codeRenderNodeRect
-                }}
+        <>
+            <div className={`spinner-wrapper ${loading ? "" : "invisible"}`}>
+                <div className={`spinner ${loading ? 'animate-spin' : ''}`}></div>
+                <div className={`spinner inner ${loading ? 'animate-spin-reverse' : ''}`}></div>
+            </div>
+
+            <div
+                className={`code-render-container grow w-full overflow-auto
+                    ${isMobile ? "max-w-md" : "max-w-screen-md"} 
+                    ${loading ? "invisible" : ""}
+                    ${isDragging ? "flash" : ""}`}
+                style={{ width: '100%', height: '100%', border: 'none' }}
             >
-                <LivePreview />
-                <LiveError />
-            </LiveProvider>}
-        </div>
+
+                <LiveProvider
+                    code={isDragging ? addEventHandlersToCode(code) : code}
+                    scope={{
+                        React, useState, ...LuIcons,
+                        setTargetCodeDropped,
+                        setTargetRenderCodeNodeBbox,
+                        processHTMLElement,
+                        setCurrentBbox,
+                        defaultBoundingBox,
+                        codeRenderNodeRect
+                    }}
+                >
+                    <LivePreview />
+                    <LiveError />
+                </LiveProvider>
+            </div></>
     );
 };
 

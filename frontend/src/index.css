@@ -55,60 +55,159 @@ code {
 .gelatine {
   animation: gelatine 0.3s forwards;
 }
+
 @keyframes gelatine {
-  from, to { transform: scale(1, 1) translate(-50%, -50%); }
-  25% { transform: scale(0.9, 1.1) translate(-50%, -50%); }
-  50% { transform: scale(1.1, 0.9) translate(-50%, -50%); }
-  75% { transform: scale(0.95, 1.05) translate(-50%, -50%); }
-  100% { transform: scale(1) translate(-50%, -50%);}
+
+  from,
+  to {
+    transform: scale(1, 1) translate(-50%, -50%);
+  }
+
+  25% {
+    transform: scale(0.9, 1.1) translate(-50%, -50%);
+  }
+
+  50% {
+    transform: scale(1.1, 0.9) translate(-50%, -50%);
+  }
+
+  75% {
+    transform: scale(0.95, 1.05) translate(-50%, -50%);
+  }
+
+  100% {
+    transform: scale(1) translate(-50%, -50%);
+  }
 }
 
 
 .grow-animation {
   animation: growAnimation 0.2s ease forwards;
 }
+
 @keyframes growAnimation {
-  from { transform: scale(0) translate(-50%, -50%); }
-  to { transform: scale(1) translate(-50%, -50%); }
+  from {
+    transform: scale(0) translate(-50%, -50%);
+  }
+
+  to {
+    transform: scale(1) translate(-50%, -50%);
+  }
 }
 
 .swing {
-	transform-origin: top center;
-	animation: swing 700ms ease forwards;
+  transform-origin: top center;
+  animation: swing 700ms ease forwards;
 }
+
 @keyframes swing {
-	20% { transform: rotate(2deg); }	
-	40% { transform: rotate(-2deg); }
-	60% { transform: rotate(0.5deg); }	
-	80% { transform: rotate(-0.5deg); }	
-	100% { transform: rotate(0deg); }
+  20% {
+    transform: rotate(2deg);
+  }
+
+  40% {
+    transform: rotate(-2deg);
+  }
+
+  60% {
+    transform: rotate(0.5deg);
+  }
+
+  80% {
+    transform: rotate(-0.5deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .flash {
   animation: flash 700ms ease forwards;
 }
+
 @keyframes flash {
-	from, to { opacity: 1; }	
-	25% { opacity: 0.75; }
-  50% { opacity: 1; }
-  75% { opacity: 0.75; }
-  100% { opacity: 1; }
+
+  from,
+  to {
+    opacity: 1;
+  }
+
+  25% {
+    opacity: 0.75;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0.75;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
-.spinner {
-  border: 16px solid #f3f3f3;
-  border-top: 16px solid rgba(88, 28, 135, 0.7);
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
+.spinner-wrapper {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: 120px;
+  height: 120px;
   transform: translate(-50%, -50%);
 }
 
+.spinner {
+  border: 3px solid transparent;
+  border-top: 3px solid rgba(88, 28, 135, 0.2);
+  border-right: 3px solid rgba(88, 28, 135, 0.2);
+  border-bottom: 3px solid rgba(88, 28, 135, 0.2);
+  border-left: 3px solid rgba(88, 28, 135, 0.8);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  animation: spin 3s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+}
+
+.spinner.inner {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  border-top: 2px solid rgba(88, 28, 135, 0.8);
+  border-right: 2px solid rgba(88, 28, 135, 0.2);
+  border-bottom: 2px solid rgba(88, 28, 135, 0.2);
+  border-left: 2px solid rgba(88, 28, 135, 0.2);
+  animation: spin-reverse 3s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+}
+
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 3s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 3s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
 }

@@ -28,6 +28,7 @@ import 'reactflow/dist/style.css';
 import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
+import ErrorPopup from './ErrorPopup';
 
 interface OpenAIResponse {
     response: string;
@@ -87,6 +88,8 @@ const FlowComponent: React.FC = () => {
     const { x, y, zoom } = useViewport();
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showError, setShowError] = useState(true);
+
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
         // when reposne is updated from the api call, we post process it
@@ -99,10 +102,11 @@ const FlowComponent: React.FC = () => {
         // 2. Replace the code pieces from the render code
         for (const codeChange of codeChangeList) {
 
-            const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
-            const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
+            try {
+                const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
+                const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
-            const replacementCodeWithComment = `
+                const replacementCodeWithComment = `
             {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code beginnning */}
             {/* ${originalCodePiece} */}
             {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code end */}
@@ -111,36 +115,40 @@ const FlowComponent: React.FC = () => {
             {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code end */}
             `
 
-            const escapeRegExp = (str: string) => {
-                return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-            };
+                const escapeRegExp = (str: string) => {
+                    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+                };
 
-            const createFlexiblePattern = (str: string) => {
-                const escapedStr = escapeRegExp(str);
-                return escapedStr
-                    .replace(/[\s\n\r]+/g, '\\s*')    // Handle varying whitespace, newlines, and carriage returns
-                    .replace(/<\//g, '<\\/?\\s*')     // Make closing slashes optional with optional whitespace
-                    .replace(/\/>/g, '\\s*\\/?\\s*>') // Make self-closing slashes optional with optional whitespace
-                    .replace(/>/g, '\\s*\\/?>\\s*')           // Allow optional whitespace after closing angle brackets
-                    .replace(/</g, '\\s*<');          // Allow optional whitespace before opening angle brackets
-            };
+                const createFlexiblePattern = (str: string) => {
+                    const escapedStr = escapeRegExp(str);
+                    return escapedStr
+                        .replace(/[\s\n\r]+/g, '\\s*')    // Handle varying whitespace, newlines, and carriage returns
+                        .replace(/<\//g, '<\\/?\\s*')     // Make closing slashes optional with optional whitespace
+                        .replace(/\/>/g, '\\s*\\/?\\s*>') // Make self-closing slashes optional with optional whitespace
+                        .replace(/>/g, '\\s*\\/?>\\s*')           // Allow optional whitespace after closing angle brackets
+                        .replace(/</g, '\\s*<');          // Allow optional whitespace before opening angle brackets
+                };
 
-            const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
+                const searchPattern = new RegExp(createFlexiblePattern(originalCodePiece), 'g');
 
-            // TODO NEED TO MAKE SURE EVERYTIME THE CHANGE IS PRESERVED TO THE NEXT ITERATION
-            if (searchPattern.test(currentRenderCode.replaceAll("'", "\""))) {
-                console.log("replacing code: " + originalCodePiece + ", search pattern: " + searchPattern);
-                // Replace and update the state using the original render code
-                const updatedRenderCode = currentRenderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
-                try {
-                    console.log("Code replaced: " + updatedRenderCode);
-                    currentRenderCode = await formatCode(updatedRenderCode);
-                } catch (err) {
-                    console.log("error in format code: " + err);
+                if (searchPattern.test(currentRenderCode.replaceAll("'", "\""))) {
+                    console.log("replacing code: " + originalCodePiece + ", search pattern: " + searchPattern);
+                    // Replace and update the state using the original render code
+                    const updatedRenderCode = currentRenderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
+                    try {
+                        currentRenderCode = await formatCode(updatedRenderCode);
+                    } catch (err) {
+                        console.log("error in format code: " + err);
+                        setShowError(true);
+                    }
+
+                } else {
+                    console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
+                    setShowError(true);
                 }
-
-            } else {
-                console.log("Cannot find the reg ex in the source renderCode: " + searchPattern);
+            } catch (error) {
+                console.log("An error occurred when parsing response. Try again?")
+                setShowError(true);
             }
         }
 
@@ -434,6 +442,14 @@ const FlowComponent: React.FC = () => {
                 <Background />
                 <Controls />
                 {memoizedCodeEditorPanel}
+                <div>
+                    {showError && (
+                        <ErrorPopup
+                            message="Oops! Something went wrong. Try that again?"
+                            onClose={() => setShowError(false)}
+                        />
+                    )}
+                </div>
             </ReactFlow>
         </div>
     )
