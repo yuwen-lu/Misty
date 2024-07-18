@@ -14,7 +14,8 @@ import ReactFlow, {
     NodeTypes,
     DefaultEdgeOptions,
     useReactFlow,
-    useViewport
+    useViewport,
+    SelectionMode
 } from 'reactflow';
 import ImageDisplayNode from './customNodes/ImageDisplayNode';
 import ImageUploadNode from './customNodes/ImageUploadNode';
@@ -193,7 +194,6 @@ const FlowComponent: React.FC = () => {
                 while (loopRunner) {
                     const { value, done } = await reader.read();
                     if (done) {
-                        console.log("aaaa done!");
                         loopRunner = false;
                         break;
                     }
@@ -410,6 +410,8 @@ const FlowComponent: React.FC = () => {
     ), [renderCode, setRenderCode, codePanelVisible, setCodePanelVisible]);
 
 
+    const panOnDrag = [1, 2];   // useful for figma like interaction
+
     return (
         <div style={{ width: '100vw', height: '100vh' }}>
             <ReactFlow
@@ -432,6 +434,11 @@ const FlowComponent: React.FC = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 nodeDragThreshold={4}
+                minZoom={0.1}
+                panOnScroll
+                selectionOnDrag
+                panOnDrag={panOnDrag}
+                selectionMode={SelectionMode.Partial}
                 defaultEdgeOptions={defaultEdgeOptions}>
                 <Background />
                 <Controls />
