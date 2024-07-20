@@ -30,11 +30,7 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-
-interface OpenAIResponse {
-    response: string;
-}
-
+import { babelBase64, otteraiBase64, appleMapListBase64 } from '../images';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -45,11 +41,26 @@ const nodeTypes: NodeTypes = {
     confirmationPopupNode: ConfirmationPopupNode,
 };
 
+const getImageBase64 = async (imagePath: string): Promise<string> => {
+    const response = await fetch(imagePath);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64data = reader.result as string;
+            resolve(base64data);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+};
+
+
 const initialNodes: Node[] = [
     {
         id: '1',
         type: 'imageUploadNode',
-        position: { x: 250, y: 100 },
+        position: { x: 150, y: 100 },
         data: { onUpload: () => { } },
     },
     {
@@ -57,6 +68,27 @@ const initialNodes: Node[] = [
         type: 'codeRenderNode',
         position: { x: 2050, y: 100 },  // TODO set Position dynamically
         data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
+    },
+    {
+        id: "3",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 800, y: 200 },
+        data: { image: babelBase64 },
+    },
+    {
+        id: "4",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 1500, y: 200 },
+        data: { image: appleMapListBase64 },
+    },
+    {
+        id: "5",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 800, y: 10 * 100 + 300 },
+        data: { image: otteraiBase64 },
     }
 ];
 
@@ -234,11 +266,6 @@ const FlowComponent: React.FC = () => {
     }
 
     useEffect(() => {
-        console.log("from flowcomponent, targetrendercode node bbox changed: " + JSON.stringify(setTargetRenderCodeNodeBbox));
-    }, [targetRenderCodeNodeBbox]);
-
-
-    useEffect(() => {
         console.log("openai api response updated: " + response);
     }, [response])
 
@@ -361,10 +388,6 @@ const FlowComponent: React.FC = () => {
 
     }, [newConfirmationPopupNodeDataPackage]);
 
-    useEffect(() => {
-        console.log("the target dropped code updated: " + targetCodeDropped);
-    }, [targetCodeDropped])
-
     const importImage = (id: string, imageUrl: string) => {
         setNodes((nds) =>
             nds.map((node) =>
@@ -423,6 +446,8 @@ const FlowComponent: React.FC = () => {
                             ...node,
                             data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, loading: loading }
                         }
+                    } else if (node.type === 'imageDisplayNode') {
+                        return { ...node, data: { ...node.data, onSubImageConfirmed: createSubImages}}
                     } else {
                         return node;
                     }

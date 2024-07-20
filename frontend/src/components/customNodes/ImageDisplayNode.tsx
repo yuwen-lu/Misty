@@ -6,7 +6,6 @@ import 'reactflow/dist/style.css';
 import '../../index.css';
 
 const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
-  const [response, setResponse] = useState<string>('');
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
