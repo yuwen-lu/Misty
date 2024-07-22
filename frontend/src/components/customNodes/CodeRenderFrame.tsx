@@ -56,15 +56,22 @@ interface CodeRenderFrameProps {
     setTargetRenderCodeNodeBbox: (bbox: BoundingBox) => void;
     codeRenderNodeRef: React.RefObject<HTMLDivElement>;
     loading: boolean;
+    setLoading: (loading: boolean) => void;
+    abortController: AbortController | null;
 }
 
-const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDragging, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loading }) => {
+const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDragging, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loading, setLoading, abortController }) => {
 
     const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
     useEffect(() => {
         if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
     }, []);
+
+    const cancelBlending = () => {
+        setLoading(false);
+        abortController && abortController.abort();
+    }
 
     const setCurrentBbox = () => {
         if (codeRenderNodeRect) {
@@ -88,6 +95,13 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDra
             <div className={`spinner-wrapper ${loading ? "" : "invisible"}`}>
                 <div className={`spinner ${loading ? 'animate-spin' : ''}`}></div>
                 <div className={`spinner inner ${loading ? 'animate-spin-reverse' : ''}`}></div>
+                <div className='flex items-center w-full'>
+                    <button
+                        className="mt-12 mx-auto px-4 py-2 bg-zinc-700 text-white font-semibold rounded-lg hover:bg-zinc-900 focus:outline-none"
+                        onClick={ cancelBlending}>
+                        Cancel
+                    </button>
+                </div>
             </div>
 
             <div

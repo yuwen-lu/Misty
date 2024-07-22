@@ -123,6 +123,18 @@ const FlowComponent: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [showError, setShowError] = useState(false);
 
+    // abort api calls when the user cancels it using the button
+    const [abortController, setAbortController] = useState<AbortController | null>(null);
+
+    useEffect(() => {
+        // Cleanup on unmount
+        return () => {
+            if (abortController) {
+                abortController.abort();
+            }
+        };
+    }, [abortController]);
+
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
         // when reposne is updated from the api call, we post process it
@@ -196,6 +208,10 @@ const FlowComponent: React.FC = () => {
     const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox) => {
         setLoading(true);
         setResponse('');
+
+        const controller = new AbortController();
+        setAbortController(controller);
+
         try {
             const messageData = {
                 message: textPrompt,
@@ -205,6 +221,7 @@ const FlowComponent: React.FC = () => {
 
             // call the api and stream
             const response = await fetch('http://127.0.0.1:5000/api/chat', {
+                signal: controller.signal,
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -238,10 +255,16 @@ const FlowComponent: React.FC = () => {
                 processResponse(finalResponse, renderCodeBoundingBox);
             }
         } catch (err) {
-            console.error('Error fetching response from OpenAI API');
-            console.log("error openai api call: " + err);
+            if (err instanceof DOMException && err.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error fetching response from OpenAI API');
+                console.log("error openai api call: " + err);
+            }
+
         } finally {
             setLoading(false);
+            setAbortController(null);
         }
     };
 
@@ -444,10 +467,10 @@ const FlowComponent: React.FC = () => {
                     } else if (node.type === 'codeRenderNode') {
                         return {
                             ...node,
-                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, loading: loading }
+                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, loading: loading, setLoading: setLoading, abortController: abortController }
                         }
                     } else if (node.type === 'imageDisplayNode') {
-                        return { ...node, data: { ...node.data, onSubImageConfirmed: createSubImages}}
+                        return { ...node, data: { ...node.data, onSubImageConfirmed: createSubImages } }
                     } else {
                         return node;
                     }
