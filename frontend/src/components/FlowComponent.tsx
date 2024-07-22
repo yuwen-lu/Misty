@@ -131,6 +131,29 @@ const FlowComponent: React.FC = () => {
         };
     }, [abortController]);
 
+    const toggleCodePanelVisible = () => {
+        setCodePanelVisible(!codePanelVisible);
+    }
+
+    const setRenderCodeList = useCallback((newCodeList: string[]) => {
+        setRenderCodeListState(newCodeList);
+    }, []);
+
+    const addRenderCode = useCallback((newCode: string) => {
+        setRenderCodeListState((prevList) => [...prevList, newCode]);
+    }, []);
+
+    const updateDisplayCode = (newCode: string) => {
+        for (let i = 0; i < renderCodeList.length; i++) {
+            if (renderCodeList[i] === displayCode) {
+                console.log("updating the displayed code...");
+                renderCodeList[i] = newCode; // Update the code in the list
+                break;
+            }
+        }
+    }
+
+
     const getCodeRenderNodes = useMemo(() => {
         if (renderCodeList.length > 0) {
             return renderCodeList.map((renderCode, idx) => ({
@@ -158,7 +181,7 @@ const FlowComponent: React.FC = () => {
     }, [renderCodeList]);
 
     useEffect(() => {
-        setNodes(getCodeRenderNodes);
+        setNodes((nodes) => [...nodes, ...getCodeRenderNodes]);
     }, [renderCodeList]);
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
@@ -461,30 +484,6 @@ const FlowComponent: React.FC = () => {
 
         console.log("Image node added, current node length: " + nodes.length);
     };
-
-
-    const toggleCodePanelVisible = () => {
-        setCodePanelVisible(!codePanelVisible);
-    }
-
-    const setRenderCodeList = useCallback((newCodeList: string[]) => {
-        setRenderCodeListState(newCodeList);
-    }, []);
-
-    const addRenderCode = useCallback((newCode: string) => {
-        setRenderCodeListState((prevList) => [...prevList, newCode]);
-    }, []);
-
-    const updateDisplayCode = (newCode: string) => {
-        for (let i = 0; i < renderCodeList.length; i++) {
-            if (renderCodeList[i] === displayCode) {
-                console.log("updating the displayed code...");
-                renderCodeList[i] = newCode; // Update the code in the list
-                break;
-            }
-        }
-    }
-
 
     // memorize the code editor panel to avoid unnecessary re-render
     const showCodePanel = (displayCode: string) => (
