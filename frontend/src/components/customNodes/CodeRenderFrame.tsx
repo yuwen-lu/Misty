@@ -10,6 +10,7 @@ const addEventHandlersToCode = (code: string) => {
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
     const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { 
         setCurrentBbox();
+        setTargetBlendCode(renderCode);
         setTargetCodeDropped(processHTMLElement(e.target).outerHTML); 
         console.log('mouse up from element:', e.target); }}`;
 
@@ -50,8 +51,9 @@ const processHTMLElement = (htmlElement: HTMLElement): HTMLElement | undefined =
 
 interface CodeRenderFrameProps {
     isMobile: boolean;
-    code: string;
+    renderCode: string;
     isDragging: boolean;
+    setTargetBlendCode: (targetBlendCode: string) => void;
     setTargetCodeDropped: (html: string) => void;
     setTargetRenderCodeNodeBbox: (bbox: BoundingBox) => void;
     codeRenderNodeRef: React.RefObject<HTMLDivElement>;
@@ -60,7 +62,7 @@ interface CodeRenderFrameProps {
     abortController: AbortController | null;
 }
 
-const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDragging, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loading, setLoading, abortController }) => {
+const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, renderCode, isDragging, setTargetBlendCode, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loading, setLoading, abortController }) => {
 
     const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
@@ -113,9 +115,11 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, code, isDra
             >
 
                 <LiveProvider
-                    code={isDragging ? addEventHandlersToCode(code) : code}
+                    code={isDragging ? addEventHandlersToCode(renderCode) : renderCode}
                     scope={{
                         React, useState, ...LuIcons,
+                        renderCode,
+                        setTargetBlendCode,
                         setTargetCodeDropped,
                         setTargetRenderCodeNodeBbox,
                         processHTMLElement,

@@ -41,8 +41,9 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
             </div>
             <CodeRenderFrame
                 isMobile={isMobile}
-                code={data.code}
+                renderCode={data.renderCode}
                 isDragging={data.isDragging}
+                setTargetBlendCode={data.setTargetBlendCode}
                 setTargetCodeDropped={data.setTargetCodeDropped}
                 setTargetRenderCodeNodeBbox={data.setTargetRenderCodeNodeBbox}
                 codeRenderNodeRef={nodeRef}
@@ -53,6 +54,11 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                 <button
                     className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
                     onClick={() => {
+                        if (!data.codePanelVisible) {   // if the code panel is not currently visible, we set the display code to this code piece
+                            data.setDisplayCode(data.renderCode);
+                        } else {
+                            data.setDisplayCode("");
+                        }
                         data.toggleCodePanelVisible();
                     }}
                 >

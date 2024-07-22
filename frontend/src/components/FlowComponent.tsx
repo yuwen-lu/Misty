@@ -109,6 +109,8 @@ const FlowComponent: React.FC = () => {
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
     const [renderCodeList, setRenderCodeListState] = useState<string[]>([FidelityNaturalHeader]);
+    const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
+    const [targetBlendCode, setTargetBlendCode] = useState<string>(""); // for the code to be blended
     const [targetCodeDropped, setTargetCodeDropped] = useState<string>("");
     const [targetRenderCodeNodeBbox, setTargetRenderCodeNodeBbox] = useState<BoundingBox | null>(null);
 
@@ -136,11 +138,12 @@ const FlowComponent: React.FC = () => {
                 type: 'codeRenderNode',
                 position: { x: 250 + 500 * idx, y: 100 }, // Example of dynamic positioning
                 data: {
-                    code: renderCode,
-                    setCode: setRenderCodeList,
+                    renderCode: renderCode,
                     toggleCodePanelVisible: toggleCodePanelVisible,
                     codePanelVisible: codePanelVisible,
                     isDragging: isDragging,
+                    setDisplayCode: setDisplayCode,
+                    setTargetBlendCode: setTargetBlendCode,
                     setTargetCodeDropped: setTargetCodeDropped,
                     setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
                     loading: loading,
@@ -218,7 +221,7 @@ const FlowComponent: React.FC = () => {
                 setShowError(true);
             }
         }
-        
+
         addRenderCode(currentRenderCode);   // update the state only after everything is replaced, after each api call, add to the renderCode list, which will create a new node
 
         // 3. add explanations
@@ -331,12 +334,13 @@ const FlowComponent: React.FC = () => {
             // if it's a whole image node, maybe do some implicit intent reasoning
             console.log("seems like a source node. id: " + connection.source);
             const sourceNode = nodes.find((node) => node.id === connection.source);
-            if (sourceNode) {
+            const targetNode = nodes.find((node) => node.id === connection.target);
+            if (sourceNode && targetNode) {
                 const referenceImageBase64 = sourceNode.data.image;
-                const textPrompt = constructTextPrompt(renderCode, targetCodeDropped);
+                const textPrompt = constructTextPrompt(targetNode.data.renderCode, targetCodeDropped);
                 console.log("sending the prompt, target code: \n" + targetCodeDropped);
                 // console.log("source node confirmed. here is the image: " + referenceImageBase64);
-                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox);  // TODO Add the bbox of rendercode node
+                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode);  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
@@ -414,7 +418,7 @@ const FlowComponent: React.FC = () => {
                         data: {
                             position: popUpPosition,
                             removeNode: removeNode,
-                            renderCode: renderCode,
+                            renderCode: targetBlendCode,
                             targetCodeDropped: targetCodeDropped,
                             callOpenAI: handleFetchResponse,
                             subImageScreenshot: subImageScreenshot,
@@ -463,23 +467,34 @@ const FlowComponent: React.FC = () => {
         setCodePanelVisible(!codePanelVisible);
     }
 
-    const setRenderCodeList = useCallback((newCode: string) => {
-        setRenderCodeListState(newCode);
+    const setRenderCodeList = useCallback((newCodeList: string[]) => {
+        setRenderCodeListState(newCodeList);
     }, []);
 
     const addRenderCode = useCallback((newCode: string) => {
-        setRenderCodeListState((prevList) => [... prevList, newCode]);
+        setRenderCodeListState((prevList) => [...prevList, newCode]);
     }, []);
 
+    const updateDisplayCode = (newCode: string) => {
+        for (let i = 0; i < renderCodeList.length; i++) {
+            if (renderCodeList[i] === displayCode) {
+                console.log("updating the displayed code...");
+                renderCodeList[i] = newCode; // Update the code in the list
+                break;
+            }
+        }
+    }
+
+
     // memorize the code editor panel to avoid unnecessary re-render
-    const memoizedCodeEditorPanel = useMemo(() => (
-        <CodeEditorPanel
-            code={renderCode}
-            setCode={setRenderCode}
+    const showCodePanel = (displayCode: string) => (
+        displayCode === "" ? <></> : <CodeEditorPanel
+            code={displayCode}
+            setCode={updateDisplayCode}
             isVisible={codePanelVisible}
             setCodePanelVisible={setCodePanelVisible}
         />
-    ), [renderCode, setRenderCode, codePanelVisible, setCodePanelVisible]);
+    );
 
 
     const panOnDrag = [1, 2];   // useful for figma like interaction
@@ -511,7 +526,7 @@ const FlowComponent: React.FC = () => {
                 defaultEdgeOptions={defaultEdgeOptions}>
                 <Background />
                 <Controls />
-                {memoizedCodeEditorPanel}
+                {showCodePanel(displayCode)}
                 <div>
                     {showError && (
                         <ErrorPopup
