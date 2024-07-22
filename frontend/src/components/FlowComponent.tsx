@@ -64,27 +64,21 @@ const initialNodes: Node[] = [
         data: { onUpload: () => { } },
     },
     {
-        id: '2',
-        type: 'codeRenderNode',
-        position: { x: 2050, y: 100 },  // TODO set Position dynamically
-        data: { code: FidelityNaturalHeader, setCodePanelVisible: null },
-    },
-    {
-        id: "3",
+        id: "2",
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 800, y: 200 },
         data: { image: babelBase64 },
     },
     {
-        id: "4",
+        id: "3",
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 1500, y: 200 },
         data: { image: appleMapListBase64 },
     },
     {
-        id: "5",
+        id: "4",
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 800, y: 10 * 100 + 300 },
@@ -114,7 +108,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCode, setRenderCodeState] = useState<string>(FidelityNaturalHeader);
+    const [renderCodeList, setRenderCodeListState] = useState<string[]>([FidelityNaturalHeader]);
     const [targetCodeDropped, setTargetCodeDropped] = useState<string>("");
     const [targetRenderCodeNodeBbox, setTargetRenderCodeNodeBbox] = useState<BoundingBox | null>(null);
 
@@ -135,8 +129,36 @@ const FlowComponent: React.FC = () => {
         };
     }, [abortController]);
 
+    const getCodeRenderNodes = useMemo(() => {
+        if (renderCodeList.length > 0) {
+            return renderCodeList.map((renderCode, idx) => ({
+                id: `code-${idx}`,
+                type: 'codeRenderNode',
+                position: { x: 250 + 500 * idx, y: 100 }, // Example of dynamic positioning
+                data: {
+                    code: renderCode,
+                    setCode: setRenderCodeList,
+                    toggleCodePanelVisible: toggleCodePanelVisible,
+                    codePanelVisible: codePanelVisible,
+                    isDragging: isDragging,
+                    setTargetCodeDropped: setTargetCodeDropped,
+                    setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
+                    loading: loading,
+                    setLoading: setLoading,
+                    abortController: abortController,
+                },
+            }));
 
-    const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox) => {
+            // TODO maybe add edges between prev & after nodes
+        }
+        return [];
+    }, [renderCodeList]);
+
+    useEffect(() => {
+        setNodes(getCodeRenderNodes);
+    }, [renderCodeList]);
+
+    const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it
 
         // 1. fetch the parsed Result
@@ -196,16 +218,16 @@ const FlowComponent: React.FC = () => {
                 setShowError(true);
             }
         }
-
-        setRenderCode(currentRenderCode);   // update the state only after everything is replaced
+        
+        addRenderCode(currentRenderCode);   // update the state only after everything is replaced, after each api call, add to the renderCode list, which will create a new node
 
         // 3. add explanations
         const explanations: string = parsedData.explanations;
-        addExplanationsNode(explanations, renderCodeBoundingBox);
+        addExplanationsNode(explanations, renderCodeBoundingBox);   // TODO set this position to between the old and new render node
     };
 
     // code block to handle API calls
-    const handleFetchResponse = async (textPrompt = "test", base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox) => {
+    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         setLoading(true);
         setResponse('');
 
@@ -252,7 +274,7 @@ const FlowComponent: React.FC = () => {
                     setResponse((prevResponse) => prevResponse + decodedChunk);
                 }
 
-                processResponse(finalResponse, renderCodeBoundingBox);
+                processResponse(finalResponse, renderCodeBoundingBox, renderCode);
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
@@ -441,8 +463,12 @@ const FlowComponent: React.FC = () => {
         setCodePanelVisible(!codePanelVisible);
     }
 
-    const setRenderCode = useCallback((newCode: string) => {
-        setRenderCodeState(newCode);
+    const setRenderCodeList = useCallback((newCode: string) => {
+        setRenderCodeListState(newCode);
+    }, []);
+
+    const addRenderCode = useCallback((newCode: string) => {
+        setRenderCodeListState((prevList) => [... prevList, newCode]);
     }, []);
 
     // memorize the code editor panel to avoid unnecessary re-render
@@ -464,11 +490,6 @@ const FlowComponent: React.FC = () => {
                 nodes={nodes.map(node => {
                     if (node.type === 'imageUploadNode') {
                         return { ...node, data: { ...node.data, onUpload: importImage } };
-                    } else if (node.type === 'codeRenderNode') {
-                        return {
-                            ...node,
-                            data: { ...node.data, code: renderCode, setCode: setRenderCode, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, loading: loading, setLoading: setLoading, abortController: abortController }
-                        }
                     } else if (node.type === 'imageDisplayNode') {
                         return { ...node, data: { ...node.data, onSubImageConfirmed: createSubImages } }
                     } else {
