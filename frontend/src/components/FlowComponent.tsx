@@ -154,11 +154,6 @@ const FlowComponent: React.FC = () => {
         }
     }
 
-    // TODO Remove this
-    useEffect(() => {
-        console.log("In main Component, isDragging: " + isDragging);
-    }, [isDragging]);
-
     // Function to get initial positions for nodes
     const getInitialPositions = () => {
         return renderCodeList.map((_, idx) => ({
@@ -175,16 +170,6 @@ const FlowComponent: React.FC = () => {
                 position: initialPositions[idx],
                 data: {
                     renderCode: renderCode,
-                    toggleCodePanelVisible: toggleCodePanelVisible,
-                    codePanelVisible: codePanelVisible,
-                    isDragging: isDragging,
-                    setDisplayCode: setDisplayCode,
-                    setTargetBlendCode: setTargetBlendCode,
-                    setTargetCodeDropped: setTargetCodeDropped,
-                    setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
-                    loading: loading,
-                    setLoading: setLoading,
-                    abortController: abortController,
                 },
             }));
             // TODO maybe add edges between prev & after nodes
@@ -201,30 +186,6 @@ const FlowComponent: React.FC = () => {
 
     // TODO IF A NODE IS INITIALIZED, WE DON"T CHANGE THEIR POSITION
 
-    // Update nodes when other dependencies change
-    useEffect(() => {
-        setNodes((prevNodes) => {
-            const updatedNodes = prevNodes.map((node, idx) => ({
-                ...node,
-                data: {
-                    ...node.data,
-                    isDragging: isDragging,
-                    toggleCodePanelVisible: toggleCodePanelVisible,
-                    codePanelVisible: codePanelVisible,
-                    setDisplayCode: setDisplayCode,
-                    setTargetBlendCode: setTargetBlendCode,
-                    setTargetCodeDropped: setTargetCodeDropped,
-                    setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
-                    loading: loading,
-                    setLoading: setLoading,
-                    abortController: abortController,
-                }
-            }));
-            return updatedNodes;
-        });
-
-        console.log("isDragging: " + isDragging + ", renderCodeList: " + renderCodeList);
-    }, [isDragging, loading, abortController]);
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it
@@ -546,6 +507,11 @@ const FlowComponent: React.FC = () => {
                 nodes={nodes.map(node => {
                     if (node.type === 'imageUploadNode') {
                         return { ...node, data: { ...node.data, onUpload: importImage } };
+                    } else if (node.type === 'codeRenderNode') {
+                        return {
+                            ...node,
+                            data: { ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, loading: loading, setLoading: setLoading, abortController: abortController }
+                        }
                     } else if (node.type === 'imageDisplayNode') {
                         return { ...node, data: { ...node.data, onSubImageConfirmed: createSubImages } }
                     } else {
