@@ -3,7 +3,7 @@ import { NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection }
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 
-const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
+const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
 
     const [isMobile, setIsMobile] = useState<boolean>(true);
     const nodeRef = useRef<HTMLDivElement>(null);
@@ -12,12 +12,6 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
     const handleToggle = () => {
         setIsMobile(!isMobile);
     };
-
-    // TODO Remove this
-    useEffect(() => {
-        console.log("In node Component, isDragging: " + data.isDragging);
-    }, [data.isDragging]);
-
 
     return (
         <div
@@ -46,6 +40,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
 
             </div>
             <CodeRenderFrame
+                nodeId={id}
                 isMobile={isMobile}
                 renderCode={data.renderCode}
                 isDragging={data.isDragging}
@@ -53,8 +48,8 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
                 setTargetCodeDropped={data.setTargetCodeDropped}
                 setTargetRenderCodeNodeBbox={data.setTargetRenderCodeNodeBbox}
                 codeRenderNodeRef={nodeRef}
-                loading={data.loading}
-                setLoading={data.setLoading}
+                loadingIds={data.loadingIds}
+                setLoadingIds={data.setLoadingIds}
                 abortController={data.abortController} />
             <div className='flex flex-row'>
                 <button

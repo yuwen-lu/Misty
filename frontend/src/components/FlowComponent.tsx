@@ -102,7 +102,7 @@ const FlowComponent: React.FC = () => {
 
     const { x, y, zoom } = useViewport();
     const [response, setResponse] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loadingIds, setLoadingIds] = useState<string[]>([]);
     const [showError, setShowError] = useState(false);
 
     // abort api calls when the user cancels it using the button
@@ -249,7 +249,8 @@ const FlowComponent: React.FC = () => {
 
     // code block to handle API calls
     const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
-        setLoading(true);
+        const loadingNodeId = loadingIds[-1];
+        console.log("loading node id: " + loadingNodeId);
         setResponse('');
 
         const controller = new AbortController();
@@ -306,7 +307,10 @@ const FlowComponent: React.FC = () => {
             }
 
         } finally {
-            setLoading(false);
+            setLoadingIds(ids => ids.filter(id => {
+                console.log("Found loadingNodeId! " + id);
+                return id !== loadingNodeId;
+            }));
             setAbortController(null);
         }
     };
@@ -502,7 +506,10 @@ const FlowComponent: React.FC = () => {
                     } else if (node.type === 'codeRenderNode') {
                         return {
                             ...node,
-                            data: { ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode, setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, loading: loading, setLoading: setLoading, abortController: abortController }
+                            data: { ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, 
+                                isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode, 
+                                setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, 
+                                loadingIds: loadingIds, setLoadingIds: setLoadingIds, abortController: abortController }
                         }
                     } else if (node.type === 'imageDisplayNode') {
                         return { ...node, data: { ...node.data, onSubImageConfirmed: createSubImages } }
