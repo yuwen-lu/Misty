@@ -130,43 +130,58 @@ const FlowComponent: React.FC = () => {
         setRenderCodeListState((prevList) => [...prevList, newCode]);
     }, []);
 
-    // TODO FUNCTION TO HELP DEBUG
-    function compareMultilineStrings(str1: string, str2: string): Array<{ line: number, line1: string, line2: string }> {
-        const lines1 = str1.split('\n');
-        const lines2 = str2.split('\n');
-        const maxLength = Math.max(lines1.length, lines2.length);
-        const differences: Array<{ line: number, line1: string, line2: string }> = [];
-
-        for (let i = 0; i < maxLength; i++) {
-            const line1 = lines1[i] || '';
-            const line2 = lines2[i] || '';
-            if (line1 !== line2) {
-                differences.push({ line: i + 1, line1, line2 });
-            }
-        }
-
-        return differences;
-    }
-
     const updateDisplayCode = (newCode: string) => {
-        console.log("outer loop Updating display code...");
         setDisplayCode((displayCode) => {
-            for (let i = 0; i < renderCodeList.length; i++) {
-                console.log("code list item " + i.toString() + ": " + renderCodeList[i]);
-                if (renderCodeList[i].trim() === displayCode.trim()) {
-                    console.log("found the displayed code, replacing...");
-                    renderCodeList[i] = newCode;
-                    setRenderCodeList(renderCodeList);  // Update the code in the list
-                    break;
-                }
-            }
+            // for (let i = 0; i < renderCodeList.length; i++) {
+            //     console.log("code list item " + i.toString() + ": " + renderCodeList[i]);
+            //     if (renderCodeList[i].trim() === displayCode.trim()) {
+            //         console.log("found the displayed code, replacing...");
+            // // update the code for the codeRenderNode
+            // setNodes((nds) => {
+            //     // Find the index of the node to update
+            //     const indexToUpdate = nds.findIndex(nd => nd.type === "codeRenderNode" && nd.data.renderCode.trim() === renderCodeList[i].trim());
+
+            //     // If the node is found, create a new array with the updated node
+            //     if (indexToUpdate !== -1) {
+            //         console.log("matched!");
+            //         console.log("updating new code: " + newCode);
+            //         return nds.map((node, index) => {
+            //             if (index === indexToUpdate) {
+            //                 // Replace data.renderCode with newCode
+            //                 console.log("Replacing...");
+            //                 return {
+            //                     ...node,
+            //                     data: {
+            //                         ...node.data,
+            //                         renderCode: newCode
+            //                     }
+            //                 };
+            //             }
+            //             return node;
+            //         });
+            //     }
+
+            //     console.log("No match!");
+
+            //     // If no matching node is found, return the original array
+            //     return nds;
+            // });
+
+
+            // Update the code in the list
+            setRenderCodeListState((prevList) => {
+                return prevList.map((code) => {
+                    return code.trim() === displayCode.trim() ? newCode : code;
+                });
+            });
+
+
+            //         break;
+            //     }
+            // }
             return newCode;
         })
-    }
-
-    useEffect(() => {
-        
-    }, [displayCode]);
+    };
 
     // Function to get initial positions for nodes
     const getInitialPositions = () => {
@@ -177,34 +192,38 @@ const FlowComponent: React.FC = () => {
     };
 
     const getCodeRenderNodes = (initialPositions: coordinatePositionType[]) => {
-        let codeRenderNodeList: Node[] = [];
-        if (renderCodeList.length > 0) {
-            codeRenderNodeList = renderCodeList.map((renderCode, idx) => {
-                const newNodeId = `code-${idx}`;
-                const existingNode = nodes.find((node) => node.id === newNodeId);
+        return renderCodeList.map((renderCode, idx) => {
+            const newNodeId = `code-${idx}`; // The idx is the index in the renderCodeList array
+            const existingNode = nodes.find((node) => node.id === newNodeId);
 
-                // if the node already exists, we don't assign a new node again, to avoid positioning issues
-                if (existingNode) {
-                    return existingNode;
-                } else {
-                    return {
-                        id: newNodeId,
-                        type: 'codeRenderNode',
-                        position: initialPositions[idx],  // change this line
-                        data: {
-                            renderCode: renderCode,
-                        },
-                    }
-                }
-            });
-            // TODO maybe add edges between prev & after nodes
-        }
-        return codeRenderNodeList;
-    }
+            if (existingNode) {
+                // Update the existing node with the new code
+                return {
+                    ...existingNode,
+                    data: {
+                        ...existingNode.data,
+                        renderCode: renderCode,
+                    },
+                };
+            } else {
+                // Create a new node if it doesn't exist
+                return {
+                    id: newNodeId,
+                    type: 'codeRenderNode',
+                    position: initialPositions[idx],
+                    data: {
+                        renderCode: renderCode,
+                    },
+                };
+            }
+        });
+    };
+
     // Initialize nodes with positions
     useEffect(() => {
         const initialPositions = getInitialPositions();
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(initialPositions)]);
+        console.log("renderCodeList updated, re-rendering the nodes");
     }, [renderCodeList]);
 
 
