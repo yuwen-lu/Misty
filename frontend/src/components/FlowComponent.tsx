@@ -163,19 +163,29 @@ const FlowComponent: React.FC = () => {
     };
 
     const getCodeRenderNodes = (initialPositions: coordinatePositionType[]) => {
+        let codeRenderNodeList: Node[] = [];
         if (renderCodeList.length > 0) {
-            return renderCodeList.map((renderCode, idx) => ({
-                id: `code-${idx}`,
-                type: 'codeRenderNode',
-                position: initialPositions[idx],
-                data: {
-                    renderCode: renderCode,
-                },
-            }));
+            codeRenderNodeList = renderCodeList.map((renderCode, idx) => {
+                const newNodeId = `code-${idx}`;
+                const existingNode = nodes.find((node) => node.id === newNodeId);
+
+                // if the node already exists, we don't assign a new node again, to avoid positioning issues
+                if (existingNode) {
+                    return existingNode;
+                } else {
+                    return {
+                        id: newNodeId,
+                        type: 'codeRenderNode',
+                        position: initialPositions[idx],  // change this line
+                        data: {
+                            renderCode: renderCode,
+                        },
+                    }
+                }
+            });
             // TODO maybe add edges between prev & after nodes
-        } else {
-            return [];
         }
+        return codeRenderNodeList;
     }
     // Initialize nodes with positions
     useEffect(() => {
