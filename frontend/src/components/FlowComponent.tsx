@@ -42,21 +42,6 @@ const nodeTypes: NodeTypes = {
     confirmationPopupNode: ConfirmationPopupNode,
 };
 
-const getImageBase64 = async (imagePath: string): Promise<string> => {
-    const response = await fetch(imagePath);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64data = reader.result as string;
-            resolve(base64data);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-};
-
-
 const initialNodes: Node[] = [
     {
         id: '1',
@@ -192,9 +177,6 @@ const FlowComponent: React.FC = () => {
         const initialPositions = getInitialPositions();
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(initialPositions)]);
     }, [renderCodeList]);
-
-
-    // TODO IF A NODE IS INITIALIZED, WE DON"T CHANGE THEIR POSITION
 
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
