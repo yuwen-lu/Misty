@@ -165,7 +165,7 @@ const FlowComponent: React.FC = () => {
     }
 
     useEffect(() => {
-        console.log("display code updated! " + displayCode);
+        
     }, [displayCode]);
 
     // Function to get initial positions for nodes
