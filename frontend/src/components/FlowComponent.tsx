@@ -15,7 +15,8 @@ import ReactFlow, {
     DefaultEdgeOptions,
     useReactFlow,
     useViewport,
-    SelectionMode
+    SelectionMode,
+    Position
 } from 'reactflow';
 import ImageDisplayNode from './customNodes/ImageDisplayNode';
 import ImageUploadNode from './customNodes/ImageUploadNode';
@@ -158,13 +159,20 @@ const FlowComponent: React.FC = () => {
         console.log("In main Component, isDragging: " + isDragging);
     }, [isDragging]);
 
+    // Function to get initial positions for nodes
+    const getInitialPositions = () => {
+        return renderCodeList.map((_, idx) => ({
+            x: 2200 + 1000 * idx,
+            y: 100
+        }));
+    };
 
-    const getCodeRenderNodes = () => {
+    const getCodeRenderNodes = (initialPositions: coordinatePositionType[]) => {
         if (renderCodeList.length > 0) {
             return renderCodeList.map((renderCode, idx) => ({
                 id: `code-${idx}`,
                 type: 'codeRenderNode',
-                position: { x: 2200 + 1000 * idx, y: 100 }, // Example of dynamic positioning
+                position: initialPositions[idx],
                 data: {
                     renderCode: renderCode,
                     toggleCodePanelVisible: toggleCodePanelVisible,
@@ -184,13 +192,39 @@ const FlowComponent: React.FC = () => {
             return [];
         }
     }
-
+    // Initialize nodes with positions
     useEffect(() => {
-        if (renderCodeList) {
-            setNodes((nodes) => [...nodes, ...getCodeRenderNodes()]);
-            console.log("isDragging: " + isDragging + ", renderCodeList: " + renderCodeList);
-        }
-    }, [renderCodeList, isDragging, loading, abortController]);
+        const initialPositions = getInitialPositions();
+        setNodes((nodes) => [...nodes, ...getCodeRenderNodes(initialPositions)]);
+    }, [renderCodeList]);
+
+
+    // TODO IF A NODE IS INITIALIZED, WE DON"T CHANGE THEIR POSITION
+
+    // Update nodes when other dependencies change
+    useEffect(() => {
+        setNodes((prevNodes) => {
+            const updatedNodes = prevNodes.map((node, idx) => ({
+                ...node,
+                data: {
+                    ...node.data,
+                    isDragging: isDragging,
+                    toggleCodePanelVisible: toggleCodePanelVisible,
+                    codePanelVisible: codePanelVisible,
+                    setDisplayCode: setDisplayCode,
+                    setTargetBlendCode: setTargetBlendCode,
+                    setTargetCodeDropped: setTargetCodeDropped,
+                    setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
+                    loading: loading,
+                    setLoading: setLoading,
+                    abortController: abortController,
+                }
+            }));
+            return updatedNodes;
+        });
+
+        console.log("isDragging: " + isDragging + ", renderCodeList: " + renderCodeList);
+    }, [isDragging, loading, abortController]);
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it
