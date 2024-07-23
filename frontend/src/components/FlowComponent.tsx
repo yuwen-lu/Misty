@@ -117,9 +117,6 @@ const FlowComponent: React.FC = () => {
         };
     }, [abortController]);
 
-    useEffect(() => {
-        console.log("loading ids updated in the main component! " + loadingIds.toString());
-    }, [loadingIds]);
 
     const toggleCodePanelVisible = () => {
         setCodePanelVisible(!codePanelVisible);
@@ -133,15 +130,43 @@ const FlowComponent: React.FC = () => {
         setRenderCodeListState((prevList) => [...prevList, newCode]);
     }, []);
 
-    const updateDisplayCode = (newCode: string) => {
-        for (let i = 0; i < renderCodeList.length; i++) {
-            if (renderCodeList[i] === displayCode) {
-                console.log("updating the displayed code...");
-                renderCodeList[i] = newCode; // Update the code in the list
-                break;
+    // TODO FUNCTION TO HELP DEBUG
+    function compareMultilineStrings(str1: string, str2: string): Array<{ line: number, line1: string, line2: string }> {
+        const lines1 = str1.split('\n');
+        const lines2 = str2.split('\n');
+        const maxLength = Math.max(lines1.length, lines2.length);
+        const differences: Array<{ line: number, line1: string, line2: string }> = [];
+
+        for (let i = 0; i < maxLength; i++) {
+            const line1 = lines1[i] || '';
+            const line2 = lines2[i] || '';
+            if (line1 !== line2) {
+                differences.push({ line: i + 1, line1, line2 });
             }
         }
+
+        return differences;
     }
+
+    const updateDisplayCode = (newCode: string) => {
+        console.log("outer loop Updating display code...");
+        setDisplayCode((displayCode) => {
+            for (let i = 0; i < renderCodeList.length; i++) {
+                console.log("code list item " + i.toString() + ": " + renderCodeList[i]);
+                if (renderCodeList[i].trim() === displayCode.trim()) {
+                    console.log("found the displayed code, replacing...");
+                    renderCodeList[i] = newCode;
+                    setRenderCodeList(renderCodeList);  // Update the code in the list
+                    break;
+                }
+            }
+            return newCode;
+        })
+    }
+
+    useEffect(() => {
+        console.log("display code updated! " + displayCode);
+    }, [displayCode]);
 
     // Function to get initial positions for nodes
     const getInitialPositions = () => {
@@ -490,7 +515,7 @@ const FlowComponent: React.FC = () => {
     };
 
     // memorize the code editor panel to avoid unnecessary re-render
-    const showCodePanel = (displayCode = "") => (
+    const showCodePanel = (displayCode: string) => (
         <CodeEditorPanel
             code={displayCode}
             setCode={updateDisplayCode}
@@ -511,10 +536,12 @@ const FlowComponent: React.FC = () => {
                     } else if (node.type === 'codeRenderNode') {
                         return {
                             ...node,
-                            data: { ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible, 
-                                isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode, 
-                                setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox, 
-                                loadingIds: loadingIds, setLoadingIds: setLoadingIds, abortController: abortController }
+                            data: {
+                                ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible,
+                                isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode,
+                                setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
+                                loadingIds: loadingIds, setLoadingIds: setLoadingIds, abortController: abortController
+                            }
                         }
                     } else if (node.type === 'imageDisplayNode') {
                         return { ...node, data: { ...node.data, onSubImageConfirmed: createSubImages } }
