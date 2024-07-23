@@ -13,6 +13,12 @@ const CodeRenderNode: React.FC<NodeProps> = ({ data, selected }) => {
         setIsMobile(!isMobile);
     };
 
+    // TODO Remove this
+    useEffect(() => {
+        console.log("In node Component, isDragging: " + data.isDragging);
+    }, [data.isDragging]);
+
+
     return (
         <div
             className={`flex flex-col items-center 

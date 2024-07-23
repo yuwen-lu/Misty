@@ -52,7 +52,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     };
 
     const cancelBlend = () => {
-        console.log("blend canceled");
+        console.log("confirmation popup closed");
         data.removeNode(id);
     }
 

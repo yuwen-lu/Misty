@@ -17,6 +17,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     // set isDragging state both locally and in app tsx
     const syncIsDragging = (draggingState: boolean) => {
         setLocalIsDragging(draggingState);
+        console.log("In SubImageNode, setting is Dragging: " + draggingState);
         data.setIsDragging(draggingState);
     }
 
@@ -32,9 +33,9 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
     }
 
     const handleWashiDragStart = (e: MouseEvent) => {
-        console.log('Drag start triggered'); // Debug log
-        console.log((e.target as HTMLElement));
-        console.log((e.target as HTMLElement).classList);
+        // console.log('Drag start triggered'); // Debug log
+        // console.log((e.target as HTMLElement));
+        // console.log((e.target as HTMLElement).classList);
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
         if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle') || (e.target as HTMLElement).classList.contains('react-flow__handle')) {
             return;
@@ -62,13 +63,13 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!localIsDragging) return;
-        console.log((e.target as HTMLElement).classList);
+        // console.log((e.target as HTMLElement).classList);
 
         // if we are dragging the handle, don't need to do anything, fallback to react flow default
         if ((e.target as HTMLElement).classList.contains('react-flow-drag-handle')) {
             return;
         }
-        console.log("from window: mouse move");
+        // console.log("from window: mouse move");
         if (localIsDragging) {
             const zoom = reactFlow.getZoom();
 
@@ -76,9 +77,9 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
                 x: (e.clientX - offset.x) / zoom,
                 y: (e.clientY - offset.y) / zoom,
             });
-            console.log("node width: " + nodeWidth);
-            console.log("x: " + e.clientX + ", y: " + e.clientY);
-            console.log("corrected x: " + String(e.clientX - offset.x), ", corrected y: " + String(e.clientY - offset.y));
+            // console.log("node width: " + nodeWidth);
+            // console.log("x: " + e.clientX + ", y: " + e.clientY);
+            // console.log("corrected x: " + String(e.clientX - offset.x), ", corrected y: " + String(e.clientY - offset.y));
         }
         // e.stopPropagation();
     };

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useViewport } from 'reactflow';
-import { LiveProvider, LiveEditor, LiveError, LivePreview } from 'react-live';
+import { LiveProvider, LiveError, LivePreview } from 'react-live';
 import * as LuIcons from 'react-icons/lu';
 import { BoundingBox, defaultBoundingBox } from '../../util';
 import "../../index.css";
@@ -70,6 +69,10 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, renderCode,
         if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
     }, []);
 
+    useEffect(() => {
+        console.log("dragging updated: " + isDragging);
+    }, [isDragging]);
+
     const cancelBlending = () => {
         setLoading(false);
         abortController && abortController.abort();
@@ -100,7 +103,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ isMobile, renderCode,
                 <div className='flex items-center w-full'>
                     <button
                         className="mt-12 mx-auto px-4 py-2 bg-zinc-700 text-white font-semibold rounded-lg hover:bg-zinc-900 focus:outline-none"
-                        onClick={ cancelBlending}>
+                        onClick={cancelBlending}>
                         Cancel
                     </button>
                 </div>

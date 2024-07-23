@@ -153,13 +153,18 @@ const FlowComponent: React.FC = () => {
         }
     }
 
+    // TODO Remove this
+    useEffect(() => {
+        console.log("In main Component, isDragging: " + isDragging);
+    }, [isDragging]);
 
-    const getCodeRenderNodes = useMemo(() => {
+
+    const getCodeRenderNodes = () => {
         if (renderCodeList.length > 0) {
             return renderCodeList.map((renderCode, idx) => ({
                 id: `code-${idx}`,
                 type: 'codeRenderNode',
-                position: { x: 250 + 500 * idx, y: 100 }, // Example of dynamic positioning
+                position: { x: 2200 + 1000 * idx, y: 100 }, // Example of dynamic positioning
                 data: {
                     renderCode: renderCode,
                     toggleCodePanelVisible: toggleCodePanelVisible,
@@ -174,15 +179,18 @@ const FlowComponent: React.FC = () => {
                     abortController: abortController,
                 },
             }));
-
             // TODO maybe add edges between prev & after nodes
+        } else {
+            return [];
         }
-        return [];
-    }, [renderCodeList]);
+    }
 
     useEffect(() => {
-        setNodes((nodes) => [...nodes, ...getCodeRenderNodes]);
-    }, [renderCodeList]);
+        if (renderCodeList) {
+            setNodes((nodes) => [...nodes, ...getCodeRenderNodes()]);
+            console.log("isDragging: " + isDragging + ", renderCodeList: " + renderCodeList);
+        }
+    }, [renderCodeList, isDragging, loading, abortController]);
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it
@@ -486,8 +494,8 @@ const FlowComponent: React.FC = () => {
     };
 
     // memorize the code editor panel to avoid unnecessary re-render
-    const showCodePanel = (displayCode: string) => (
-        displayCode === "" ? <></> : <CodeEditorPanel
+    const showCodePanel = (displayCode = "") => (
+        <CodeEditorPanel
             code={displayCode}
             setCode={updateDisplayCode}
             isVisible={codePanelVisible}
