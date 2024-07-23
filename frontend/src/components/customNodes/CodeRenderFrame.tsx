@@ -9,7 +9,7 @@ const addEventHandlersToCode = (code: string) => {
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
     const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { 
         setCurrentBbox();
-        setLoadingIds((ids) => [...ids, nodeId]);
+        setLoadingIds((ids) => ids.includes(nodeId) ? ids : [...ids, nodeId]);
         setTargetBlendCode(renderCode);
         setTargetCodeDropped(processHTMLElement(e.target).outerHTML); 
         console.log('mouse up from element:', e.target); }}`;

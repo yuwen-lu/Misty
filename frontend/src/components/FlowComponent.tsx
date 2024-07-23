@@ -117,6 +117,10 @@ const FlowComponent: React.FC = () => {
         };
     }, [abortController]);
 
+    useEffect(() => {
+        console.log("loading ids updated in the main component! " + loadingIds.toString());
+    }, [loadingIds]);
+
     const toggleCodePanelVisible = () => {
         setCodePanelVisible(!codePanelVisible);
     }
@@ -248,8 +252,8 @@ const FlowComponent: React.FC = () => {
     };
 
     // code block to handle API calls
-    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
-        const loadingNodeId = loadingIds[-1];
+    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, loadingId: string) => {
+        const loadingNodeId = loadingId;
         console.log("loading node id: " + loadingNodeId);
         setResponse('');
 
@@ -362,7 +366,7 @@ const FlowComponent: React.FC = () => {
                 const textPrompt = constructTextPrompt(targetNode.data.renderCode, targetCodeDropped);
                 console.log("sending the prompt, target code: \n" + targetCodeDropped);
                 // console.log("source node confirmed. here is the image: " + referenceImageBase64);
-                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode);  // TODO Add the bbox of rendercode node
+                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, loadingIds[-1]);  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
@@ -443,6 +447,7 @@ const FlowComponent: React.FC = () => {
                             renderCode: targetBlendCode,
                             targetCodeDropped: targetCodeDropped,
                             callOpenAI: handleFetchResponse,
+                            loadingIds: loadingIds,
                             subImageScreenshot: subImageScreenshot,
                             targetRenderCodeNodeBbox: targetRenderCodeNodeBbox,
                         },
