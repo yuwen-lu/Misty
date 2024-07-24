@@ -13,30 +13,26 @@ export const constructTextPrompt = (renderCode: string, targetCodeDropped: strin
 
         1. return the whole component for the entire screen, with the updates;
         2. only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
-        3. Explain the original code piece you changed and the updated code piece in the returned result. In your response, use the format "Explanations:" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"
+        3. Summarize the code changes in your response, use the format "Changes:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
 
-        Return result in the below format:
+        Return result in the below format, make sure you use json:
 
-        () => {
-            ... // the code
+        {
+            "updatedCode": \`() => {}\`
+            "changes": [a list of changes described in strings]
         }
-
-        Explanations:
-        ... // the explanations
 
         `;
 };
 
+export interface ParsedGlobalBlendingData {
+    updatedCode: string;
+    changes: string[];
+}
 
-export function parseResponse(response: string): string[] {
-    const index = response.indexOf("() =>");
-    if (index !== -1) {
-        response = response.slice(index);
-    } else {
-        console.log("error: cannot find the code prefix for generated result")
-    }
-    const splitResponse = response.replace('```', '').split("Explanations:");
-    return splitResponse;
+export function parseResponse(response: string): ParsedGlobalBlendingData {
+    const data = JSON.parse(response);
+    return data;
 };
 const getPromptForBlendMode = (blendModes: string[]): string => {
     if (blendModes.length === 0) {
@@ -128,7 +124,7 @@ function collectDeepestStrings(value: any, results: string[] = []): string[] {
     return results;
 }
 
-export function parseJsonResponse(jsonString: string): ParsedData {
+export function parseReplacementPromptResponse(jsonString: string): ParsedData {
     // Parse the input JSON string
     const data = JSON.parse(jsonString);
 

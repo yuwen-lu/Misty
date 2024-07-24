@@ -26,7 +26,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
             <div className='w-full flex relative items-center'>
                 {/* <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl my-5'> */}
                     <div className='w-full text-center font-semibold text-purple-900 text-xl mb-5'>
-                        Drag To Select
+                        Code Render
                     </div>
                 {/* </div> */}
                 {/* <button

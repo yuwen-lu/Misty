@@ -29,7 +29,7 @@ import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode, loadingIdState } from "../util";
-import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
+import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
 import { BookList } from './renderCode/BookList';
@@ -190,20 +190,19 @@ const FlowComponent: React.FC = () => {
 
     // TODO TESTING BLOCK
     useEffect(() => {
-        console.log("LoadingStates updated, \n" + 
+        console.log("LoadingStates updated, \n" +
             loadingStates.map((state) => {
                 return `ID: ${state.id}, Loading: ${state.loading}`;
             }).join("\n")
         );
     }, [loadingStates]);
-    
 
 
-    const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
+
+    const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it
-
         // 1. fetch the parsed Result
-        const parsedData: ParsedData = parseJsonResponse(finishedResponse); // TODO if we do the realtime parsing stream thing, parseJsonResponse will handle partial json
+        const parsedData: ParsedData = parseReplacementPromptResponse(finishedResponse); // TODO if we do the realtime parsing stream thing, parseReplacementPromptResponse will handle partial json
         const codeChangeList: CodeChange[] = parsedData.codeChanges;
 
         let currentRenderCode = renderCode;    // we keep a local copy of the code and only update the state at the end
@@ -267,6 +266,17 @@ const FlowComponent: React.FC = () => {
         addExplanationsNode(explanations, renderCodeBoundingBox);   // TODO set this position to between the old and new render node
     };
 
+    const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
+        // 1. fetch the parsed Result
+        const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse); 
+        const updatedCode = parsedData.updatedCode;
+        const changes: string[] = parsedData.changes;
+
+        addRenderCode(updatedCode);
+        addExplanationsNode(changes.join("\n"), renderCodeBoundingBox);   // TODO set this position to between the old and new render node
+
+    };
+
     const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {
         setLoadingStates(items => {
             // Check if the item already exists in the state
@@ -288,7 +298,7 @@ const FlowComponent: React.FC = () => {
     };
 
     // code block to handle API calls
-    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, loadingId: string) => {
+    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, loadingId: string, globalBlending = false) => {
 
         // set the loading status here
         updateLoadingState(targetCodeRenderNodeId, true);
@@ -337,7 +347,7 @@ const FlowComponent: React.FC = () => {
                     setResponse((prevResponse) => prevResponse + decodedChunk);
                 }
 
-                processResponse(finalResponse, renderCodeBoundingBox, renderCode);
+                globalBlending ? processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode) : processReplacementPromptResponse(finalResponse, renderCodeBoundingBox, renderCode);
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
@@ -401,7 +411,7 @@ const FlowComponent: React.FC = () => {
                 const textPrompt = constructTextPrompt(targetNode.data.renderCode, targetCodeDropped);
                 console.log("sending the prompt, target code: \n" + targetCodeDropped);
                 // console.log("source node confirmed. here is the image: " + referenceImageBase64);
-                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, targetCodeRenderNodeId);  // TODO Add the bbox of rendercode node
+                handleFetchResponse(textPrompt, referenceImageBase64, true, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, targetCodeRenderNodeId, true);  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
