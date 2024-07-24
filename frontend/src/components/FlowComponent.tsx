@@ -28,7 +28,7 @@ import CodeEditorPanel from './CodeEditorPanel';
 import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode, loadingIdState } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { babelBase64, otteraiBase64, appleMapListBase64 } from '../images';
@@ -96,16 +96,19 @@ const FlowComponent: React.FC = () => {
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
     const [renderCodeList, setRenderCodeListState] = useState<string[]>([FidelityNaturalHeader]);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
+
+    // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
     const [targetBlendCode, setTargetBlendCode] = useState<string>(""); // for the code to be blended
     const [targetCodeDropped, setTargetCodeDropped] = useState<string>("");
     const [targetRenderCodeNodeBbox, setTargetRenderCodeNodeBbox] = useState<BoundingBox | null>(null);
+    const [targetCodeRenderNodeId, setTargetCodeRenderNodeId] = useState<string>("");
 
     const { x, y, zoom } = useViewport();
     const [response, setResponse] = useState('');
-    const [loadingIds, setLoadingIds] = useState<string[]>([]);
+    const [loadingStates, setLoadingStates] = useState<loadingIdState[]>([]);
     const [showError, setShowError] = useState(false);
 
-    // abort api calls when the user cancels it using the button
+    // abort api calls when the user cancels it 
     const [abortController, setAbortController] = useState<AbortController | null>(null);
 
     useEffect(() => {
@@ -132,53 +135,12 @@ const FlowComponent: React.FC = () => {
 
     const updateDisplayCode = (newCode: string) => {
         setDisplayCode((displayCode) => {
-            // for (let i = 0; i < renderCodeList.length; i++) {
-            //     console.log("code list item " + i.toString() + ": " + renderCodeList[i]);
-            //     if (renderCodeList[i].trim() === displayCode.trim()) {
-            //         console.log("found the displayed code, replacing...");
-            // // update the code for the codeRenderNode
-            // setNodes((nds) => {
-            //     // Find the index of the node to update
-            //     const indexToUpdate = nds.findIndex(nd => nd.type === "codeRenderNode" && nd.data.renderCode.trim() === renderCodeList[i].trim());
-
-            //     // If the node is found, create a new array with the updated node
-            //     if (indexToUpdate !== -1) {
-            //         console.log("matched!");
-            //         console.log("updating new code: " + newCode);
-            //         return nds.map((node, index) => {
-            //             if (index === indexToUpdate) {
-            //                 // Replace data.renderCode with newCode
-            //                 console.log("Replacing...");
-            //                 return {
-            //                     ...node,
-            //                     data: {
-            //                         ...node.data,
-            //                         renderCode: newCode
-            //                     }
-            //                 };
-            //             }
-            //             return node;
-            //         });
-            //     }
-
-            //     console.log("No match!");
-
-            //     // If no matching node is found, return the original array
-            //     return nds;
-            // });
-
-
             // Update the code in the list
             setRenderCodeListState((prevList) => {
                 return prevList.map((code) => {
                     return code.trim() === displayCode.trim() ? newCode : code;
                 });
             });
-
-
-            //         break;
-            //     }
-            // }
             return newCode;
         })
     };
@@ -223,8 +185,12 @@ const FlowComponent: React.FC = () => {
     useEffect(() => {
         const initialPositions = getInitialPositions();
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(initialPositions)]);
-        console.log("renderCodeList updated, re-rendering the nodes");
     }, [renderCodeList]);
+
+    // TODO TESTING BLOCK
+    useEffect(() => {
+        console.log("LoadingStates updated, \n" + loadingStates.toString());
+    }, [loadingStates]);
 
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
@@ -295,10 +261,32 @@ const FlowComponent: React.FC = () => {
         addExplanationsNode(explanations, renderCodeBoundingBox);   // TODO set this position to between the old and new render node
     };
 
+    const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {
+        setLoadingStates(items => {
+          // Check if the item already exists in the state
+          const itemExists = items.some(item => item.id === targetCodeRenderNodeId);
+          
+          // If the item exists, update its loading state
+          if (itemExists) {
+            return items.map(item => {
+              if (item.id === targetCodeRenderNodeId) {
+                return { ...item, loading: newState };
+              }
+              return item;
+            });
+          } else {
+            // If the item does not exist, add it to the state
+            return [...items, { id: targetCodeRenderNodeId, loading: true }];
+          }
+        });
+      };
+
     // code block to handle API calls
     const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, loadingId: string) => {
-        const loadingNodeId = loadingId;
-        console.log("loading node id: " + loadingNodeId);
+
+        // set the loading status here
+        updateLoadingState(targetCodeRenderNodeId, true);
+
         setResponse('');
 
         const controller = new AbortController();
@@ -355,10 +343,7 @@ const FlowComponent: React.FC = () => {
             }
 
         } finally {
-            setLoadingIds(ids => ids.filter(id => {
-                console.log("Found loadingNodeId! " + id);
-                return id !== loadingNodeId;
-            }));
+            updateLoadingState(targetCodeRenderNodeId, false);
             setAbortController(null);
         }
     };
@@ -410,7 +395,7 @@ const FlowComponent: React.FC = () => {
                 const textPrompt = constructTextPrompt(targetNode.data.renderCode, targetCodeDropped);
                 console.log("sending the prompt, target code: \n" + targetCodeDropped);
                 // console.log("source node confirmed. here is the image: " + referenceImageBase64);
-                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, loadingIds[-1]);  // TODO Add the bbox of rendercode node
+                handleFetchResponse(textPrompt, referenceImageBase64, false, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, targetCodeRenderNodeId);  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
@@ -491,7 +476,7 @@ const FlowComponent: React.FC = () => {
                             renderCode: targetBlendCode,
                             targetCodeDropped: targetCodeDropped,
                             callOpenAI: handleFetchResponse,
-                            loadingIds: loadingIds,
+                            targetCodeRenderNodeId: targetCodeRenderNodeId,
                             subImageScreenshot: subImageScreenshot,
                             targetRenderCodeNodeBbox: targetRenderCodeNodeBbox,
                         },
@@ -559,7 +544,7 @@ const FlowComponent: React.FC = () => {
                                 ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible,
                                 isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode,
                                 setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
-                                loadingIds: loadingIds, setLoadingIds: setLoadingIds, abortController: abortController
+                                setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates, updateLoadingState: updateLoadingState, abortController: abortController
                             }
                         }
                     } else if (node.type === 'imageDisplayNode') {

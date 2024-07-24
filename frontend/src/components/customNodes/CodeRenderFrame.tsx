@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LiveProvider, LiveError, LivePreview } from 'react-live';
 import * as LuIcons from 'react-icons/lu';
-import { BoundingBox, defaultBoundingBox } from '../../util';
+import { BoundingBox, defaultBoundingBox, loadingIdState } from '../../util';
 import "../../index.css";
 
 const addEventHandlersToCode = (code: string) => {
@@ -9,7 +9,7 @@ const addEventHandlersToCode = (code: string) => {
     const handleMouseOut = `onMouseOut={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.remove('highlight'); }}`;
     const handleMouseUp = `onMouseUp={(e: React.MouseEvent<HTMLElement>) => { 
         setCurrentBbox();
-        setLoadingIds((ids) => ids.includes(nodeId) ? ids : [...ids, nodeId]);
+        setTargetCodeRenderNodeId(nodeId);
         setTargetBlendCode(renderCode);
         setTargetCodeDropped(processHTMLElement(e.target).outerHTML); 
         console.log('mouse up from element:', e.target); }}`;
@@ -58,12 +58,13 @@ interface CodeRenderFrameProps {
     setTargetCodeDropped: (html: string) => void;
     setTargetRenderCodeNodeBbox: (bbox: BoundingBox) => void;
     codeRenderNodeRef: React.RefObject<HTMLDivElement>;
-    loadingIds: string[];
-    setLoadingIds: React.Dispatch<React.SetStateAction<string[]>>;
+    loadingStates: loadingIdState[];
+    updateLoadingState: (targetId: string, newState: boolean) => void;
+    setTargetCodeRenderNodeId: (nodeId: string) => void;
     abortController: AbortController | null;
 }
 
-const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, renderCode, isDragging, setTargetBlendCode, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loadingIds, setLoadingIds, abortController }) => {
+const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, renderCode, isDragging, setTargetBlendCode, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loadingStates, setTargetCodeRenderNodeId, updateLoadingState, abortController }) => {
 
     const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
@@ -76,7 +77,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
     }, [isDragging]);
 
     const cancelBlending = () => {
-        setLoadingIds((ids) => ids.filter(id => id !== nodeId));
+        updateLoadingState(nodeId, false);
         abortController && abortController.abort();
     };
 
@@ -97,11 +98,16 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
 
     }
 
+    const checkIsLoading = () => {
+        const currentNodeState = loadingStates.find(items => items.id === nodeId);
+        return currentNodeState?.loading;
+    }
+
     return (
         <>
-            <div className={`spinner-wrapper ${loadingIds.includes(nodeId) ? "" : "invisible"}`}>
-                <div className={`spinner ${loadingIds.includes(nodeId) ? 'animate-spin' : ''}`}></div>
-                <div className={`spinner inner ${loadingIds.includes(nodeId) ? 'animate-spin-reverse' : ''}`}></div>
+            <div className={`spinner-wrapper ${checkIsLoading() ? "" : "invisible"}`}>
+                <div className={`spinner ${checkIsLoading() ? 'animate-spin' : ''}`}></div>
+                <div className={`spinner inner ${checkIsLoading() ? 'animate-spin-reverse' : ''}`}></div>
                 <div className='flex items-center w-full'>
                     <button
                         className="mt-12 mx-auto px-4 py-2 bg-zinc-700 text-white font-semibold rounded-lg hover:bg-zinc-900 focus:outline-none"
@@ -114,7 +120,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
             <div
                 className={`code-render-container grow w-full overflow-auto
                     ${isMobile ? "max-w-md" : "max-w-screen-md"} 
-                    ${loadingIds.includes(nodeId) ? "invisible" : ""}
+                    ${checkIsLoading() ? "invisible" : ""}
                     ${isDragging ? "flash" : ""}`}
                 style={{ width: '100%', height: '100%', border: 'none' }}
             >
@@ -124,7 +130,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
                     scope={{
                         React, useState, ...LuIcons,
                         renderCode,
-                        setLoadingIds,
+                        setTargetCodeRenderNodeId,
                         nodeId,
                         setTargetBlendCode,
                         setTargetCodeDropped,

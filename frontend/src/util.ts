@@ -241,3 +241,10 @@ export async function convertToOutline(base64Image: string): Promise<string> {
     };
   });
 }
+
+
+
+export interface loadingIdState {
+  id: string,
+  loading: boolean,
+}

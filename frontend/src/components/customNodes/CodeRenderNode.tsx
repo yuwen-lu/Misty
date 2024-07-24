@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
+import { loadingIdState } from '../../util';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
 
@@ -48,8 +49,9 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 setTargetCodeDropped={data.setTargetCodeDropped}
                 setTargetRenderCodeNodeBbox={data.setTargetRenderCodeNodeBbox}
                 codeRenderNodeRef={nodeRef}
-                loadingIds={data.loadingIds}
-                setLoadingIds={data.setLoadingIds}
+                loadingStates={data.loadingStates}
+                updateLoadingState={data.updateLoadingState}
+                setTargetCodeRenderNodeId={data.setTargetCodeRenderNodeId}
                 abortController={data.abortController} />
             <div className='flex flex-row'>
                 <button
