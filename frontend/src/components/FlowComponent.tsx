@@ -68,7 +68,7 @@ const initialNodes: Node[] = [
         id: "4",
         type: 'imageDisplayNode',
         draggable: true,
-        position: { x: 800, y: 10 * 100 + 300 },
+        position: { x: 900, y: 700 },
         data: { image: appleFitness },
     }
 ];
@@ -292,9 +292,8 @@ const FlowComponent: React.FC = () => {
 
         // set the loading status here
         updateLoadingState(targetCodeRenderNodeId, true);
-
+        console.log("node " + targetCodeRenderNodeId + " started! ");
         setResponse('');
-
         const controller = new AbortController();
         setAbortController(controller);
 
@@ -349,6 +348,7 @@ const FlowComponent: React.FC = () => {
             }
 
         } finally {
+            console.log("node " + targetCodeRenderNodeId + " done! ");
             updateLoadingState(targetCodeRenderNodeId, false);
             setAbortController(null);
         }

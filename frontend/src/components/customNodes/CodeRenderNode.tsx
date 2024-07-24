@@ -23,11 +23,13 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
             w-full h-full `}
             ref={nodeRef}
         >
-            <div className='w-full flex relative items-center mb-5'>
-                <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl'>
-                    Code Render
-                </div>
-                <button
+            <div className='w-full flex relative items-center'>
+                {/* <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl my-5'> */}
+                    <div className='w-full text-center font-semibold text-purple-900 text-xl mb-5'>
+                        Drag To Select
+                    </div>
+                {/* </div> */}
+                {/* <button
                     onClick={handleToggle}
                     className="ml-auto flex items-center justify-center px-1 py-1 bg-stone-700 rounded-full border border-stone-500 hover:bg-stone-600"
                 >
@@ -37,7 +39,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     <div className={`px-0.5 py-0.5 rounded-full ${!isMobile ? "bg-stone-500" : ""} `}>
                         <LuMonitor size={24} className={`transition-opacity duration-300 mx-2 my-1 ${isMobile ? 'opacity-50' : 'opacity-100'}`} />
                     </div>
-                </button>
+                </button> */}
 
             </div>
             <CodeRenderFrame
