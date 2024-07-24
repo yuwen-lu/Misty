@@ -31,7 +31,7 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode, loadingIdState } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness } from '../images';
+import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
 import { BookList } from './renderCode/BookList';
 
 const nodeTypes: NodeTypes = {
@@ -55,7 +55,7 @@ const initialNodes: Node[] = [
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 800, y: 200 },
-        data: { image: babelBase64 },
+        data: { image: groupedTableViewOrange },
     },
     {
         id: "3",
@@ -190,8 +190,13 @@ const FlowComponent: React.FC = () => {
 
     // TODO TESTING BLOCK
     useEffect(() => {
-        console.log("LoadingStates updated, \n" + loadingStates.toString());
+        console.log("LoadingStates updated, \n" + 
+            loadingStates.map((state) => {
+                return `ID: ${state.id}, Loading: ${state.loading}`;
+            }).join("\n")
+        );
     }, [loadingStates]);
+    
 
 
     const processResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
@@ -209,14 +214,14 @@ const FlowComponent: React.FC = () => {
                 const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
                 const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
-            //     const replacementCodeWithComment = `
-            // {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code beginnning */}
-            // {/* ${originalCodePiece} */}
-            // {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code end */}
-            // {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code beginnning */}
-            // ${replacementCodePiece}
-            // {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code end */}
-            // `
+                //     const replacementCodeWithComment = `
+                // {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code beginnning */}
+                // {/* ${originalCodePiece} */}
+                // {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code end */}
+                // {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code beginnning */}
+                // ${replacementCodePiece}
+                // {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code end */}
+                // `
 
                 const escapeRegExp = (str: string) => {
                     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -264,23 +269,23 @@ const FlowComponent: React.FC = () => {
 
     const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {
         setLoadingStates(items => {
-          // Check if the item already exists in the state
-          const itemExists = items.some(item => item.id === targetCodeRenderNodeId);
-          
-          // If the item exists, update its loading state
-          if (itemExists) {
-            return items.map(item => {
-              if (item.id === targetCodeRenderNodeId) {
-                return { ...item, loading: newState };
-              }
-              return item;
-            });
-          } else {
-            // If the item does not exist, add it to the state
-            return [...items, { id: targetCodeRenderNodeId, loading: true }];
-          }
+            // Check if the item already exists in the state
+            const itemExists = items.some(item => item.id === targetCodeRenderNodeId);
+
+            // If the item exists, update its loading state
+            if (itemExists) {
+                return items.map(item => {
+                    if (item.id === targetCodeRenderNodeId) {
+                        return { ...item, loading: newState };
+                    }
+                    return item;
+                });
+            } else {
+                // If the item does not exist, add it to the state
+                return [...items, { id: targetCodeRenderNodeId, loading: true }];
+            }
         });
-      };
+    };
 
     // code block to handle API calls
     const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, loadingId: string) => {
