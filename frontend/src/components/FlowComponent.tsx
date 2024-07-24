@@ -31,7 +31,7 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode, loadingIdState } from "../util";
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { babelBase64, otteraiBase64, appleMapListBase64 } from '../images';
+import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness } from '../images';
 import { BookList } from './renderCode/BookList';
 
 const nodeTypes: NodeTypes = {
@@ -69,7 +69,7 @@ const initialNodes: Node[] = [
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 800, y: 10 * 100 + 300 },
-        data: { image: otteraiBase64 },
+        data: { image: appleFitness },
     }
 ];
 
@@ -209,14 +209,14 @@ const FlowComponent: React.FC = () => {
                 const originalCodePiece = removeEscapedChars(codeChange.originalCode.replaceAll("'", "\""));
                 const replacementCodePiece = removeEscapedChars(codeChange.replacementCode);
 
-                const replacementCodeWithComment = `
-            {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code beginnning */}
-            {/* ${originalCodePiece} */}
-            {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code end */}
-            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code beginnning */}
-            ${replacementCodePiece}
-            {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code end */}
-            `
+            //     const replacementCodeWithComment = `
+            // {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code beginnning */}
+            // {/* ${originalCodePiece} */}
+            // {/* ${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)}${String.fromCodePoint(0x1FAA6)} replaced code end */}
+            // {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code beginnning */}
+            // ${replacementCodePiece}
+            // {/* ${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)}${String.fromCodePoint(0x1F6A7)} new code end */}
+            // `
 
                 const escapeRegExp = (str: string) => {
                     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -237,7 +237,7 @@ const FlowComponent: React.FC = () => {
                 if (searchPattern.test(currentRenderCode.replaceAll("'", "\""))) {
                     // console.log("replacing code: " + originalCodePiece + ", search pattern: " + searchPattern);
                     // Replace and update the state using the original render code
-                    const updatedRenderCode = currentRenderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodeWithComment);
+                    const updatedRenderCode = currentRenderCode.replaceAll("'", "\"").replace(searchPattern, replacementCodePiece);
                     try {
                         currentRenderCode = await formatCode(updatedRenderCode);
                     } catch (err) {
