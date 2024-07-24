@@ -122,7 +122,6 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
                     ${isMobile ? "max-w-md" : "max-w-screen-md"} 
                     ${checkIsLoading() ? "invisible" : ""}
                     ${isDragging ? "flash" : ""}`}
-                style={{ width: '100%', height: '100%', border: 'none' }}
             >
 
                 <LiveProvider

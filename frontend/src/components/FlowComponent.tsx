@@ -32,6 +32,7 @@ import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundin
 import { parseResponse, constructTextPrompt, parseJsonResponse, CodeChange, ParsedData } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { babelBase64, otteraiBase64, appleMapListBase64 } from '../images';
+import { BookList } from './renderCode/BookList';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -94,7 +95,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeList, setRenderCodeListState] = useState<string[]>([FidelityNaturalHeader]);
+    const [renderCodeList, setRenderCodeListState] = useState<string[]>([BookList]);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
