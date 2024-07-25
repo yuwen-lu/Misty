@@ -13,14 +13,17 @@ export const constructTextPrompt = (renderCode: string) => {
 
         1. return the whole component for the entire screen, with the updates;
         2. only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
-        3. Summarize the code changes in your response, use the format "Changes:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
+        3. Summarize the code changes in your response, use the format "changes:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
 
         Return result in the below format, make sure you use json:
 
         {
             "updatedCode": \`() => {}\`
-            "changes": [a list of changes described in strings]
+            "changes": [a list of changes described in strings, use the tailwind classes to indicate the changes]
         }
+
+        here is a good example of the changes field:
+        [ "Color change: Background color - bg-black to bg-white, text color - text-white to text-gray-900.", "Color change: Section title color - text-white to text-gray-600.", "Border addition: added border-2 border-gray-300/90"]
 
         `;
 };
