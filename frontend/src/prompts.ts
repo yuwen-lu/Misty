@@ -1,11 +1,11 @@
 // TODO give some images for the model to use
-export const constructTextPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = [""]) => {
+export const constructTextPrompt = (renderCode: string) => {
 
     return `Here is my react and tailwind code: 
                 
         ${renderCode}. 
 
-        Help me blend the prominent color of the reference image into ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}. Change only the source code corresponding to this, and no other sections.`}
+        Help me blend the visual style of the reference image into the above code. Change only the source code corresponding to this, and no other sections.
 
         Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
 

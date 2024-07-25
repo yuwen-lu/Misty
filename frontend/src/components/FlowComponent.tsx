@@ -263,21 +263,22 @@ const FlowComponent: React.FC = () => {
 
         // 3. add explanations
         const explanations: string = parsedData.explanations;
-        addExplanationsNode(explanations, renderCodeBoundingBox);   // TODO set this position to between the old and new render node
+        addExplanationsNode([explanations], renderCodeBoundingBox);   // TODO set this position to between the old and new render node
     };
 
     const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // 1. fetch the parsed Result
-        const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse); 
+        const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse);
         const updatedCode = parsedData.updatedCode;
         const changes: string[] = parsedData.changes;
 
         addRenderCode(updatedCode);
-        addExplanationsNode(changes.join("\n"), renderCodeBoundingBox);   // TODO set this position to between the old and new render node
+        addExplanationsNode(changes, renderCodeBoundingBox);   // TODO set this position to between the old and new render node
 
     };
 
     const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {
+        console.log("updating state with target code id: " + targetCodeRenderNodeId);
         setLoadingStates(items => {
             // Check if the item already exists in the state
             const itemExists = items.some(item => item.id === targetCodeRenderNodeId);
@@ -298,11 +299,12 @@ const FlowComponent: React.FC = () => {
     };
 
     // code block to handle API calls
-    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, loadingId: string, globalBlending = false) => {
+    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, targetNodeId="", globalBlending = false) => {
 
         // set the loading status here
-        updateLoadingState(targetCodeRenderNodeId, true);
-        console.log("node " + targetCodeRenderNodeId + " started! ");
+        targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, true) : updateLoadingState(targetNodeId, true);
+
+        console.log("calling api, node " + targetCodeRenderNodeId + " started! ");
         setResponse('');
         const controller = new AbortController();
         setAbortController(controller);
@@ -358,14 +360,13 @@ const FlowComponent: React.FC = () => {
             }
 
         } finally {
-            console.log("node " + targetCodeRenderNodeId + " done! ");
-            updateLoadingState(targetCodeRenderNodeId, false);
+            targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, false) : updateLoadingState(targetNodeId, false);
             setAbortController(null);
         }
     };
 
 
-    const addExplanationsNode = (explanations: string, renderCodeNodeBoundingBox: BoundingBox) => {
+    const addExplanationsNode = (explanations: string[], renderCodeNodeBoundingBox: BoundingBox) => {
 
         console.log("Received bbox in flowcomponent: " + JSON.stringify(renderCodeNodeBoundingBox));
         const newXPos = renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200;
@@ -407,11 +408,12 @@ const FlowComponent: React.FC = () => {
             const sourceNode = nodes.find((node) => node.id === connection.source);
             const targetNode = nodes.find((node) => node.id === connection.target);
             if (sourceNode && targetNode) {
+                // console.log("setting targetNodeId, " + targetNode.id)
+                setTargetCodeRenderNodeId(targetNode.id);
                 const referenceImageBase64 = sourceNode.data.image;
-                const textPrompt = constructTextPrompt(targetNode.data.renderCode, targetCodeDropped);
-                console.log("sending the prompt, target code: \n" + targetCodeDropped);
-                // console.log("source node confirmed. here is the image: " + referenceImageBase64);
-                handleFetchResponse(textPrompt, referenceImageBase64, true, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, targetCodeRenderNodeId, true);  // TODO Add the bbox of rendercode node
+                const textPrompt = constructTextPrompt(targetNode.data.renderCode);
+                // we have to pass the targetNode.id in here because of some weird state not updating & async function call issues
+                handleFetchResponse(textPrompt, referenceImageBase64, true, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, targetNode.id, true);  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
