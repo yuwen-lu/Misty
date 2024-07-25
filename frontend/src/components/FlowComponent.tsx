@@ -269,7 +269,14 @@ const FlowComponent: React.FC = () => {
     const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // 1. fetch the parsed Result
         const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse);
-        const updatedCode = parsedData.updatedCode;
+        let updatedCode = parsedData.updatedCode;
+
+        // Check if updatedCode is wrapped in backticks
+        if (updatedCode.startsWith('`') && updatedCode.endsWith('`')) {
+            // Remove the backticks
+            updatedCode = updatedCode.slice(1, -1);
+        }
+
         const changes: string[] = parsedData.changes;
 
         addRenderCode(updatedCode);
@@ -299,7 +306,7 @@ const FlowComponent: React.FC = () => {
     };
 
     // code block to handle API calls
-    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, targetNodeId="", globalBlending = false) => {
+    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, targetNodeId = "", globalBlending = false) => {
 
         // set the loading status here
         targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, true) : updateLoadingState(targetNodeId, true);
