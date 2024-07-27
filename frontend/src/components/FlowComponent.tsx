@@ -33,6 +33,7 @@ import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, Cod
 import ErrorPopup from './ErrorPopup';
 import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
 import { BookList } from './renderCode/BookList';
+import TSXDiff from '../TSXDiff';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -558,7 +559,7 @@ const FlowComponent: React.FC = () => {
 
     return (
         <div style={{ width: '100vw', height: '100vh' }}>
-            <ReactFlow
+            {/* <ReactFlow
                 nodes={nodes.map(node => {
                     if (node.type === 'imageUploadNode') {
                         return { ...node, data: { ...node.data, onUpload: importImage } };
@@ -601,7 +602,8 @@ const FlowComponent: React.FC = () => {
                         />
                     )}
                 </div>
-            </ReactFlow>
+            </ReactFlow> */}
+            <TSXDiff />
         </div>
     )
 }
