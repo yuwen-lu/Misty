@@ -1,10 +1,7 @@
 import React from 'react';
 import { NodeProps } from 'reactflow';
+import { Change } from '../../prompts';
 
-type ParsedItem = {
-    description: string;
-    changes: string[];
-};
 
 const parseString = (input: string | string[]): string[] => {
     const processString = (str: string): string[] => {
@@ -22,21 +19,36 @@ const parseString = (input: string | string[]): string[] => {
     }
 };
 
+const parseObject = (input: Change[]): string[] => {
+    return input.map(item => {
+        const beforeText = item.before ? `before: ${item.before}` : "before: (empty)";
+        const afterText = `after: ${item.after}`;
+        return `type: ${item.type}, ${beforeText}, ${afterText}`;
+    });
+}
+
 
 const ExplanationNode: React.FC<NodeProps> = ({ id, data }) => {
 
-    const items = parseString(data.text);
+    let items;
+    if (typeof data.text === 'object') {
+        items = parseObject(data.text);
+    } else {
+        items = parseString(data.text);
+    }
+     
 
     return (
         <div className='max-w-lg flex flex-col items-center px-10 pb-10 shadow-lg rounded-lg text-white bg-purple-900/70 rounded-lg border-2 border-stone-400'>
             <div className='font-semibold text-lg my-7'>Changes Summary</div>
             <div>
                 {items.map((item, index) => {
-                    const [title, ...content] = item.split(': ');
+                    // const [title, ...content] = item.split(': ');
                     return (
                         <div key={index} style={{ marginBottom: '1rem' }}>
-                            <strong>{index + 1}. {title}:</strong>
-                            <p>{content.join(': ')}</p>
+                            {/* <strong>{index + 1}. {title}:</strong>
+                            <p>{content.join(': ')}</p> */}
+                            <p>{item}</p>
                         </div>
                     );
                 })}

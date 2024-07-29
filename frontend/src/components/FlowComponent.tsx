@@ -29,11 +29,12 @@ import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode, loadingIdState } from "../util";
-import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData } from '../prompts';
+import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
 import { BookList } from './renderCode/BookList';
 import TSXDiff from '../TSXDiff';
+import DynamicUI from './customNodes/DynamicUI';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -42,7 +43,41 @@ const nodeTypes: NodeTypes = {
     explanationNode: ExplanationNode,
     codeRenderNode: CodeRenderNode,
     confirmationPopupNode: ConfirmationPopupNode,
+    dynamicUINode: DynamicUI,
 };
+
+
+// TODO remove this
+const tempChanges: Change[] = [{
+    "type": "color",
+    "before": "bg-black",
+    "after": "bg-white"
+}, {
+    "type": "color",
+    "before": "text-white",
+    "after": "text-gray-900"
+}, {
+    "type": "color",
+    "before": "bg-gray-800",
+    "after": "bg-white"
+}, {
+    "type": "shadow",
+    "before": "",
+    "after": "shadow-md"
+}, {
+    "type": "border",
+    "before": "border-gray-500/90",
+    "after": "border-gray-200"
+}, {
+    "type": "text-size",
+    "before": "w-72",
+    "after": "w-40"
+}, {
+    "type": "font-style",
+    "before": "",
+    "after": "text-base font-medium"
+}]
+
 
 const initialNodes: Node[] = [
     {
@@ -71,6 +106,13 @@ const initialNodes: Node[] = [
         draggable: true,
         position: { x: 900, y: 700 },
         data: { image: appleFitness },
+    },
+    {
+        id: "5",
+        type: "dynamicUINode",
+        draggable: true,
+        position: { x: 2000, y: 200 },
+        data: { changes: tempChanges }
     }
 ];
 
@@ -262,7 +304,7 @@ const FlowComponent: React.FC = () => {
 
         addRenderCode(currentRenderCode);   // update the state only after everything is replaced, after each api call, add to the renderCode list, which will create a new node
 
-        // 3. add explanations
+        // 3. add explanations  TODO now it might be the field of "changes"
         const explanations: string = parsedData.explanations;
         addExplanationsNode([explanations], renderCodeBoundingBox);   // TODO set this position to between the old and new render node
     };
@@ -278,7 +320,20 @@ const FlowComponent: React.FC = () => {
             updatedCode = updatedCode.slice(1, -1);
         }
 
-        const changes: string[] = parsedData.changes;
+        // Check if updatedCode does not start with () =>
+        if (!updatedCode.startsWith('() =>')) {
+            // Find the index of () =>
+            const arrowFunctionIndex = updatedCode.indexOf('() =>');
+
+            // If () => is found, slice the code from that point
+            if (arrowFunctionIndex !== -1) {
+                updatedCode = updatedCode.slice(arrowFunctionIndex);
+            }
+        }
+
+        console.log("displaying...\n" + parsedData)
+
+        const changes: Change[] = parsedData.changes;
 
         addRenderCode(updatedCode);
         addExplanationsNode(changes, renderCodeBoundingBox);   // TODO set this position to between the old and new render node
@@ -374,7 +429,7 @@ const FlowComponent: React.FC = () => {
     };
 
 
-    const addExplanationsNode = (explanations: string[], renderCodeNodeBoundingBox: BoundingBox) => {
+    const addExplanationsNode = (explanations: Change[] | string[], renderCodeNodeBoundingBox: BoundingBox) => {
 
         console.log("Received bbox in flowcomponent: " + JSON.stringify(renderCodeNodeBoundingBox));
         const newXPos = renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200;
@@ -553,7 +608,6 @@ const FlowComponent: React.FC = () => {
             setCodePanelVisible={setCodePanelVisible}
         />
     );
-
 
     const panOnDrag = [1, 2];   // useful for figma like interaction
 

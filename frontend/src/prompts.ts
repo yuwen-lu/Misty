@@ -18,25 +18,47 @@ export const constructTextPrompt = (renderCode: string) => {
         Return result in the below format, make sure you use json:
 
         {
-            "updatedCode": \`() => {}\`
-            "changes": [a list of changes described in strings, use the tailwind classes to indicate the changes]
+            updatedCode: \`() => {}\`
+            // a list of objects listing the changes made, use the tailwind classes to indicate the changes
+            changes: [{
+                type: "color",
+                before": // the tailwind class before the change,
+                "after": // the tailwind class after the change
+            }]
         }
 
         here is a good example of the changes field:
-        [ "Color change: Background color - bg-black to bg-white, text color - text-white to text-gray-900.", "Color change: Section title color - text-white to text-gray-600.", "Border addition: added border-2 border-gray-300/90"]
-
+        changes: [{
+            type: "color",
+            before: "bg-black",
+            after: "bg-white"
+        }, {
+            type: "color",
+            before: "text-white",
+            after: "text-gray-900"
+        }, {
+            type: "border",
+            before: "", // you can use empty before field to indicate addition of new classes
+            after: "border-2 border-gray-300/90"
+        }, ...] // add as many as appropriate
         `;
+};
+
+export type Change = {
+    type: string;
+    before: string;
+    after: string;
 };
 
 export interface ParsedGlobalBlendingData {
     updatedCode: string;
-    changes: string[];
+    changes: Change[];
 }
 
 export function parseResponse(response: string): ParsedGlobalBlendingData {
-    const data = JSON.parse(response);
-    return data;
+    return JSON.parse(response) as ParsedGlobalBlendingData;
 };
+
 const getPromptForBlendMode = (blendModes: string[]): string => {
     if (blendModes.length === 0) {
         return "Please provide at least one blend mode.";
