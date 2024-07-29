@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
-import { loadingIdState } from '../../util';
+import { loadingIdState, tempChanges } from '../../util';
+import DynamicUI from './DynamicUI';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
 
@@ -16,14 +17,14 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
 
     return (
         <div
-            className={`flex flex-col items-center 
+            className={`flex flex-row items-center 
             px-20 py-5 
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
             border-t-8 border-t-purple-900
             w-full h-full `}
             ref={nodeRef}
         >
-            <div className='w-full flex relative items-center'>
+            <div className='w-full flex flex-col relative items-center'>
                 {/* <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl my-5'> */}
                     <div className='w-full text-center font-semibold text-purple-900 text-xl mb-5'>
                         Code Render
@@ -82,6 +83,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 id="render-t"
                 isConnectable={true}
             />
+            <DynamicUI changes={tempChanges} />
         </div >
     );
 };

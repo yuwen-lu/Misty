@@ -42,7 +42,6 @@ const nodeTypes: NodeTypes = {
     explanationNode: ExplanationNode,
     codeRenderNode: CodeRenderNode,
     confirmationPopupNode: ConfirmationPopupNode,
-    dynamicUINode: DynamicUI,
 };
 
 const initialNodes: Node[] = [
@@ -73,13 +72,6 @@ const initialNodes: Node[] = [
         position: { x: 900, y: 700 },
         data: { image: appleFitness },
     },
-    {
-        id: "5",
-        type: "dynamicUINode",
-        draggable: true,
-        position: { x: 3000, y: 200 },
-        data: { changes: tempChanges }
-    }
 ];
 
 const initialEdges: Edge[] = [
@@ -104,7 +96,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, changes: []}]);
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, changes: tempChanges}]); // TODO URGENT REPLACE THIS TEMP CHANGES
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -189,6 +181,7 @@ const FlowComponent: React.FC = () => {
                     position: initialPositions[idx],
                     data: {
                         renderCode: renderCode,
+                        changes: renderContent.changes
                     },
                 };
             }

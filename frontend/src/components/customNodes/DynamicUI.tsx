@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
 import { Eye, Brackets, ALargeSmall, Type, MoonStar } from 'lucide-react';
-import { NodeProps } from 'reactflow';
 import { Change } from '../../prompts';
 
-const DynamicUI: React.FC<NodeProps> = ({ id, data }) => {
-    const [state, setState] = useState<Change[]>(data.changes);
+interface DynamicUIProps {
+    changes: Change[];
+}
+
+const DynamicUI: React.FC<DynamicUIProps> = ({ changes }) => {
+    const [state, setState] = useState<Change[]>(changes);
 
     const handleColorChange = (index: number, color: ColorResult) => {
         const newState = [...state];
@@ -21,7 +24,7 @@ const DynamicUI: React.FC<NodeProps> = ({ id, data }) => {
     };
 
     return (
-        <div className="flex flex-col items-center w-full h-full px-20 py-5 bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-purple-900">
+        <div>
             <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Changes</div>
             {state.map((change, index) => (
                 <div key={index} className="mb-4 w-full flex flex-col items-start">
