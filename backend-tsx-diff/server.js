@@ -21,9 +21,14 @@ app.post('/compare', (req, res) => {
     const ast1 = babel.parseSync(tsx1, { filename: 'file1.tsx' });
     const ast2 = babel.parseSync(tsx2, { filename: 'file2.tsx' });
 
+    console.log("Parsing tsx...");
+    console.log(ast1);
+    console.log(typeof(ast1));
+    // TODO The problem might be that ast1 and ast2 are not in json format
     const diffResult = diff.diffJson(ast1, ast2);
 
     return res.json(diffResult);
+    // return [ast1, ast2];
   } catch (error) {
     console.error(error);
     return res.status(500).send('Error parsing TSX strings.');

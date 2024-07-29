@@ -30,6 +30,7 @@ const TSXDiff: React.FC = () => {
       }
 
       const result: DiffResult[] = await response.json();
+      console.log("diff result:\n" + result);
       setDiffResult(result);
     } catch (error) {
       console.log("Error: " + error);
