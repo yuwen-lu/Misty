@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { SketchPicker, ColorResult } from 'react-color';
 import { Eye, Brackets, ALargeSmall, Type, MoonStar } from 'lucide-react';
 import { NodeProps } from 'reactflow';
-
-interface Change {
-    type: string;
-    before: string;
-    after: string;
-}
+import { Change } from '../../prompts';
 
 const DynamicUI: React.FC<NodeProps> = ({ id, data }) => {
     const [state, setState] = useState<Change[]>(data.changes);

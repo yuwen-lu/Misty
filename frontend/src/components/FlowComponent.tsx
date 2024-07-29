@@ -24,16 +24,16 @@ import ExplanationNode from './customNodes/ExplanationNode';
 import CodeRenderNode from './customNodes/CodeRenderNode';
 import SubImageNode from './customNodes/SubImageNode';
 import ConfirmationPopupNode from './customNodes/ConfirmationPopupNode';
+import DynamicUI from './customNodes/DynamicUI';
 import CodeEditorPanel from './CodeEditorPanel';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent, tempChanges } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
+import { appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
 import { BookList } from './renderCode/BookList';
 import TSXDiff from '../TSXDiff';
-import DynamicUI from './customNodes/DynamicUI';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -44,39 +44,6 @@ const nodeTypes: NodeTypes = {
     confirmationPopupNode: ConfirmationPopupNode,
     dynamicUINode: DynamicUI,
 };
-
-
-// TODO remove this
-const tempChanges: Change[] = [{
-    "type": "color",
-    "before": "bg-black",
-    "after": "bg-white"
-}, {
-    "type": "color",
-    "before": "text-white",
-    "after": "text-gray-900"
-}, {
-    "type": "color",
-    "before": "bg-gray-800",
-    "after": "bg-white"
-}, {
-    "type": "shadow",
-    "before": "",
-    "after": "shadow-md"
-}, {
-    "type": "border",
-    "before": "border-gray-500/90",
-    "after": "border-gray-200"
-}, {
-    "type": "text-size",
-    "before": "w-72",
-    "after": "w-40"
-}, {
-    "type": "font-style",
-    "before": "",
-    "after": "text-base font-medium"
-}]
-
 
 const initialNodes: Node[] = [
     {
@@ -137,7 +104,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeList, setRenderCodeListState] = useState<string[]>([BookList]);
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, changes: []}]);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -168,20 +135,23 @@ const FlowComponent: React.FC = () => {
         setCodePanelVisible(!codePanelVisible);
     }
 
-    const setRenderCodeList = useCallback((newCodeList: string[]) => {
-        setRenderCodeListState(newCodeList);
+    const setRenderCodeContentList = useCallback((newCodeContentList: codeRenderNodeContent[]) => {
+        setRenderCodeContentListState(newCodeContentList);
     }, []);
 
-    const addRenderCode = useCallback((newCode: string) => {
-        setRenderCodeListState((prevList) => [...prevList, newCode]);
+    const addRenderCodeContent = useCallback((newContent: codeRenderNodeContent) => {
+        setRenderCodeContentListState((prevList) => [...prevList, newContent]);
     }, []);
 
     const updateDisplayCode = (newCode: string) => {
         setDisplayCode((displayCode) => {
             // Update the code in the list
-            setRenderCodeListState((prevList) => {
-                return prevList.map((code) => {
-                    return code.trim() === displayCode.trim() ? newCode : code;
+            setRenderCodeContentListState((prevList) => {
+                return prevList.map((content) => {
+                    return {
+                        code: content.code.trim() === displayCode.trim() ? newCode : content.code,
+                        changes: content.changes
+                    };
                 });
             });
             return newCode;
@@ -190,14 +160,15 @@ const FlowComponent: React.FC = () => {
 
     // Function to get initial positions for nodes
     const getInitialPositions = () => {
-        return renderCodeList.map((_, idx) => ({
+        return renderCodeContentList.map((_, idx) => ({
             x: 2200 + 1000 * idx,
             y: 100
         }));
     };
 
     const getCodeRenderNodes = (initialPositions: coordinatePositionType[]) => {
-        return renderCodeList.map((renderCode, idx) => {
+        return renderCodeContentList.map((renderContent, idx) => {
+            const renderCode = renderContent.code;
             const newNodeId = `code-${idx}`; // The idx is the index in the renderCodeList array
             const existingNode = nodes.find((node) => node.id === newNodeId);
 
@@ -228,18 +199,7 @@ const FlowComponent: React.FC = () => {
     useEffect(() => {
         const initialPositions = getInitialPositions();
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(initialPositions)]);
-    }, [renderCodeList]);
-
-    // TODO TESTING BLOCK
-    useEffect(() => {
-        console.log("LoadingStates updated, \n" +
-            loadingStates.map((state) => {
-                return `ID: ${state.id}, Loading: ${state.loading}`;
-            }).join("\n")
-        );
-    }, [loadingStates]);
-
-
+    }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it
@@ -302,9 +262,15 @@ const FlowComponent: React.FC = () => {
         }
         // 3. add explanations  TODO now it might be the field of "changes"
         const explanations: string = parsedData.explanations;
-        addExplanationsNode([explanations], renderCodeBoundingBox);   // TODO set this position to between the old and new render node
+        addExplanationsNode([explanations], renderCodeBoundingBox);   // TODO set this position to between the old and new render node, plus the explanation format is now different
 
-        addRenderCode(currentRenderCode);   // update the state only after everything is replaced, after each api call, add to the renderCode list, which will create a new node
+        // URGENT TODO COME BACK AND FIX THIS
+        // const newRenderCodeContent: codeRenderNodeContent = {
+        //     code: currentRenderCode,
+        //     changes: explanations
+        // };
+
+        // addRenderCodeContent(newRenderCodeContent);   // update the state only after everything is replaced, after each api call, add to the renderCode list, which will create a new node
 
     };
 
@@ -334,7 +300,12 @@ const FlowComponent: React.FC = () => {
 
         const changes: Change[] = parsedData.changes;
 
-        addRenderCode(updatedCode);
+        const newRenderCodeContent: codeRenderNodeContent = {
+            code: updatedCode,
+            changes: changes
+        }
+
+        addRenderCodeContent(newRenderCodeContent);
         addExplanationsNode(changes, renderCodeBoundingBox);   // TODO set this position to between the old and new render node
 
     };
