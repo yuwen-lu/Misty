@@ -25,10 +25,9 @@ import CodeRenderNode from './customNodes/CodeRenderNode';
 import SubImageNode from './customNodes/SubImageNode';
 import ConfirmationPopupNode from './customNodes/ConfirmationPopupNode';
 import CodeEditorPanel from './CodeEditorPanel';
-import { FidelityNaturalHeader } from './renderCode/FidelityNaturalHeader';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, stripWhitespaceAndNormalizeQuotes, escapeRegex, formatCode, loadingIdState } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { babelBase64, otteraiBase64, appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
@@ -111,7 +110,7 @@ const initialNodes: Node[] = [
         id: "5",
         type: "dynamicUINode",
         draggable: true,
-        position: { x: 2000, y: 200 },
+        position: { x: 3000, y: 200 },
         data: { changes: tempChanges }
     }
 ];
@@ -301,12 +300,12 @@ const FlowComponent: React.FC = () => {
                 setShowError(true);
             }
         }
-
-        addRenderCode(currentRenderCode);   // update the state only after everything is replaced, after each api call, add to the renderCode list, which will create a new node
-
         // 3. add explanations  TODO now it might be the field of "changes"
         const explanations: string = parsedData.explanations;
         addExplanationsNode([explanations], renderCodeBoundingBox);   // TODO set this position to between the old and new render node
+
+        addRenderCode(currentRenderCode);   // update the state only after everything is replaced, after each api call, add to the renderCode list, which will create a new node
+
     };
 
     const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {

@@ -27,15 +27,15 @@ const DynamicUI: React.FC<NodeProps> = ({ id, data }) => {
 
     return (
         <div className="flex flex-col items-center w-full h-full px-20 py-5 bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-purple-900">
-            <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Dynamic UI Tweaks</div>
+            <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Changes</div>
             {state.map((change, index) => (
                 <div key={index} className="mb-4 w-full flex flex-col items-start">
-                    <div className="font-semibold text-white mb-2 flex items-center">
-                        {change.type === 'color' && <Eye className="mr-2" />}
-                        {change.type === 'border' && <Brackets className="mr-2" />}
-                        {change.type === 'text-size' && <ALargeSmall className="mr-2" />}
-                        {change.type === 'font-style' && <Type className="mr-2" />}
-                        {change.type === 'shadow' && <MoonStar className="mr-2" />}
+                    <div className="text-purple-900 mb-2 flex items-center">
+                        {change.type === 'color' && <Eye className="mr-2" size={20}/>}
+                        {change.type === 'border' && <Brackets className="mr-2" size={20}/>}
+                        {change.type === 'text-size' && <ALargeSmall className="mr-2" size={20}/>}
+                        {change.type === 'font-style' && <Type className="mr-2" size={20}/>}
+                        {change.type === 'shadow' && <MoonStar className="mr-2" size={20}/>}
                         Change Type: {change.type}
                     </div>
                     {change.type === 'color' && (
