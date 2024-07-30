@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Eye, Brackets, ALargeSmall, Type, MoonStar } from 'lucide-react';
-import { SketchPicker, ColorResult } from 'react-color';
 import { coordinatePositionType } from '../../util';
+import "../../index.css"
 
 interface Change {
     type: string;
@@ -17,17 +17,14 @@ interface DynamicUIProps {
 const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
     const [state, setState] = useState<Change[]>(changes);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
-    const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
-    const { x, y, zoom } = useViewport();
     const colorBlockRef = useRef<HTMLDivElement | null>(null);
-    const pickerRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const [containerOffset, setContainerOffset] = useState<coordinatePositionType | null>(null);
 
-    const handleColorChange = (color: ColorResult) => {
+    const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (editingIndex !== null) {
             const newState = [...state];
-            newState[editingIndex].after = color.hex;
+            const color = event.target.value;
+            newState[editingIndex].after = color;
             setState(newState);
         }
     };
@@ -38,13 +35,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
             const newState = [...state];
             newState[editingIndex].after = value;
             setState(newState);
-        }
-    };
-
-    const startEditing = (index: number, type: string) => {
-        setEditingIndex(index);
-        if (type === 'color') {
-            setShowColorPicker(true);
         }
     };
 
@@ -61,30 +51,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
         return colorClasses[className] || className;
     };
 
-    useEffect(() => {
-        if (containerRef.current) {
-            const newContainerOffset: coordinatePositionType = {
-                x: containerRef.current.getBoundingClientRect().x,
-                y: containerRef.current.getBoundingClientRect().y,
-            };
-            setContainerOffset(newContainerOffset);
-        }
-    }, [containerRef]);
-
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
-                setShowColorPicker(false);
-                setEditingIndex(null);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
     return (
         <div className="ml-20 relative" ref={containerRef}>
             <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Dynamic UI Tweaks</div>
@@ -100,47 +66,35 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
                     </div>
                     <div className="flex items-center">
                         <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div>
-                        <div className="mr-4 text-black">After:
+                        <div className="mr-4 text-black flex items-center">
+                            <span>After: </span>
                             {change.type === 'color' ? (
-                                <div
-                                    ref={editingIndex === index ? colorBlockRef : null}
-                                    className="inline-block border-2 border-white mx-2 w-6 h-6 rounded-lg cursor-pointer"
-                                    style={{ backgroundColor: getColorStyle(change.after) }}
-                                    onClick={() => startEditing(index, change.type)}
-                                ></div>
-                            ) : (
                                 <span
-                                    className="font-mono cursor-pointer"
-                                    onClick={() => startEditing(index, change.type)}
-                                >
-                                    {change.after}
+                                    ref={editingIndex === index ? colorBlockRef : null}>
+                                    <label className='custom-color-picker'>
+                                        <input
+                                            className="nodrag"
+                                            type="color"
+                                            onChange={handleColorChange}
+                                            defaultValue={getColorStyle(change.after)}
+                                        />
+                                    </label>
                                 </span>
+                            ) : (
+
+                                // TODO URGENT FIX THIS INPUT
+                                <input
+                                    type="text"
+                                    value={change.after}
+                                    onChange={handleInputChange}
+                                    className="p-2 bg-gray-800 text-white rounded-lg"
+                                />
+
                             )}
                         </div>
                     </div>
                 </div>
             ))}
-            {showColorPicker && editingIndex !== null && (
-                <div
-                    ref={pickerRef}
-                    className="fixed bottom-5 right-5 z-10 text-black"
-                >
-                    <SketchPicker
-                        color={state[editingIndex].after}
-                        onChangeComplete={handleColorChange}
-                    />
-                </div>
-            )}
-            {editingIndex !== null && state[editingIndex].type !== 'color' && (
-                <div className="absolute z-10">
-                    <input
-                        type="text"
-                        value={state[editingIndex].after}
-                        onChange={handleInputChange}
-                        className="p-2 bg-gray-800 text-white rounded-lg"
-                    />
-                </div>
-            )}
         </div>
     );
 };

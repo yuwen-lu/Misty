@@ -211,3 +211,30 @@ code {
 .animate-spin-reverse {
   animation: spin-reverse 3s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
 }
+
+.custom-color-picker input[type="color"] {
+  -webkit-appearance: none;
+  border: 2px solid white;
+  width: 48px;
+  height: 24px;
+  cursor: pointer;
+  border-radius: 0.125rem; /* Tailwind's rounded-sm equivalent */
+  padding: 0;
+  margin-left: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.custom-color-picker input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 0.125rem; /* Tailwind's rounded-sm equivalent */
+}
+
+.custom-color-picker input[type="color"]::-moz-color-swatch {
+  border: none;
+  border-radius: 0.125rem; /* Tailwind's rounded-sm equivalent */
+}
