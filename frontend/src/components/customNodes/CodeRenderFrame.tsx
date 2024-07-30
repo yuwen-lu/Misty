@@ -104,8 +104,12 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
     }
 
     return (
-        <>
-            <div className={`spinner-wrapper ${checkIsLoading() ? "" : "invisible"}`}>
+        <div
+            className={`code-render-container grow w-full overflow-auto relative
+                    ${checkIsLoading() ? "invisible" : ""}
+                    ${isDragging ? "flash" : ""}`}
+        >
+            <div className={`spinner-wrapper z-50 ${checkIsLoading() ? "visible" : "invisible"}`}>
                 <div className={`spinner ${checkIsLoading() ? 'animate-spin' : ''}`}></div>
                 <div className={`spinner inner ${checkIsLoading() ? 'animate-spin-reverse' : ''}`}></div>
                 <div className='flex items-center w-full'>
@@ -116,34 +120,28 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
                     </button>
                 </div>
             </div>
+            {/* removed for now: ${isMobile ? "max-w-md" : "max-w-screen-md"}  */}
 
-            <div
-                className={`code-render-container grow w-full overflow-auto
-                    ${isMobile ? "max-w-md" : "max-w-screen-md"} 
-                    ${checkIsLoading() ? "invisible" : ""}
-                    ${isDragging ? "flash" : ""}`}
+            <LiveProvider
+                code={isDragging ? addEventHandlersToCode(renderCode) : renderCode}
+                scope={{
+                    React, useState, ...LuIcons,
+                    renderCode,
+                    setTargetCodeRenderNodeId,
+                    nodeId,
+                    setTargetBlendCode,
+                    setTargetCodeDropped,
+                    setTargetRenderCodeNodeBbox,
+                    processHTMLElement,
+                    setCurrentBbox,
+                    defaultBoundingBox,
+                    codeRenderNodeRect
+                }}
             >
-
-                <LiveProvider
-                    code={isDragging ? addEventHandlersToCode(renderCode) : renderCode}
-                    scope={{
-                        React, useState, ...LuIcons,
-                        renderCode,
-                        setTargetCodeRenderNodeId,
-                        nodeId,
-                        setTargetBlendCode,
-                        setTargetCodeDropped,
-                        setTargetRenderCodeNodeBbox,
-                        processHTMLElement,
-                        setCurrentBbox,
-                        defaultBoundingBox,
-                        codeRenderNodeRect
-                    }}
-                >
-                    <LivePreview />
-                    <LiveError />
-                </LiveProvider>
-            </div></>
+                <LivePreview />
+                <LiveError />
+            </LiveProvider>
+        </div>
     );
 };
 
