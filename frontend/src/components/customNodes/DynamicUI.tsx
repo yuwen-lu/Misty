@@ -91,6 +91,54 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
         }
     }, [editingIndex, x, y, zoom]);
 
+    useEffect(() => {
+        const handleMouseDown = (e: MouseEvent) => {
+            console.log("mouse down!!");
+            if (pickerRef.current && pickerRef.current.contains(e.target as Node)) {
+                console.log("target in!!");
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
+                console.log("target not in!!");
+            }
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+            if (pickerRef.current && pickerRef.current.contains(e.target as Node)) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        };
+
+        const handleMouseUp = (e: MouseEvent) => {
+            if (pickerRef.current && pickerRef.current.contains(e.target as Node)) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        };
+
+        const handleMouseLeave = (e: MouseEvent) => {
+            e.stopPropagation();
+        };
+
+        const containerElement = containerRef.current;
+        if (containerElement) {
+            containerElement.addEventListener('mousedown', handleMouseDown);
+            containerElement.addEventListener('mousemove', handleMouseMove);
+            containerElement.addEventListener('mouseup', handleMouseUp);
+            containerElement.addEventListener('mouseleave', handleMouseLeave);
+        }
+
+        return () => {
+            if (containerElement) {
+                containerElement.removeEventListener('mousedown', handleMouseDown);
+                containerElement.removeEventListener('mousemove', handleMouseMove);
+                containerElement.removeEventListener('mouseup', handleMouseUp);
+                containerElement.removeEventListener('mouseleave', handleMouseLeave);
+            }
+        };
+    }, []);
+
     return (
         <div className="ml-20 relative" ref={containerRef}>
             <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Dynamic UI Tweaks</div>
