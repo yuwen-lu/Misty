@@ -500,8 +500,6 @@ const FlowComponent: React.FC = () => {
 
         const posX = (popUpPosition.x - viewportX) / zoom;  // adjust for window transform and zoom for react flow
         const posY = (popUpPosition.y - viewportY) / zoom;
-        console.log("current zoom: " + zoom);
-        console.log("adjusted for zoom pos: x: " + posX + ", y: " + posY);
 
         if (posX !== 0 && posY !== 0) {
 
