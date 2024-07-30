@@ -20,7 +20,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
     const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
     const { x, y, zoom } = useViewport();
     const colorBlockRef = useRef<HTMLDivElement | null>(null);
-    const [colorBlockPosition, setColorBlockPosition] = useState<coordinatePositionType | null>(null);
     const pickerRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [containerOffset, setContainerOffset] = useState<coordinatePositionType | null>(null);
@@ -44,7 +43,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
 
     const startEditing = (index: number, type: string) => {
         setEditingIndex(index);
-        console.log("color picker clicked!");
         if (type === 'color') {
             setShowColorPicker(true);
         }
@@ -64,16 +62,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
     };
 
     useEffect(() => {
-        if (showColorPicker && colorBlockRef.current) {
-            const newPickerPos: coordinatePositionType = {
-                x: colorBlockRef.current.getBoundingClientRect().x,
-                y: colorBlockRef.current.getBoundingClientRect().y
-            };
-            setColorBlockPosition(newPickerPos);
-        }
-    }, [showColorPicker]);
-
-    useEffect(() => {
         if (containerRef.current) {
             const newContainerOffset: coordinatePositionType = {
                 x: containerRef.current.getBoundingClientRect().x,
@@ -84,63 +72,16 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
     }, [containerRef]);
 
     useEffect(() => {
-        if (editingIndex !== null && colorBlockRef.current) {
-            const newPickerPos: coordinatePositionType = {
-                x: colorBlockRef.current.getBoundingClientRect().x,
-                y: colorBlockRef.current.getBoundingClientRect().y
-            };
-            setColorBlockPosition(newPickerPos);
-        }
-    }, [editingIndex, x, y, zoom]);
-
-    useEffect(() => {
-        const handleMouseDown = (e: MouseEvent) => {
-            console.log("mouse down!!");
-            console.log(editingIndex);
-            console.log(colorBlockRef.current);
-            console.log((e.target as HTMLElement).outerHTML);
-            if (pickerRef.current && pickerRef.current.contains(e.target as Node)) {
-                console.log("target in!!");
-                e.preventDefault();
-                e.stopPropagation();
-            } else {
-                console.log("target not in!!");
+        const handleClickOutside = (e: MouseEvent) => {
+            if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+                setShowColorPicker(false);
+                setEditingIndex(null);
             }
         };
 
-        const handleMouseMove = (e: MouseEvent) => {
-            if (pickerRef.current && pickerRef.current.contains(e.target as Node)) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        };
-
-        const handleMouseUp = (e: MouseEvent) => {
-            if (pickerRef.current && pickerRef.current.contains(e.target as Node)) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        };
-
-        const handleMouseLeave = (e: MouseEvent) => {
-            e.stopPropagation();
-        };
-
-        const containerElement = containerRef.current;
-        if (containerElement) {
-            containerElement.addEventListener('mousedown', handleMouseDown);
-            containerElement.addEventListener('mousemove', handleMouseMove);
-            containerElement.addEventListener('mouseup', handleMouseUp);
-            containerElement.addEventListener('mouseleave', handleMouseLeave);
-        }
-
+        document.addEventListener('mousedown', handleClickOutside);
         return () => {
-            if (containerElement) {
-                containerElement.removeEventListener('mousedown', handleMouseDown);
-                containerElement.removeEventListener('mousemove', handleMouseMove);
-                containerElement.removeEventListener('mouseup', handleMouseUp);
-                containerElement.removeEventListener('mouseleave', handleMouseLeave);
-            }
+            document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
@@ -165,12 +106,12 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
                                     ref={editingIndex === index ? colorBlockRef : null}
                                     className="inline-block border-2 border-white mx-2 w-6 h-6 rounded-lg cursor-pointer"
                                     style={{ backgroundColor: getColorStyle(change.after) }}
-                                    onClick={(e) => { startEditing(index, change.type); }}
+                                    onClick={() => startEditing(index, change.type)}
                                 ></div>
                             ) : (
                                 <span
                                     className="font-mono cursor-pointer"
-                                    onClick={(e) => { startEditing(index, change.type); }}
+                                    onClick={() => startEditing(index, change.type)}
                                 >
                                     {change.after}
                                 </span>
@@ -179,25 +120,19 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
                     </div>
                 </div>
             ))}
-            {showColorPicker && editingIndex !== null && colorBlockPosition && containerOffset && (
+            {showColorPicker && editingIndex !== null && (
                 <div
                     ref={pickerRef}
-                    className="absolute z-10"
-                    style={{
-                        left: (colorBlockPosition.x - x) / zoom - containerOffset.x,
-                        top: (colorBlockPosition.y - y) / zoom - containerOffset.y,
-                    }}
+                    className="fixed bottom-5 right-5 z-10 text-black"
                 >
-                    <div className="fixed inset-0" onClick={() => setShowColorPicker(false)}></div>
                     <SketchPicker
                         color={state[editingIndex].after}
-                        onChangeComplete={(color: ColorResult) => handleColorChange(color)}
+                        onChangeComplete={handleColorChange}
                     />
                 </div>
             )}
             {editingIndex !== null && state[editingIndex].type !== 'color' && (
                 <div className="absolute z-10">
-                    <div className="fixed inset-0" onClick={() => setEditingIndex(null)}></div>
                     <input
                         type="text"
                         value={state[editingIndex].after}
