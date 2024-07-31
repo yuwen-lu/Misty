@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { NodeProps, Handle, Position, NodeResizeControl, OnConnect, Connection, useViewport } from 'reactflow';
+import { NodeProps, Handle, Position, NodeResizeControl } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 import { loadingIdState, tempChanges } from '../../util';
@@ -85,8 +85,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 />
             </div >
             <DynamicUI 
-                changes={tempChanges} 
-                useViewport={useViewport}/>
+                changes={data.changes} />
         </div>
     );
 };

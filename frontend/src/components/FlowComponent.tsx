@@ -96,7 +96,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, changes: tempChanges}]); // TODO URGENT REPLACE THIS TEMP CHANGES
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, changes: []}]); // TODO URGENT REPLACE THIS TEMP CHANGES
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -258,7 +258,7 @@ const FlowComponent: React.FC = () => {
         const explanations: string = parsedData.explanations;
         addExplanationsNode([explanations], renderCodeBoundingBox);   // TODO set this position to between the old and new render node, plus the explanation format is now different
 
-        // URGENT TODO COME BACK AND FIX THIS
+        // URGENT TODO COME BACK AND FIX THIS, PLUS TEST AGAIN THE WHOLE FUNCTION
         // const newRenderCodeContent: codeRenderNodeContent = {
         //     code: currentRenderCode,
         //     changes: explanations
