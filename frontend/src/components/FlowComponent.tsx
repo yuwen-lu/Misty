@@ -28,7 +28,7 @@ import DynamicUI from './customNodes/DynamicUI';
 import CodeEditorPanel from './CodeEditorPanel';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent, tempChanges } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
@@ -96,7 +96,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, changes: []}]); // TODO URGENT REPLACE THIS TEMP CHANGES
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, prevCode: "", changes: []}]);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -137,11 +137,12 @@ const FlowComponent: React.FC = () => {
 
     const updateDisplayCode = (newCode: string) => {
         setDisplayCode((displayCode) => {
-            // Update the code in the list
+            // Update the code in the list when code editor updates
             setRenderCodeContentListState((prevList) => {
                 return prevList.map((content) => {
                     return {
                         code: content.code.trim() === displayCode.trim() ? newCode : content.code,
+                        prevCode: content.prevCode,
                         changes: content.changes
                     };
                 });
@@ -182,6 +183,7 @@ const FlowComponent: React.FC = () => {
                     data: {
                         response: response,
                         renderCode: renderCode,
+                        prevCode: renderContent.prevCode,
                         changes: renderContent.changes
                     },
                 };
@@ -296,6 +298,7 @@ const FlowComponent: React.FC = () => {
 
         const newRenderCodeContent: codeRenderNodeContent = {
             code: updatedCode,
+            prevCode: renderCode,
             changes: changes
         }
 
@@ -375,6 +378,8 @@ const FlowComponent: React.FC = () => {
                     finalResponse += decodedChunk;
                     setResponse((prevResponse) => prevResponse + decodedChunk);
                 }
+
+                console.log("Handle fetch response render code: " + renderCode);
 
                 globalBlending ? processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode) : processReplacementPromptResponse(finalResponse, renderCodeBoundingBox, renderCode);
             }

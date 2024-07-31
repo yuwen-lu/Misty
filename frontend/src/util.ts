@@ -252,37 +252,37 @@ export interface loadingIdState {
 
 export interface codeRenderNodeContent {
   code: string,
+  prevCode: string,
   changes: Change[] // the changes that render dynamic UI
 }
 
 
-// TODO remove this
-export const tempChanges: Change[] = [{
-  "type": "color",
-  "before": "bg-black",
-  "after": "bg-white"
-}, {
-  "type": "color",
-  "before": "text-white",
-  "after": "text-gray-900"
-}, {
-  "type": "color",
-  "before": "bg-gray-800",
-  "after": "bg-white"
-}, {
-  "type": "shadow",
-  "before": "",
-  "after": "shadow-md"
-}, {
-  "type": "border",
-  "before": "border-gray-500/90",
-  "after": "border-gray-200"
-}, {
-  "type": "text-size",
-  "before": "w-72",
-  "after": "w-40"
-}, {
-  "type": "font-style",
-  "before": "",
-  "after": "text-base font-medium"
-}]
+// export const tempChanges: Change[] = [{
+//   "type": "color",
+//   "before": "bg-black",
+//   "after": "bg-white"
+// }, {
+//   "type": "color",
+//   "before": "text-white",
+//   "after": "text-gray-900"
+// }, {
+//   "type": "color",
+//   "before": "bg-gray-800",
+//   "after": "bg-white"
+// }, {
+//   "type": "shadow",
+//   "before": "",
+//   "after": "shadow-md"
+// }, {
+//   "type": "border",
+//   "before": "border-gray-500/90",
+//   "after": "border-gray-200"
+// }, {
+//   "type": "text-size",
+//   "before": "w-72",
+//   "after": "w-40"
+// }, {
+//   "type": "font-style",
+//   "before": "",
+//   "after": "text-base font-medium"
+// }]

@@ -11,9 +11,11 @@ interface Change {
 
 interface DynamicUIProps {
     changes: Change[];
+    prevCode: string;
+    newCode: string;
 }
 
-const DynamicUI: React.FC<DynamicUIProps> = ({ changes }) => {
+const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => {
     const [state, setState] = useState<Change[]>(changes);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const colorBlockRef = useRef<HTMLDivElement | null>(null);
@@ -50,10 +52,15 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes }) => {
         return colorClasses[className] || className;
     };
 
+    useEffect(() => {
+        console.log("Prev code: " + prevCode);
+        console.log("New Code: " + newCode);
+    }, []);
+
     return (
         <>
             {state.length === 0 ? <></> : <div className="ml-20 relative" ref={containerRef}>
-                <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Dynamic UI Tweaks</div>
+                <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Applied Changes</div>
                 {state.map((change, index) => (
                     <div key={index} className="mb-6 w-full flex flex-col items-start">
                         <div className="font-semibold text-purple-900 mb-2 flex items-center">
