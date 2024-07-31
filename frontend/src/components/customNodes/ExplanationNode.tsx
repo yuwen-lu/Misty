@@ -30,11 +30,16 @@ const parseObject = (input: Change[]): string[] => {
 
 const ExplanationNode: React.FC<NodeProps> = ({ id, data }) => {
 
-    let items;
+    let items: string[];
     if (typeof data.text === 'object') {
         items = parseObject(data.text);
     } else {
-        items = parseString(data.text);
+        try {
+            items = parseString(data.text);
+        } catch (e) {
+            console.log("Parse string error for explanation node");
+            items = [];
+        }
     }
      
 

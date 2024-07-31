@@ -180,6 +180,7 @@ const FlowComponent: React.FC = () => {
                     type: 'codeRenderNode',
                     position: initialPositions[idx],
                     data: {
+                        response: response,
                         renderCode: renderCode,
                         changes: renderContent.changes
                     },
@@ -413,6 +414,14 @@ const FlowComponent: React.FC = () => {
 
     useEffect(() => {
         console.log("openai api response updated: " + response);
+        // update the coderendernode to display generation progress
+        setNodes((nds) =>
+            nds.map((node) =>
+                node.type === "codeRenderNode"
+                    ? { ...node, data: { ...node.data, response: response } }
+                    : node
+            )
+        );
     }, [response])
 
 

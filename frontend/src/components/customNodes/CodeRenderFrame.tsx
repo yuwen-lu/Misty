@@ -51,6 +51,7 @@ const processHTMLElement = (htmlElement: HTMLElement): HTMLElement | undefined =
 
 interface CodeRenderFrameProps {
     nodeId: string;
+    response: string;
     isMobile: boolean;
     renderCode: string;
     isDragging: boolean;
@@ -64,7 +65,7 @@ interface CodeRenderFrameProps {
     abortController: AbortController | null;
 }
 
-const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, renderCode, isDragging, setTargetBlendCode, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loadingStates, setTargetCodeRenderNodeId, updateLoadingState, abortController }) => {
+const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isMobile, renderCode, isDragging, setTargetBlendCode, setTargetCodeDropped, setTargetRenderCodeNodeBbox, codeRenderNodeRef, loadingStates, setTargetCodeRenderNodeId, updateLoadingState, abortController }) => {
 
     const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
@@ -122,25 +123,30 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, isMobile, ren
             </div>
             {/* removed for now: ${isMobile ? "max-w-md" : "max-w-screen-md"}  */}
 
-            <LiveProvider
-                code={isDragging ? addEventHandlersToCode(renderCode) : renderCode}
-                scope={{
-                    React, useState, ...LuIcons,
-                    renderCode,
-                    setTargetCodeRenderNodeId,
-                    nodeId,
-                    setTargetBlendCode,
-                    setTargetCodeDropped,
-                    setTargetRenderCodeNodeBbox,
-                    processHTMLElement,
-                    setCurrentBbox,
-                    defaultBoundingBox,
-                    codeRenderNodeRect
-                }}
-            >
-                <LivePreview />
-                <LiveError />
-            </LiveProvider>
+            <div className={`absolute w-full h-full text-purple-400/80 ${checkIsLoading() ? "visible text-glow" : "invisible"}`}>
+                {checkIsLoading() ? response : ""}
+            </div>
+            <div className={`${checkIsLoading() ? "invisible" : ""}`}>
+                <LiveProvider
+                    code={isDragging ? addEventHandlersToCode(renderCode) : renderCode}
+                    scope={{
+                        React, useState, ...LuIcons,
+                        renderCode,
+                        setTargetCodeRenderNodeId,
+                        nodeId,
+                        setTargetBlendCode,
+                        setTargetCodeDropped,
+                        setTargetRenderCodeNodeBbox,
+                        processHTMLElement,
+                        setCurrentBbox,
+                        defaultBoundingBox,
+                        codeRenderNodeRect
+                    }}
+                >
+                    <LivePreview />
+                    <LiveError />
+                </LiveProvider>
+            </div>
         </div>
     );
 };

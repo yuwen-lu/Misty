@@ -87,7 +87,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, useViewport }) => {
                                     type="text"
                                     value={change.after}
                                     onChange={handleInputChange}
-                                    className="p-2 bg-gray-800 text-white rounded-lg"
+                                    className="p-2 ml-2 bg-gray-800 text-white rounded-lg"
                                 />
 
                             )}

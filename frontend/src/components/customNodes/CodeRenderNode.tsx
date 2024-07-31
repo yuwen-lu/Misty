@@ -45,6 +45,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 <CodeRenderFrame
                     nodeId={id}
                     isMobile={isMobile}
+                    response={data.response}
                     renderCode={data.renderCode}
                     isDragging={data.isDragging}
                     setTargetBlendCode={data.setTargetBlendCode}
