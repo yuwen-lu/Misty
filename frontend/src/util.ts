@@ -286,3 +286,36 @@ export interface codeRenderNodeContent {
 //   "before": "",
 //   "after": "text-base font-medium"
 // }]
+
+
+export const findAllIndexesOfStrings = (mainString: string, ...searchStrings: string[]): number[] => {
+  const indexes: number[] = [];
+
+  searchStrings.forEach(searchString => {
+    let position: number = mainString.indexOf(searchString);
+    while (position !== -1) {
+      indexes.push(position);
+      position = mainString.indexOf(searchString, position + searchString.length);
+    }
+  });
+
+  // Sort the indexes in ascending order
+  indexes.sort((a, b) => a - b);
+  return indexes;
+};
+
+export const getIndexesToChange = (prevCode: string, newCode: string, oldValue: string, newValue: string): number[] => {
+  
+  const prevCodeIdx = findAllIndexesOfStrings(prevCode, oldValue, newValue);
+  const prevCodeOldValueIdx = findAllIndexesOfStrings(prevCode, oldValue);
+  
+  const newCodeIdx = findAllIndexesOfStrings(newCode, oldValue, newValue);
+  const newCodeNewValueIdx = findAllIndexesOfStrings(newCode, newValue);
+  
+  const changeIdx: number[] = newCodeIdx.filter((value, pos) => {
+    // we only get the idx of oldValue -> newValue
+    return newCodeNewValueIdx.includes(value) && prevCodeOldValueIdx.includes(prevCodeIdx[pos]);
+  });
+
+  return changeIdx;
+};

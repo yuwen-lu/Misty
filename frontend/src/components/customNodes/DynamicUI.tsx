@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Eye, Brackets, ALargeSmall, Type, MoonStar } from 'lucide-react';
-import { coordinatePositionType } from '../../util';
+import { getIndexesToChange } from '../../util';
+import { colorList } from "../../utilColors";
 import "../../index.css"
 
 interface Change {
@@ -39,23 +40,36 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => 
         }
     };
 
-    const getColorStyle = (className: string) => {
-        const colorClasses: { [key: string]: string } = {
-            'bg-black': '#000000',
-            'bg-white': '#FFFFFF',
-            'text-white': '#FFFFFF',
-            'text-gray-900': '#1A202C',
-            'bg-gray-800': '#2D3748',
-            'border-gray-500/90': '#6B7280',
-            'border-gray-200': '#E5E7EB'
-        };
-        return colorClasses[className] || className;
+    const getColorStyle = (className: string): string | undefined => {
+        const colorTag = className.replace(/(bg-|text-|border-)/, "");
+        if (colorTag.includes("-")) {
+            const [colorName, shade] = colorTag.split('-');
+            return colorList[colorName] ? colorList[colorName][parseInt(shade, 10)] : colorTag;
+        }
+        return colorTag;
     };
+    
 
     useEffect(() => {
         console.log("Prev code: " + prevCode);
         console.log("New Code: " + newCode);
     }, []);
+
+    const tweakCodeDynamicUI = (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): string => {
+        const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
+        let resultCode = newCode; // Work on a copy of newCode
+
+        for (const changeIdx of indexesToChange) {
+            // Find the position to replace in the resultCode
+            const startIdx = changeIdx;
+            const endIdx = startIdx + newValue.length;
+
+            // Replace the newValue at the calculated position with the replacementValue
+            resultCode = resultCode.slice(0, startIdx) + replacementValue + resultCode.slice(endIdx);
+        }
+
+        return resultCode;
+    };
 
     return (
         <>
