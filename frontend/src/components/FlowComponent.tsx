@@ -291,6 +291,22 @@ const FlowComponent: React.FC = () => {
             }
         }
 
+
+        // Define the regex pattern to check the desired format
+        const regexPattern = /^\(\) => \{\s*return\s*\(\s*([\s\S]*?)\s*\);\s*\};$/;
+
+        // Test if the updatedCode matches the regex pattern
+        if (!regexPattern.test(updatedCode.trim())) {
+            // Handle the case where the code does not match the desired format
+            throw new Error('Code does not match the desired format');
+        }
+
+        // Remove extra closing parentheses if present
+        const extraParenthesesPattern = /\)\s*\)\s*;\s*\};$/;
+        if (extraParenthesesPattern.test(updatedCode)) {
+            updatedCode = updatedCode.replace(extraParenthesesPattern, ');\n};');
+        }
+
         console.log("displaying...\n" + parsedData)
 
         const changes: Change[] = parsedData.changes;
@@ -611,7 +627,7 @@ const FlowComponent: React.FC = () => {
                                 ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible,
                                 isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode,
                                 setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
-                                setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates, 
+                                setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates,
                                 updateLoadingState: updateLoadingState, abortController: abortController,
                                 handleCodeReplacement: handleCodeReplacement
                             }

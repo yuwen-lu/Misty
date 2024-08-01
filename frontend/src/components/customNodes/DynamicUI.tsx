@@ -59,8 +59,8 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
         // TODO need to handle gradients. maybe just let the model deal with this?
 
         const colorTag = className.replace(/(bg-|text-|border-)/, "");
-        if (colorTag === "white") return "#FFF";
-        if (colorTag === "black") return "#000";
+        if (colorTag === "white") return "#ffffff";
+        if (colorTag === "black") return "#000000";
         if (colorTag.includes("-")) {
             const [colorName, shade] = colorTag.split('-');
             return colorList[colorName] ? colorList[colorName][parseInt(shade, 10)] : colorTag;
