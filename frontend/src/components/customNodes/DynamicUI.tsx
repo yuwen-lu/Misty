@@ -22,38 +22,39 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => 
     const colorBlockRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
 
-    const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (editingIndex !== null) {
-            const newState = [...state];
-            const color = event.target.value;
-            newState[editingIndex].after = color;
-            setState(newState);
-        }
-    };
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (editingIndex !== null) {
             const { value } = event.target;
             const newState = [...state];
+            console.log("New value: " + value);
             newState[editingIndex].after = value;
             setState(newState);
         }
     };
 
     const getColorStyle = (className: string): string | undefined => {
+
+        // TODO need to handle gradients. maybe just let the model deal with this?
+
         const colorTag = className.replace(/(bg-|text-|border-)/, "");
+        if (colorTag === "white") return "#FFF";
+        if (colorTag === "black") return "#000";
         if (colorTag.includes("-")) {
             const [colorName, shade] = colorTag.split('-');
             return colorList[colorName] ? colorList[colorName][parseInt(shade, 10)] : colorTag;
         }
         return colorTag;
     };
-    
+
 
     useEffect(() => {
         console.log("Prev code: " + prevCode);
         console.log("New Code: " + newCode);
     }, []);
+
+    useEffect(() => {
+        console.log("Index changed: " + editingIndex);
+    }, [editingIndex]);
 
     const tweakCodeDynamicUI = (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): string => {
         const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
@@ -80,8 +81,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => 
                         <div className="font-semibold text-purple-900 mb-2 flex items-center">
                             {change.type === 'color' && <Eye className="mr-2" />}
                             {change.type === 'border' && <Brackets className="mr-2" />}
-                            {change.type === 'text-size' && <ALargeSmall className="mr-2" />}
-                            {change.type === 'font-style' && <Type className="mr-2" />}
+                            {(change.type.includes('text') || (change.type.includes('font'))) && <Type className="mr-2" />}
                             {change.type === 'shadow' && <MoonStar className="mr-2" />}
                             Changed {change.type}
                         </div>
@@ -91,12 +91,13 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => 
                                 <span>After: </span>
                                 {change.type === 'color' ? (
                                     <span
+                                        onFocus={() => setEditingIndex(index)}
                                         ref={editingIndex === index ? colorBlockRef : null}>
                                         <label className='custom-color-picker'>
                                             <input
                                                 className="nodrag"
                                                 type="color"
-                                                onChange={handleColorChange}
+                                                onChange={handleInputChange}
                                                 defaultValue={getColorStyle(change.after)}
                                             />
                                         </label>
@@ -106,9 +107,10 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => 
                                     // TODO URGENT FIX THIS INPUT
                                     <input
                                         type="text"
+                                        className="p-2 ml-2 bg-gray-800 text-white rounded-lg"
                                         value={change.after}
                                         onChange={handleInputChange}
-                                        className="p-2 ml-2 bg-gray-800 text-white rounded-lg"
+                                        onFocus={() => setEditingIndex(index)}
                                     />
 
                                 )}

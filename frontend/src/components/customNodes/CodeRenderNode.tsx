@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NodeProps, Handle, Position, NodeResizeControl } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
-import { loadingIdState } from '../../util';
+import { loadingIdState, tempChanges } from '../../util';
 import DynamicUI from './DynamicUI';
 
 const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
@@ -85,7 +85,8 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 />
             </div >
             <DynamicUI 
-                changes={data.changes}
+                // changes={data.changes}
+                changes={tempChanges}
                 prevCode={data.prevCode}
                 newCode={data.renderCode} />
         </div>

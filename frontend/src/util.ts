@@ -257,35 +257,35 @@ export interface codeRenderNodeContent {
 }
 
 
-// export const tempChanges: Change[] = [{
-//   "type": "color",
-//   "before": "bg-black",
-//   "after": "bg-white"
-// }, {
-//   "type": "color",
-//   "before": "text-white",
-//   "after": "text-gray-900"
-// }, {
-//   "type": "color",
-//   "before": "bg-gray-800",
-//   "after": "bg-white"
-// }, {
-//   "type": "shadow",
-//   "before": "",
-//   "after": "shadow-md"
-// }, {
-//   "type": "border",
-//   "before": "border-gray-500/90",
-//   "after": "border-gray-200"
-// }, {
-//   "type": "text-size",
-//   "before": "w-72",
-//   "after": "w-40"
-// }, {
-//   "type": "font-style",
-//   "before": "",
-//   "after": "text-base font-medium"
-// }]
+export const tempChanges: Change[] = [{
+  "type": "color",
+  "before": "bg-black",
+  "after": "bg-white"
+}, {
+  "type": "color",
+  "before": "text-white",
+  "after": "text-gray-900"
+}, {
+  "type": "color",
+  "before": "bg-gray-800",
+  "after": "bg-white"
+}, {
+  "type": "shadow",
+  "before": "",
+  "after": "shadow-md"
+}, {
+  "type": "border",
+  "before": "border-gray-500/90",
+  "after": "border-gray-200"
+}, {
+  "type": "text-size",
+  "before": "w-72",
+  "after": "w-40"
+}, {
+  "type": "font-style",
+  "before": "",
+  "after": "text-base font-medium"
+}]
 
 
 export const findAllIndexesOfStrings = (mainString: string, ...searchStrings: string[]): number[] => {
