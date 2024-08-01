@@ -11,22 +11,44 @@ interface Change {
 }
 
 interface DynamicUIProps {
+    nodeId: string;
     changes: Change[];
     prevCode: string;
     newCode: string;
+    handleCodeReplacement: (newCode: string, nodeId: string) => void;
 }
 
-const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => {
+const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCode, handleCodeReplacement }) => {
     const [state, setState] = useState<Change[]>(changes);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const colorBlockRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
 
+    const tweakCodeDynamicUI = (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): string => {
+        const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
+        let resultCode = newCode; 
+
+        for (const changeIdx of indexesToChange) {
+            // Find the position to replace in the resultCode
+            const startIdx = changeIdx;
+            const endIdx = startIdx + newValue.length;
+            // Replace the newValue at the calculated position with the replacementValue
+            resultCode = resultCode.slice(0, startIdx) + replacementValue + resultCode.slice(endIdx);
+        }
+
+        return resultCode;
+    };
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (editingIndex !== null) {
             const { value } = event.target;
-            const newState = [...state];
             console.log("New value: " + value);
+
+            const updatedCode = tweakCodeDynamicUI(prevCode, newCode, state[editingIndex].before, state[editingIndex].after, value);
+            handleCodeReplacement(nodeId, updatedCode);
+
+            // update state too
+            const newState = [...state];
             newState[editingIndex].after = value;
             setState(newState);
         }
@@ -51,21 +73,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => 
         console.log("Prev code: " + prevCode);
         console.log("New Code: " + newCode);
     }, []);
-
-    const tweakCodeDynamicUI = (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): string => {
-        const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
-        let resultCode = newCode; 
-
-        for (const changeIdx of indexesToChange) {
-            // Find the position to replace in the resultCode
-            const startIdx = changeIdx;
-            const endIdx = startIdx + newValue.length;
-            // Replace the newValue at the calculated position with the replacementValue
-            resultCode = resultCode.slice(0, startIdx) + replacementValue + resultCode.slice(endIdx);
-        }
-
-        return resultCode;
-    };
 
     return (
         <>

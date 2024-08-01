@@ -84,11 +84,13 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     isConnectable={true}
                 />
             </div >
-            <DynamicUI 
+            <DynamicUI
                 changes={data.changes}
+                nodeId={id}
                 // changes={tempChanges}
                 prevCode={data.prevCode}
-                newCode={data.renderCode} />
+                newCode={data.renderCode} 
+                handleCodeReplacement={data.handleCodeReplacement} />
         </div>
     );
 };

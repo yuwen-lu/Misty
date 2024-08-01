@@ -190,7 +190,8 @@ const FlowComponent: React.FC = () => {
             }
         });
     };
-    // Initialize nodes with positions
+
+    // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
     }, [renderCodeContentList]);
@@ -301,10 +302,22 @@ const FlowComponent: React.FC = () => {
             changes: changes
         }
 
+        // TODO URGENT use the nodeId to enable updates to the code
+
         addRenderCodeContent(newRenderCodeContent);
         // addExplanationsNode(changes, renderCodeBoundingBox);   // TODO fix this set this position to between the old and new render node
 
     };
+
+    const handleCodeReplacement = (newCode: string, nodeId: string) => {
+        setNodes((nds) => nds.map((nd) =>
+            nd.type === "codeRenderNode" && nd.id === nodeId ? {
+                ...nd,
+                code: newCode
+            } : nd
+        )
+        )
+    }
 
     const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {
         console.log("updating state with target code id: " + targetCodeRenderNodeId);
@@ -598,7 +611,9 @@ const FlowComponent: React.FC = () => {
                                 ...node.data, toggleCodePanelVisible: toggleCodePanelVisible, codePanelVisible: codePanelVisible,
                                 isDragging: isDragging, setTargetBlendCode: setTargetBlendCode, setDisplayCode: setDisplayCode,
                                 setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
-                                setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates, updateLoadingState: updateLoadingState, abortController: abortController
+                                setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates, 
+                                updateLoadingState: updateLoadingState, abortController: abortController,
+                                handleCodeReplacement: handleCodeReplacement
                             }
                         }
                     } else if (node.type === 'imageDisplayNode') {
