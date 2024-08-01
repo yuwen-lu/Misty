@@ -33,7 +33,6 @@ import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, Cod
 import ErrorPopup from './ErrorPopup';
 import { appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
 import { BookList } from './renderCode/BookList';
-import TSXDiff from '../TSXDiff';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -96,7 +95,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{code: BookList, prevCode: "", changes: []}]);
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{ code: BookList, prevCode: "", nodeId: "code-0", changes: [] }]);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -143,6 +142,7 @@ const FlowComponent: React.FC = () => {
                     return {
                         code: content.code.trim() === displayCode.trim() ? newCode : content.code,
                         prevCode: content.prevCode,
+                        nodeId: content.nodeId,
                         changes: content.changes
                     };
                 });
@@ -162,7 +162,7 @@ const FlowComponent: React.FC = () => {
     const getCodeRenderNodes = (initialPositions: coordinatePositionType[]) => {
         return renderCodeContentList.map((renderContent, idx) => {
             const renderCode = renderContent.code;
-            const newNodeId = `code-${idx}`; // The idx is the index in the renderCodeList array
+            const newNodeId = renderContent.nodeId ? renderContent.nodeId : "code-" + nodes.length; // TODO This is a hack
             const existingNode = nodes.find((node) => node.id === newNodeId);
 
             if (existingNode) {
@@ -190,11 +190,9 @@ const FlowComponent: React.FC = () => {
             }
         });
     };
-
     // Initialize nodes with positions
     useEffect(() => {
-        const initialPositions = getInitialPositions();
-        setNodes((nodes) => [...nodes, ...getCodeRenderNodes(initialPositions)]);
+        setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
@@ -299,6 +297,7 @@ const FlowComponent: React.FC = () => {
         const newRenderCodeContent: codeRenderNodeContent = {
             code: updatedCode,
             prevCode: renderCode,
+            nodeId: `code-${renderCodeContentList.length}`,
             changes: changes
         }
 

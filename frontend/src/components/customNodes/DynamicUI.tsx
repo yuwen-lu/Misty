@@ -52,19 +52,14 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ changes, prevCode, newCode }) => 
         console.log("New Code: " + newCode);
     }, []);
 
-    useEffect(() => {
-        console.log("Index changed: " + editingIndex);
-    }, [editingIndex]);
-
     const tweakCodeDynamicUI = (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): string => {
         const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
-        let resultCode = newCode; // Work on a copy of newCode
+        let resultCode = newCode; 
 
         for (const changeIdx of indexesToChange) {
             // Find the position to replace in the resultCode
             const startIdx = changeIdx;
             const endIdx = startIdx + newValue.length;
-
             // Replace the newValue at the calculated position with the replacementValue
             resultCode = resultCode.slice(0, startIdx) + replacementValue + resultCode.slice(endIdx);
         }

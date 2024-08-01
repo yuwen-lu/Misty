@@ -85,8 +85,8 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 />
             </div >
             <DynamicUI 
-                // changes={data.changes}
-                changes={tempChanges}
+                changes={data.changes}
+                // changes={tempChanges}
                 prevCode={data.prevCode}
                 newCode={data.renderCode} />
         </div>

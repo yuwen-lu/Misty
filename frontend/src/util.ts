@@ -253,6 +253,7 @@ export interface loadingIdState {
 export interface codeRenderNodeContent {
   code: string,
   prevCode: string,
+  nodeId: string | null,
   changes: Change[] // the changes that render dynamic UI
 }
 
