@@ -318,8 +318,6 @@ const FlowComponent: React.FC = () => {
             changes: changes
         }
 
-        // TODO URGENT use the nodeId to enable updates to the code
-
         addRenderCodeContent(newRenderCodeContent);
         // addExplanationsNode(changes, renderCodeBoundingBox);   // TODO fix this set this position to between the old and new render node
 

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Eye, Brackets, ALargeSmall, Type, MoonStar } from 'lucide-react';
-import { getIndexesToChange } from '../../util';
+import { formatCode, getIndexesToChange } from '../../util';
 import { colorList } from "../../utilColors";
 import "../../index.css"
 
@@ -24,30 +24,46 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
     const colorBlockRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
 
-    const tweakCodeDynamicUI = (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): string => {
+    const tweakCodeDynamicUI = async (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): Promise<string> => {
         const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
-        let resultCode = newCode; 
+        console.log("Indexes to change: " + indexesToChange.forEach(idx => idx));
+        let resultCode = newCode;
+
+
+        const targetValue = (newValue.includes("bg-") || newValue.includes("text-") || newValue.includes("border-"))
+            ? newValue.slice(0, newValue.indexOf("-") + 1) + `[${replacementValue}]`
+            : replacementValue;
+
 
         for (const changeIdx of indexesToChange) {
             // Find the position to replace in the resultCode
             const startIdx = changeIdx;
             const endIdx = startIdx + newValue.length;
             // Replace the newValue at the calculated position with the replacementValue
-            resultCode = resultCode.slice(0, startIdx) + replacementValue + resultCode.slice(endIdx);
+            resultCode = resultCode.slice(0, startIdx) + targetValue + resultCode.slice(endIdx);
         }
+
+        try {
+            resultCode = await formatCode(resultCode);
+        } catch (err) {
+            console.log("error in format code: " + err);
+        }
+
+        console.log("Code replaced, replacing " + newValue + " with " + replacementValue + ", \n" + resultCode);
 
         return resultCode;
     };
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (editingIndex !== null) {
             const { value } = event.target;
             console.log("New value: " + value);
 
-            const updatedCode = tweakCodeDynamicUI(prevCode, newCode, state[editingIndex].before, state[editingIndex].after, value);
+            // Await the asynchronous tweakCodeDynamicUI function
+            const updatedCode = await tweakCodeDynamicUI(prevCode, newCode, state[editingIndex].before, state[editingIndex].after, value);
             handleCodeReplacement(nodeId, updatedCode);
 
-            // update state too
+            // Update state too
             const newState = [...state];
             newState[editingIndex].after = value;
             setState(newState);
@@ -57,6 +73,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
     const getColorStyle = (className: string): string | undefined => {
 
         // TODO need to handle gradients. maybe just let the model deal with this?
+        // TODO also need to deal with more than one class names
 
         const colorTag = className.replace(/(bg-|text-|border-)/, "");
         if (colorTag === "white") return "#ffffff";
@@ -90,7 +107,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
                         <div className="flex items-center">
                             <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div>
                             <div className="mr-4 text-black flex items-center">
-                                <span>After: </span>
+                                <span>After: {change.after} </span>
                                 {change.type === 'color' ? (
                                     <span
                                         onFocus={() => setEditingIndex(index)}
