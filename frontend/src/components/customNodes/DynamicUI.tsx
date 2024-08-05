@@ -25,8 +25,13 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     const tweakCodeDynamicUI = async (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): Promise<string> => {
-        const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
-        console.log("Indexes to change: " + indexesToChange.forEach(idx => idx));
+        console.log("prevCode: " + prevCode);
+        console.log("newCode: " + newCode);
+        console.log("oldValue: " + oldValue);
+        console.log("newValue: " + newValue);
+        console.log("replacementValue: " + replacementValue);
+        const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue); 
+        console.log("Indexes to change: " + indexesToChange);
         let resultCode = newCode;
 
 
@@ -49,7 +54,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
             console.log("error in format code: " + err);
         }
 
-        console.log("Code replaced, replacing " + newValue + " with " + replacementValue + ", \n" + resultCode);
+        console.log("Code replaced, replacing " + newValue + " with " + targetValue + ", \n" + resultCode);
 
         return resultCode;
     };

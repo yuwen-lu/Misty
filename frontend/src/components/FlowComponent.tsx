@@ -292,21 +292,23 @@ const FlowComponent: React.FC = () => {
         }
 
 
-        // Define the regex pattern to check the desired format
-        const regexPattern = /^\(\) => \{\s*return\s*\(\s*([\s\S]*?)\s*\);\s*\};$/;
-
-        // Test if the updatedCode matches the regex pattern
-        if (!regexPattern.test(updatedCode.trim())) {
-            // Handle the case where the code does not match the desired format
-            throw new Error('Code does not match the desired format');
-        }
-
+        
         // Remove extra closing parentheses if present
         const extraParenthesesPattern = /\)\s*\)\s*;\s*\};$/;
         if (extraParenthesesPattern.test(updatedCode)) {
             updatedCode = updatedCode.replace(extraParenthesesPattern, ');\n};');
         }
+        
+        // Define the regex pattern to check the desired format
+        const regexPattern = /^\(\)\s*=>\s*\{\s*([\s\S]*?)\s*\};?$/;
 
+        // Test if the updatedCode matches the regex pattern
+        if (!regexPattern.test(updatedCode.trim())) {
+            // Handle the case where the code does not match the desired format
+            console.log('code does not match the desired format in regex');
+            setShowError(true);
+        }
+        
         console.log("displaying...\n" + parsedData)
 
         const changes: Change[] = parsedData.changes;
@@ -323,7 +325,8 @@ const FlowComponent: React.FC = () => {
 
     };
 
-    const handleCodeReplacement = (newCode: string, nodeId: string) => {
+    const handleCodeReplacement = (nodeId: string, newCode: string) => {
+        console.log("Updating node state for the code update, nodeId: " + nodeId + ", newCode: " + newCode);
         setNodes((nds) => nds.map((nd) =>
             nd.type === "codeRenderNode" && nd.id === nodeId ? {
                 ...nd,
