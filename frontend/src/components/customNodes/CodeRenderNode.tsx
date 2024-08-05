@@ -20,7 +20,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
             border-t-8 border-t-purple-900
             w-full h-full'>
             <div
-                className={"flex flex-col items-center"}
+                className={"flex flex-col min-w-96 items-center"}
                 ref={nodeRef}
             >
                 <div className='w-full flex relative items-center'>

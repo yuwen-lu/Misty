@@ -161,7 +161,7 @@ const FlowComponent: React.FC = () => {
 
     const getCodeRenderNodes = (initialPositions: coordinatePositionType[]) => {
         return renderCodeContentList.map((renderContent, idx) => {
-            const renderCode = renderContent.code;
+            const renderCode = renderContent.code.replaceAll(`{" "}`, "");  // sometimes there are weird formatting issues that inserts this empty string to the formatted code
             const newNodeId = renderContent.nodeId ? renderContent.nodeId : "code-" + nodes.length; // TODO This is a hack
             const existingNode = nodes.find((node) => node.id === newNodeId);
 
@@ -292,13 +292,13 @@ const FlowComponent: React.FC = () => {
         }
 
 
-        
+
         // Remove extra closing parentheses if present
         const extraParenthesesPattern = /\)\s*\)\s*;\s*\};$/;
         if (extraParenthesesPattern.test(updatedCode)) {
             updatedCode = updatedCode.replace(extraParenthesesPattern, ');\n};');
         }
-        
+
         // Define the regex pattern to check the desired format
         const regexPattern = /^\(\)\s*=>\s*\{\s*([\s\S]*?)\s*\};?$/;
 
@@ -308,7 +308,7 @@ const FlowComponent: React.FC = () => {
             console.log('code does not match the desired format in regex');
             setShowError(true);
         }
-        
+
         console.log("displaying...\n" + parsedData)
 
         const changes: Change[] = parsedData.changes;
@@ -327,14 +327,15 @@ const FlowComponent: React.FC = () => {
 
     const handleCodeReplacement = (nodeId: string, newCode: string) => {
         console.log("Updating node state for the code update, nodeId: " + nodeId + ", newCode: " + newCode);
-        setNodes((nds) => nds.map((nd) =>
-            nd.type === "codeRenderNode" && nd.id === nodeId ? {
-                ...nd,
+
+        setRenderCodeContentListState((renderCodeList: codeRenderNodeContent[]) => renderCodeList.map((renderCodeContent: codeRenderNodeContent) =>
+            renderCodeContent.nodeId === nodeId ? {
+                ...renderCodeContent,
                 code: newCode
-            } : nd
-        )
-        )
-    }
+            } : renderCodeContent
+        ));
+    };
+
 
     const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {
         console.log("updating state with target code id: " + targetCodeRenderNodeId);

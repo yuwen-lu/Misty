@@ -34,11 +34,15 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
         console.log("Indexes to change: " + indexesToChange);
         let resultCode = newCode;
 
-
-        const targetValue = (newValue.includes("bg-") || newValue.includes("text-") || newValue.includes("border-"))
-            ? newValue.slice(0, newValue.indexOf("-") + 1) + `[${replacementValue}]`
-            : replacementValue;
-
+        const includesPrefix: boolean = newValue.includes("bg-") || newValue.includes("text-") || newValue.includes("border-");
+        const replacementValueIncludesPrefix: boolean = replacementValue.includes("bg-") || replacementValue.includes("text-") || replacementValue.includes("border-");
+        let attributePrefix = "";
+        let targetValue = replacementValue;
+        
+        if (includesPrefix && !replacementValueIncludesPrefix) {
+            attributePrefix = newValue.slice(0, newValue.indexOf("-") + 1);
+            targetValue = attributePrefix + `[${replacementValue}]`
+        }
 
         for (const changeIdx of indexesToChange) {
             // Find the position to replace in the resultCode
@@ -98,7 +102,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
 
     return (
         <>
-            {state.length === 0 ? <></> : <div className="ml-20 relative" ref={containerRef}>
+            {state.length === 0 ? <></> : <div className="ml-20 max-w-xl relative" ref={containerRef}>
                 <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Applied Changes</div>
                 {state.map((change, index) => (
                     <div key={index} className="mb-6 w-full flex flex-col items-start">
