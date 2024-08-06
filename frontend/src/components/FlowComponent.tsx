@@ -29,7 +29,7 @@ import CodeEditorPanel from './CodeEditorPanel';
 import 'reactflow/dist/style.css';
 import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent } from "../util";
-import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change } from '../prompts';
+import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change, CategorizedChange } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
 import { BookList } from './renderCode/BookList';
@@ -95,7 +95,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{ code: BookList, prevCode: "", nodeId: "code-0", changes: [] }]);
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{ code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [] }]);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -183,7 +183,7 @@ const FlowComponent: React.FC = () => {
                         renderCode: renderCode,
                         prevCode: renderContent.prevCode,
                         blendedCode: renderCode,    // when we create a new node, we record its original updated code after blending, so we can reset when needed
-                        changes: renderContent.changes
+                        categorizedChanges: renderContent.categorizedChanges
                     },
                 };
             }
@@ -272,7 +272,7 @@ const FlowComponent: React.FC = () => {
     const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // 1. fetch the parsed Result
         const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse);
-        let updatedCode = parsedData.updatedCode;
+        let updatedCode = parsedData.updatedCode.trim();
 
         // Check if updatedCode is wrapped in backticks
         if (updatedCode.startsWith('`') && updatedCode.endsWith('`')) {
@@ -311,13 +311,13 @@ const FlowComponent: React.FC = () => {
 
         console.log("displaying...\n" + parsedData)
 
-        const changes: Change[] = parsedData.changes;
+        const categorizedChanges: CategorizedChange[] = parsedData.categorizedChanges;
 
         const newRenderCodeContent: codeRenderNodeContent = {
             code: updatedCode,
             prevCode: renderCode,
             nodeId: `code-${renderCodeContentList.length}`,
-            changes: changes
+            categorizedChanges: categorizedChanges
         }
 
         addRenderCodeContent(newRenderCodeContent);
@@ -327,14 +327,15 @@ const FlowComponent: React.FC = () => {
 
     const handleCodeReplacement = (nodeId: string, newCode: string) => {
         console.log("Updating node state for the code update, nodeId: " + nodeId + ", newCode: " + newCode);
-
-        setRenderCodeContentListState((renderCodeList: codeRenderNodeContent[]) => renderCodeList.map((renderCodeContent: codeRenderNodeContent) =>
-            renderCodeContent.nodeId === nodeId ? {
-                ...renderCodeContent,
-                code: newCode
-            } : renderCodeContent
-        ));
-    };
+    
+        setRenderCodeContentListState((renderCodeList: codeRenderNodeContent[]) =>
+            renderCodeList.map((renderCodeContent: codeRenderNodeContent) =>
+                renderCodeContent.nodeId === nodeId ? {
+                    ...renderCodeContent,
+                    code: newCode
+                } : renderCodeContent
+            ));
+    };    
 
 
     const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {

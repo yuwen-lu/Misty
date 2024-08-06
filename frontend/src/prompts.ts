@@ -20,27 +20,50 @@ export const constructTextPrompt = (renderCode: string) => {
         {
             updatedCode: \`() => {}\`
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
-            changes: [{
-                type: "color",
-                before": // the tailwind class before the change,
-                "after": // the tailwind class after the change
-            }]
+            categorizedChanges: [
+                {
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. dark theme, spacing, layout, etc.
+                    changes: [{
+                        type: "color",
+                        before": // the tailwind class before the change,
+                        "after": // the tailwind class after the change
+                    }]
+                }
+            ]
         }
 
         here is a good example of the changes field:
-        changes: [{
-            type: "color",
-            before: "bg-black",
-            after: "bg-white"
-        }, {
-            type: "color",
-            before: "text-white",
-            after: "text-gray-900"
-        }, {
-            type: "border",
-            before: "", // you can use empty before field to indicate addition of new classes
-            after: "border-2 border-gray-300/90"
-        }, ...] // add as many as appropriate
+        categorizedChanges: [
+            {
+                category: "Dark Theme",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "color",
+                    before: "text-white",
+                    after: "text-gray-900"
+                }, {
+                    type: "border",
+                    before: "", // you can use empty before field to indicate addition of new classes
+                    after: "border-2 border-gray-300/90"
+                }, ...] // add as many as appropriate,
+            },
+            {
+                category: "Visual Hierarchy",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "font",
+                    before: "text-sm",
+                    after: "text-lg"
+                }, ...] // add as many as appropriate,
+            },
+            
+            ]
         `;
 };
 
@@ -50,9 +73,14 @@ export type Change = {
     after: string;
 };
 
+export type CategorizedChange = {
+    category: string;
+    changes: Change[]
+};
+
 export interface ParsedGlobalBlendingData {
     updatedCode: string;
-    changes: Change[];
+    categorizedChanges: CategorizedChange[];
 }
 
 export function parseResponse(response: string): ParsedGlobalBlendingData {

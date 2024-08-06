@@ -1,7 +1,7 @@
 import * as prettier from 'prettier/standalone';
 import * as parserBabel from 'prettier/parser-babel';
 import * as prettierPluginEstree from "prettier/plugins/estree";
-import { Change } from './prompts';
+import { CategorizedChange, Change } from './prompts';
 
 export const formatContent = (text: string) => {
   return text
@@ -254,7 +254,7 @@ export interface codeRenderNodeContent {
   code: string,
   prevCode: string,
   nodeId: string | null,
-  changes: Change[] // the changes that render dynamic UI
+  categorizedChanges: CategorizedChange[] // the changes that render dynamic UI
 }
 
 
