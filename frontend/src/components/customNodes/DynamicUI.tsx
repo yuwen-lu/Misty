@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Eye, Brackets, Type, MoonStar, RotateCcw } from 'lucide-react';
-import { formatCode, getIndexesToChange } from '../../util';
+import { formatCode, getIndexesToChange, splitChanges } from '../../util';
 import { colorList } from "../../utilColors";
 import "../../index.css";
 import { CategorizedChange } from '../../prompts';
@@ -15,7 +15,7 @@ interface DynamicUIProps {
 }
 
 const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement }) => {
-    const [state, setState] = useState<CategorizedChange[]>(JSON.parse(JSON.stringify(categorizedChanges)));
+    const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
     // Initialize local state when categorizedChanges prop changes
@@ -105,20 +105,23 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                         </div>
                         {category.changes.map((change, changeIndex) => (
                             <div key={changeIndex} className="flex items-center mb-4">
-                                <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div>
+                                {change.before ? <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div> : <></>}
                                 <div className="mr-4 text-black flex items-center">
-                                    <span>After: </span>
-                                    <select
-                                        className="p-2 ml-2 bg-gray-800 text-white rounded-lg"
-                                        value={change.after}
-                                        onChange={(event) => handleSelectChange(event, categoryIndex, changeIndex)}
-                                    >
-                                        {getDropdownOptions(change.after).map(option => (
-                                            <option key={option} value={option}>
-                                                {option}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <span>{change.before ? "After: " : "Added: "}</span>
+                                    {splitChanges(change.after).map(changeItem =>
+                                        <select
+                                            className="p-2 ml-2 bg-gray-800 text-white rounded-lg"
+                                            value={ changeItem }
+                                            onChange={(event) => handleSelectChange(event, categoryIndex, changeIndex)}
+                                        >
+                                            {getDropdownOptions(changeItem).map(option => (
+                                                <option key={option} value={option}>
+                                                    {option}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    )}
+
                                 </div>
                             </div>
                         ))}

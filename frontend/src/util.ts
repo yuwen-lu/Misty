@@ -320,3 +320,8 @@ export const getIndexesToChange = (prevCode: string, newCode: string, oldValue: 
 
   return changeIdx;
 };
+
+export const splitChanges = (changes: string): string[] => {
+  // sometimes there are weird responses like size: 40, we need to change them to size-40
+  return changes.replaceAll(": ", "-").split(" ");
+}

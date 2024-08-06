@@ -193,7 +193,6 @@ const FlowComponent: React.FC = () => {
     // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
-        console.log("rendercodecontentlistupdated: " + JSON.stringify(renderCodeContentList));
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
