@@ -12,14 +12,15 @@ interface DynamicUIProps {
     blendedCode: string;
     newCode: string;
     handleCodeReplacement: (nodeId: string, newCode: string) => void;
+    sethoverIdxList: (hoverIdxList: number[]) => void;
 }
 
-const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement }) => {
+const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, sethoverIdxList }) => {
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
     useEffect(() => {
-        setState(JSON.parse(JSON.stringify(categorizedChanges)));
+        if (categorizedChanges) setState(JSON.parse(JSON.stringify(categorizedChanges)));
     }, [categorizedChanges]);
 
     const tweakCodeDynamicUI = async (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): Promise<string> => {
@@ -36,7 +37,9 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
             targetValue = attributePrefix + `[${replacementValue}]`;
         }
 
-        for (const changeIdx of indexesToChange) {
+        // Process replacements from back to front, so the replacement will not impact the index
+        for (let i = indexesToChange.length - 1; i >= 0; i--) {
+            const changeIdx = indexesToChange[i];
             const startIdx = changeIdx;
             const endIdx = startIdx + newValue.length;
             resultCode = resultCode.slice(0, startIdx) + targetValue + resultCode.slice(endIdx);
@@ -122,12 +125,18 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                             {category.category}
                         </div>
                         {category.changes.map((change, changeIndex) => (
-                            <div key={changeIndex} className="flex items-center mb-4">
+                            <div
+                                key={changeIndex}
+                                className="flex items-center ml-4 mb-4"
+                                onMouseOver={() => sethoverIdxList(getIndexesToChange(prevCode, newCode, change.before, change.after))}
+                                onMouseLeave={() => sethoverIdxList([])}
+                            >
                                 {change.before ? <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div> : <></>}
                                 <div className="mr-4 text-black flex items-center flex-wrap	">
                                     <span>{change.before ? "After: " : "Added: "}</span>
                                     {splitChanges(change.after).map((changeItem, changeItemIndex) =>
                                         <select
+                                            key={changeItemIndex}
                                             className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
                                             value={changeItem}
                                             onChange={(event) => handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex)}

@@ -77,6 +77,10 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
         console.log("dragging updated: " + isDragging);
     }, [isDragging]);
 
+    useEffect(() => {
+        console.log("code updated, contains highlight? " + renderCode.includes("highlight"));
+    }, [renderCode]);
+
     const cancelBlending = () => {
         updateLoadingState(nodeId, false);
         abortController && abortController.abort();
