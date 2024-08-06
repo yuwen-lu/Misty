@@ -323,5 +323,7 @@ export const getIndexesToChange = (prevCode: string, newCode: string, oldValue: 
 
 export const splitChanges = (changes: string): string[] => {
   // sometimes there are weird responses like size: 40, we need to change them to size-40
-  return changes.replaceAll(": ", "-").split(" ");
+  const splittedChanges = changes.replaceAll(": ", "-").split(" ");
+  console.log("splittedChanges: " + splittedChanges);
+  return splittedChanges;
 }

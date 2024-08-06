@@ -106,11 +106,11 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                         {category.changes.map((change, changeIndex) => (
                             <div key={changeIndex} className="flex items-center mb-4">
                                 {change.before ? <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div> : <></>}
-                                <div className="mr-4 text-black flex items-center">
+                                <div className="mr-4 text-black flex items-center flex-wrap	">
                                     <span>{change.before ? "After: " : "Added: "}</span>
                                     {splitChanges(change.after).map(changeItem =>
                                         <select
-                                            className="p-2 ml-2 bg-gray-800 text-white rounded-lg"
+                                            className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
                                             value={ changeItem }
                                             onChange={(event) => handleSelectChange(event, categoryIndex, changeIndex)}
                                         >
