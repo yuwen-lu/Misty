@@ -140,10 +140,8 @@ const FlowComponent: React.FC = () => {
             setRenderCodeContentListState((prevList) => {
                 return prevList.map((content) => {
                     return {
+                        ...content,
                         code: content.code.trim() === displayCode.trim() ? newCode : content.code,
-                        prevCode: content.prevCode,
-                        nodeId: content.nodeId,
-                        changes: content.changes
                     };
                 });
             });
@@ -184,6 +182,7 @@ const FlowComponent: React.FC = () => {
                         response: response,
                         renderCode: renderCode,
                         prevCode: renderContent.prevCode,
+                        blendedCode: renderCode,    // when we create a new node, we record its original updated code after blending, so we can reset when needed
                         changes: renderContent.changes
                     },
                 };
@@ -194,6 +193,7 @@ const FlowComponent: React.FC = () => {
     // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
+        console.log("rendercodecontentlistupdated: " + JSON.stringify(renderCodeContentList));
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {

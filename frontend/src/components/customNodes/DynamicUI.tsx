@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Eye, Brackets, ALargeSmall, Type, MoonStar } from 'lucide-react';
+import { Eye, Brackets, Type, MoonStar, RotateCcw } from 'lucide-react';
 import { formatCode, getIndexesToChange } from '../../util';
 import { colorList } from "../../utilColors";
-import "../../index.css"
+import "../../index.css";
 
 interface Change {
     type: string;
@@ -14,11 +14,12 @@ interface DynamicUIProps {
     nodeId: string;
     changes: Change[];
     prevCode: string;
+    blendedCode: string;
     newCode: string;
     handleCodeReplacement: (newCode: string, nodeId: string) => void;
 }
 
-const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCode, handleCodeReplacement }) => {
+const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, blendedCode, newCode, handleCodeReplacement }) => {
     const [state, setState] = useState<Change[]>(changes);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const colorBlockRef = useRef<HTMLDivElement | null>(null);
@@ -30,7 +31,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
         console.log("oldValue: " + oldValue);
         console.log("newValue: " + newValue);
         console.log("replacementValue: " + replacementValue);
-        const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue); 
+        const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
         console.log("Indexes to change: " + indexesToChange);
         let resultCode = newCode;
 
@@ -38,7 +39,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
         const replacementValueIncludesPrefix: boolean = replacementValue.includes("bg-") || replacementValue.includes("text-") || replacementValue.includes("border-");
         let attributePrefix = "";
         let targetValue = replacementValue;
-        
+
         if (includesPrefix && !replacementValueIncludesPrefix) {
             attributePrefix = newValue.slice(0, newValue.indexOf("-") + 1);
             targetValue = attributePrefix + `[${replacementValue}]`
@@ -72,18 +73,16 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
             const updatedCode = await tweakCodeDynamicUI(prevCode, newCode, state[editingIndex].before, state[editingIndex].after, value);
             handleCodeReplacement(nodeId, updatedCode);
 
+            console.log("changes before update?  " + JSON.stringify(changes));
             // Update state too
             const newState = [...state];
             newState[editingIndex].after = value;
             setState(newState);
+            console.log("is changes updated? " + JSON.stringify(changes));
         }
     };
 
     const getColorStyle = (className: string): string | undefined => {
-
-        // TODO need to handle gradients. maybe just let the model deal with this?
-        // TODO also need to deal with more than one class names
-
         const colorTag = className.replace(/(bg-|text-|border-)/, "");
         if (colorTag === "white") return "#ffffff";
         if (colorTag === "black") return "#000000";
@@ -94,16 +93,25 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
         return colorTag;
     };
 
-
-    useEffect(() => {
-        console.log("Prev code: " + prevCode);
-        console.log("New Code: " + newCode);
-    }, []);
+    const resetCode = () => {
+        handleCodeReplacement(nodeId, blendedCode);
+        console.log("resetting changes: " + JSON.stringify(changes));
+        setState(changes);
+    };
 
     return (
         <>
             {state.length === 0 ? <></> : <div className="ml-20 max-w-xl relative" ref={containerRef}>
-                <div className="w-full text-center font-semibold text-purple-900 text-xl mb-5">Applied Changes</div>
+                <div className="w-full flex items-center justify-between font-semibold text-purple-900 text-xl mb-5">
+                    <div className="flex-1 text-center">Applied Changes</div>
+                    <button
+                        className='ml-auto flex items-center space-x-2 font-normal text-sm text-purple-900 hover:text-purple-700 hover:bg-purple-100 px-4 py-2 rounded'
+                        onClick={resetCode}>
+                        <RotateCcw />
+                        <span>Reset</span>
+                    </button>
+                </div>
+
                 {state.map((change, index) => (
                     <div key={index} className="mb-6 w-full flex flex-col items-start">
                         <div className="font-semibold text-purple-900 mb-2 flex items-center">
@@ -131,8 +139,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
                                         </label>
                                     </span>
                                 ) : (
-
-                                    // TODO URGENT FIX THIS INPUT
                                     <input
                                         type="text"
                                         className="p-2 ml-2 bg-gray-800 text-white rounded-lg"
@@ -140,7 +146,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, changes, prevCode, newCod
                                         onChange={handleInputChange}
                                         onFocus={() => setEditingIndex(index)}
                                     />
-
                                 )}
                             </div>
                         </div>

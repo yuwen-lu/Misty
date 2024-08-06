@@ -85,11 +85,12 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 />
             </div >
             <DynamicUI
-                changes={data.changes}
                 nodeId={id}
+                prevCode={data.prevCode}    // this is the original source code for blending
+                blendedCode={data.blendedCode}  // blended code, needed for resetting the node
+                newCode={data.renderCode}   // current code to display. will be the same as blendedCode, if no dynamic UI tweaks are performed
+                changes={data.changes}
                 // changes={tempChanges}
-                prevCode={data.prevCode}
-                newCode={data.renderCode} 
                 handleCodeReplacement={data.handleCodeReplacement} />
         </div>
     );
