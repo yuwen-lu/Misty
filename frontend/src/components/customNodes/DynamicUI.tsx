@@ -18,7 +18,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-    // Initialize local state when categorizedChanges prop changes
     useEffect(() => {
         setState(JSON.parse(JSON.stringify(categorizedChanges)));
     }, [categorizedChanges]);
@@ -52,14 +51,18 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
         return resultCode;
     };
 
-    const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>, categoryIndex: number, changeIndex: number) => {
+    const handleSelectChange = async (event: React.ChangeEvent<HTMLSelectElement>, categoryIndex: number, changeIndex: number, changeItemIndex: number) => {
         const { value } = event.target;
         const change = state[categoryIndex].changes[changeIndex];
-        const updatedCode = await tweakCodeDynamicUI(prevCode, newCode, change.before, change.after, value);
+        const splitChangeAfter = splitChanges(change.after);
+        const oldChangeItem = splitChangeAfter[changeItemIndex];
+        splitChangeAfter[changeItemIndex] = value;
+        const updatedChangeAfter = splitChangeAfter.join(' ');
+        const updatedCode = await tweakCodeDynamicUI(prevCode, newCode, change.before, change.after, updatedChangeAfter);
         handleCodeReplacement(nodeId, updatedCode);
 
         const newState = [...state];
-        newState[categoryIndex].changes[changeIndex].after = value;
+        newState[categoryIndex].changes[changeIndex].after = updatedChangeAfter;
         setState(newState);
     };
 
@@ -67,14 +70,29 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
         const prefix = currentValue.split('-')[0];
         switch (prefix) {
             case 'bg':
-                return Object.keys(colorList).flatMap(color =>
-                    Object.keys(colorList[color]).map(shade => `${prefix}-${color}-${shade}`)
-                );
             case 'text':
             case 'border':
                 return Object.keys(colorList).flatMap(color =>
                     Object.keys(colorList[color]).map(shade => `${prefix}-${color}-${shade}`)
                 );
+            case 'mt':
+            case 'mb':
+            case 'ml':
+            case 'mr':
+            case 'mx':
+            case 'my':
+            case 'p':
+            case 'pt':
+            case 'pb':
+            case 'pl':
+            case 'pr':
+            case 'px':
+            case 'py':
+                return ['0', '1', '2', '3', '4', '5', '6', '8', '10', '12', '16', '20', '24', '32', '40', '48', '56', '64'].map(size => `${prefix}-${size}`);
+            case 'shadow':
+                return ['sm', 'md', 'lg', 'xl', '2xl', 'inner', 'none'].map(shadow => `${prefix}-${shadow}`);
+            case 'rounded':
+                return ['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map(size => `${prefix}-${size}`);
             default:
                 return [currentValue];
         }
@@ -108,11 +126,11 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                 {change.before ? <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div> : <></>}
                                 <div className="mr-4 text-black flex items-center flex-wrap	">
                                     <span>{change.before ? "After: " : "Added: "}</span>
-                                    {splitChanges(change.after).map(changeItem =>
+                                    {splitChanges(change.after).map((changeItem, changeItemIndex) =>
                                         <select
                                             className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
-                                            value={ changeItem }
-                                            onChange={(event) => handleSelectChange(event, categoryIndex, changeIndex)}
+                                            value={changeItem}
+                                            onChange={(event) => handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex)}
                                         >
                                             {getDropdownOptions(changeItem).map(option => (
                                                 <option key={option} value={option}>
@@ -121,7 +139,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                             ))}
                                         </select>
                                     )}
-
                                 </div>
                             </div>
                         ))}
