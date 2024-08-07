@@ -538,7 +538,7 @@ const FlowComponent: React.FC = () => {
                             id: validNewNodeId,
                             type: 'subimageNode',
                             draggable: true,
-                            position: { x: currentRightEdge + 100, y: (nodes.length + index) * 100 + 100 },
+                            position: { x: currentRightEdge + 100, y: index * 100 + 100 },
                             data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging, setNewConfirmationPopupNodeDataPackage: setNewConfirmationPopupNodeDataPackage },
                         }
                     );
