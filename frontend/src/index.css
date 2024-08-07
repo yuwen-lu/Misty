@@ -52,6 +52,26 @@ code {
   border-radius: 0.25rem !important;
 }
 
+@keyframes breathing-gray {
+  0% {
+    background-color: rgba(123, 123, 123, 0.276);
+  }
+
+  50% {
+    background-color: rgba(123, 123, 123, 0.1);
+  }
+
+  100% {
+    background-color: rgba(123, 123, 123, 0.276);
+  }
+}
+
+.highlight-gray {
+  animation: breathing-gray 2s ease-in-out infinite !important;
+  border-radius: 0.25rem !important;
+}
+
+
 .gelatine {
   animation: gelatine 0.3s forwards;
 }

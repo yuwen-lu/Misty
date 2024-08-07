@@ -44,11 +44,13 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     console.log("here is the matched class names: " + matchedClassName);
                     newOriginalClassNames.push(matchedClassName);
                     if (matchedClassName.includes("bg-")) {
+                        updatedClassName = updatedClassName.slice(1, -1);   // first, remove the quotes
                         updatedClassName = updatedClassName.split(' ').filter(cls => !cls.startsWith('bg-')).join(' ');
-                        console.log("Bg removed: " + updatedClassName);
+                        updatedClassName = quoteChar + updatedClassName + quoteChar;    // add the quotes back
+                        console.log("bg removed: " + updatedClassName);
                     }
-                    updatedClassName = updatedClassName.slice(0, 1) + "highlight " + updatedClassName.slice(1);
-                    console.log("highlight added: " + updatedClassName);
+                    updatedClassName = updatedClassName.slice(0, 1) + "highlight-gray " + updatedClassName.slice(1);
+                    console.log("highlight-gray added: " + updatedClassName);
                     newReplacementClassNames.push(updatedClassName);
                     resultCode = resultCode.replaceAll(matchedClassName, updatedClassName);
                 }
@@ -56,8 +58,8 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
             setOriginalClassNames(newOriginalClassNames);
             setReplacementClassNames(newReplacementClassNames);
             setCode(resultCode);
-        } else if (code.match(/className=(["']).*?\1/)) {
-            console.log("code includes highlight in className, removing...");
+        } else if (code.match(/className=(["'])highlight-gray.*?\1/)) {
+            console.log("code includes highlight-gray in className, removing...");
             // Recover the original className strings
             let recoveredCode = resultCode;
             originalClassNames.forEach((originalClassName, idx) => {
