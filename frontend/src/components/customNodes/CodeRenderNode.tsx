@@ -12,18 +12,18 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
     const [hoverIdxList, sethoverIdxList] = useState<number[]>([]);
     const nodeRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        console.log("hoverIdxList updated: " + hoverIdxList);
-        let resultCode = code;
-        if (hoverIdxList.length > 0) {
-            for (let i = hoverIdxList.length - 1; i >= 0; i--) {
-                resultCode = resultCode.slice(0, hoverIdxList[i]) + " highlight " + resultCode.slice(hoverIdxList[i]);
-            }
-            setCode(resultCode);
-        } else {
-            setCode(resultCode.replaceAll("highligh", ""));
-        }
-    }, [hoverIdxList]);
+    // useEffect(() => {
+    //     console.log("hoverIdxList updated: " + hoverIdxList);
+    //     let resultCode = code;
+    //     if (hoverIdxList.length > 0) {
+    //         for (let i = hoverIdxList.length - 1; i >= 0; i--) {
+    //             resultCode = resultCode.slice(0, hoverIdxList[i]) + " highlight " + resultCode.slice(hoverIdxList[i]);
+    //         }
+    //         setCode(resultCode);
+    //     } else {
+    //         setCode(resultCode.replaceAll("highligh", ""));
+    //     }
+    // }, [hoverIdxList]);
 
     const handleToggle = () => {
         setIsMobile(!isMobile);
@@ -61,7 +61,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     nodeId={id}
                     isMobile={isMobile}
                     response={data.response}
-                    renderCode={code}
+                    renderCode={data.renderCode}
                     isDragging={data.isDragging}
                     setTargetBlendCode={data.setTargetBlendCode}
                     setTargetCodeDropped={data.setTargetCodeDropped}

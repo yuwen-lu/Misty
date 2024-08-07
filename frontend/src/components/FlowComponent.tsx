@@ -190,9 +190,30 @@ const FlowComponent: React.FC = () => {
         });
     };
 
+    // TODO Urgent helper function can be removed
+    const printCodeRenderNodeContentList = (list: codeRenderNodeContent[]) => {
+        list.forEach((item, index) => {
+            console.log(`Item ${index + 1}:`);
+            console.log(`  Code: ${item.code}`);
+            console.log(`  Prev Code: ${item.prevCode}`);
+            console.log(`  Node ID: ${item.nodeId}`);
+            console.log(`  Categorized Changes:`);
+            item.categorizedChanges.forEach((change, changeIndex) => {
+                console.log(`    Change ${changeIndex + 1}:`);
+                console.log(`      Category: ${change.category}`);
+                change.changes.forEach((c, cIndex) => {
+                    console.log(`      Change ${cIndex + 1}: Before: ${c.before}, After: ${c.after}`);
+                });
+            });
+        });
+    };
+    
+
     // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
+        console.log("renderCodeContentList updated: ");
+        printCodeRenderNodeContentList(renderCodeContentList);
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
@@ -325,13 +346,11 @@ const FlowComponent: React.FC = () => {
     };
 
     const handleCodeReplacement = (nodeId: string, newCode: string) => {
-        console.log("Updating node state for the code update, nodeId: " + nodeId + ", newCode: " + newCode);
-    
         setRenderCodeContentListState((renderCodeList: codeRenderNodeContent[]) =>
             renderCodeList.map((renderCodeContent: codeRenderNodeContent) =>
                 renderCodeContent.nodeId === nodeId ? {
                     ...renderCodeContent,
-                    code: newCode
+                    code: newCode.replaceAll(`{" "}`, "")
                 } : renderCodeContent
             ));
     };    

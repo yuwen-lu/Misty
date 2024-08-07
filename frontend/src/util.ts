@@ -161,7 +161,6 @@ export const formatCode = async (code: string): Promise<string> => {
     tabWidth: 4,
     plugins: [parserBabel, prettierPluginEstree]
   });
-  console.log("formattedCode: " + formattedCode);
   return formattedCode;
 }
 
@@ -293,8 +292,11 @@ export const findAllIndexesOfStrings = (mainString: string, ...searchStrings: st
   const indexes: number[] = [];
 
   searchStrings.forEach(searchString => {
+    if (!searchString) return;
     let position: number = mainString.indexOf(searchString);
+    console.log("looking for string " + searchString + " in string " + mainString.slice(0, 100));
     while (position !== -1) {
+      console.log("Finding position: " + position);
       indexes.push(position);
       position = mainString.indexOf(searchString, position + searchString.length);
     }
