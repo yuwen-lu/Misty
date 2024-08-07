@@ -149,6 +149,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                 className="flex items-center ml-4 mb-4"
                                 onMouseEnter={() => sethoverIdxList(getIndexesToChange(prevCode, newCode, change.before, change.after))}
                                 onMouseLeave={() => sethoverIdxList([])}
+                                onClick={() => sethoverIdxList([])}
                             >
                                 {change.before ? <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div> : <></>}
                                 <div className="mr-4 text-black flex items-center flex-wrap	">
