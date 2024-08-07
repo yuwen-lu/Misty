@@ -294,7 +294,7 @@ export const findAllIndexesOfStrings = (mainString: string, ...searchStrings: st
   searchStrings.forEach(searchString => {
     if (!searchString) return;
     let position: number = mainString.indexOf(searchString);
-    console.log("looking for string " + searchString + " in string " + mainString.slice(0, 100));
+    // console.log("looking for string " + searchString + " in string " + mainString.slice(0, 100));
     while (position !== -1) {
       console.log("Finding position: " + position);
       indexes.push(position);
@@ -309,11 +309,13 @@ export const findAllIndexesOfStrings = (mainString: string, ...searchStrings: st
 
 export const getIndexesToChange = (prevCode: string, newCode: string, oldValue: string, newValue: string): number[] => {
   
+  const newCodeNewValueIdx = findAllIndexesOfStrings(newCode, newValue);
+  if (!oldValue) return newCodeNewValueIdx; // this is a newly added value, just use this
+
   const prevCodeIdx = findAllIndexesOfStrings(prevCode, oldValue, newValue);
   const prevCodeOldValueIdx = findAllIndexesOfStrings(prevCode, oldValue);
   
   const newCodeIdx = findAllIndexesOfStrings(newCode, oldValue, newValue);
-  const newCodeNewValueIdx = findAllIndexesOfStrings(newCode, newValue);
   
   const changeIdx: number[] = newCodeIdx.filter((value, pos) => {
     // we only get the idx of oldValue -> newValue
