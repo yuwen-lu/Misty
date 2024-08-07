@@ -121,6 +121,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
     const resetCode = () => {
         handleCodeReplacement(nodeId, blendedCode);
+        sethoverIdxList([]);
         setState(JSON.parse(JSON.stringify(categorizedChanges))); // Reset to initial changes
     };
 

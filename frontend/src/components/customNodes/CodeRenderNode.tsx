@@ -12,21 +12,59 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
     const [hoverIdxList, sethoverIdxList] = useState<number[]>([]);
     const nodeRef = useRef<HTMLDivElement>(null);
 
+    const [originalClassNames, setOriginalClassNames] = useState<string[]>([]);
+    const [replacementClassNames, setReplacementClassNames] = useState<string[]>([]);
+
+    const classNameStartString = "className=";
     useEffect(() => {
-        console.log("hoverIdxList updated: " + hoverIdxList);
         let resultCode = code;
+        let newOriginalClassNames = [...originalClassNames];
+        let newReplacementClassNames = [...replacementClassNames];
+
+        if (hoverIdxList.length === 0) {
+            setCode(data.renderCode);   // reset
+            return ;
+        }
+ 
         if (hoverIdxList.length > 0) {
             for (let i = hoverIdxList.length - 1; i >= 0; i--) {
-                // sometimes the target index might be off by a few index because of the variance of new&old values
                 let targetIdx = hoverIdxList[i];
-                console.log("Adding highlight to code section raw: " + resultCode.slice(targetIdx - 20, targetIdx) + " highlight " + resultCode.slice(targetIdx, targetIdx + 20));
-                console.log("looking at char: " + resultCode.charAt(hoverIdxList[i]-1));
-                console.log("Adding highlight to code section: " + resultCode.slice(targetIdx - 20, targetIdx) + " highlight " + resultCode.slice(targetIdx, targetIdx + 20));
-                resultCode = resultCode.slice(0, targetIdx) + " highlight " + resultCode.slice(targetIdx);
+
+                // Extract the className string surrounding the targetIdx
+                const beforeTarget = resultCode.slice(0, targetIdx);
+                const afterTarget = resultCode.slice(targetIdx);
+                const classNameMatchIdx = beforeTarget.lastIndexOf(classNameStartString) + classNameStartString.length;
+                let quoteChar = resultCode.charAt(classNameMatchIdx); // need to figure out if it's ' or "
+                console.log("quote char is " + quoteChar);
+                const classNameMatchEndIdx = afterTarget.indexOf(quoteChar) + beforeTarget.length;
+
+                if (classNameMatchIdx !== -1 && classNameMatchEndIdx !== -1) {
+                    const matchedClassName = resultCode.slice(classNameMatchIdx, classNameMatchEndIdx + 1); // + 1 to include the ending quote
+                    let updatedClassName = matchedClassName;
+                    console.log("here is the matched class names: " + matchedClassName);
+                    newOriginalClassNames.push(matchedClassName);
+                    if (matchedClassName.includes("bg-")) {
+                        updatedClassName = updatedClassName.split(' ').filter(cls => !cls.startsWith('bg-')).join(' ');
+                        console.log("Bg removed: " + updatedClassName);
+                    }
+                    updatedClassName = updatedClassName.slice(0, 1) + "highlight " + updatedClassName.slice(1);
+                    console.log("highlight added: " + updatedClassName);
+                    newReplacementClassNames.push(updatedClassName);
+                    resultCode = resultCode.replaceAll(matchedClassName, updatedClassName);
+                }
             }
+            setOriginalClassNames(newOriginalClassNames);
+            setReplacementClassNames(newReplacementClassNames);
             setCode(resultCode);
-        } else {
-            setCode(resultCode.replaceAll(" highlight ", ""));
+        } else if (code.match(/className=(["']).*?\1/)) {
+            console.log("code includes highlight in className, removing...");
+            // Recover the original className strings
+            let recoveredCode = resultCode;
+            originalClassNames.forEach((originalClassName, idx) => {
+                recoveredCode = recoveredCode.replace(replacementClassNames[idx], originalClassName);
+            });
+            setCode(recoveredCode);
+            setOriginalClassNames([]);
         }
     }, [hoverIdxList]);
 
