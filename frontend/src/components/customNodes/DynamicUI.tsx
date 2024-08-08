@@ -106,6 +106,9 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
             case 'shadow':
                 options = ['sm', 'md', 'lg', 'xl', '2xl', 'inner', 'none'].map(shadow => `${prefix}-${shadow}`);
                 break;
+            case 'font':
+                options = ['none', 'thin', 'extralight', 'light', 'normal', 'medium', 'semibold', 'bold', 'extrabold', 'black'].map(weight => `${prefix}-${weight}`);
+                break;
             case 'rounded':
                 options = ['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map(size => `${prefix}-${size}`);
                 break;
