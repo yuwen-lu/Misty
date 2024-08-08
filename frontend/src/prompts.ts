@@ -7,13 +7,14 @@ export const constructTextPrompt = (renderCode: string) => {
 
         Help me create a new component page that blends the content of the above code with the visual style, layout, and appearance of the reference image. Change only the source code corresponding to this, and no other sections.
 
-        Preserve the content in the UI of the code, fully follow the layout and visual style of the reference image, optionally add more content where the original code's content cannot fill in all fields in the reference image's layout. 
+        Preserve the content in the UI of the code, fully follow the layout and visual style of the reference image, optionally add more content where the original code's content cannot fill in all fields in the reference image's layout. Do not use content from the reference image, just use its layout and visual style. 
 
         A few rules:
 
         1. return the whole component for the entire screen, with the updates;
         2. only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
-        3. Summarize the code changes in your response, use the format "changes:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
+        3. there are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />
+        4. Summarize the code changes in your response, use the format "changes:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
 
         Return result in the below format, make sure you use json:
 
