@@ -5,9 +5,9 @@ export const constructTextPrompt = (renderCode: string) => {
                 
         ${renderCode}. 
 
-        Help me blend the visual style of the reference image into the above code. Change only the source code corresponding to this, and no other sections.
+        Help me create a new component page that blends the content of the above code with the visual style, layout, and appearance of the reference image. Change only the source code corresponding to this, and no other sections.
 
-        Preserve the content in the UI of the code, only blend in the visual style of reference images.
+        Preserve the content in the UI of the code, fully follow the layout and visual style of the reference image, optionally add more content where the original code's content cannot fill in all fields in the reference image's layout. 
 
         A few rules:
 
