@@ -277,5 +277,6 @@ code {
 
 .render-view-container {
   min-width: 360px;
-  max-height: 960px;
+  max-width: 480px;
+  min-height: 960px;
 }
