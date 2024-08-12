@@ -193,7 +193,6 @@ const FlowComponent: React.FC = () => {
     // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
-        console.log("renderCodeContentList updated: ");
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
@@ -333,7 +332,7 @@ const FlowComponent: React.FC = () => {
                     code: newCode.replaceAll(`{" "}`, "")
                 } : renderCodeContent
             ));
-    };    
+    };
 
 
     const updateLoadingState = (targetCodeRenderNodeId: string, newState: boolean) => {
@@ -460,7 +459,17 @@ const FlowComponent: React.FC = () => {
 
 
     const onNodesChange: OnNodesChange = useCallback(
-        (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+        (changes) => {
+            // remove the code content that corresponds to the node that is removed
+            changes.forEach(change => {
+                if (change.type === "remove") {
+                    setRenderCodeContentListState(list => list.filter(code => code.nodeId !== change.id))
+                    console.log("node " + change.id + " removed");
+                }
+            })
+            // update nodes
+            setNodes((nds) => applyNodeChanges(changes, nds));
+        },
         [],
     );
     const onEdgesChange: OnEdgesChange = useCallback(

@@ -13,7 +13,7 @@ export const constructTextPrompt = (renderCode: string) => {
 
         1. return the whole component for the entire screen, with the updates;
         2. only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
-        3. there are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 10, and portrait 0 to 6. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. 
+        3. there are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 10, and portrait 0 to 6. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. Do not use any other images.
         4. Summarize the code changes in your response, use the format "changes:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
 
         Return result in the below format, make sure you use json:

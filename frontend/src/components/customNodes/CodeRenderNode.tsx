@@ -71,10 +71,6 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
         setCode(data.renderCode);
     }, [data.renderCode]);
 
-    useEffect(() => {
-        console.log("code updated in node, " + code);
-    }, [code]);
-
     const handleToggle = () => {
         setIsMobile(!isMobile);
     };
