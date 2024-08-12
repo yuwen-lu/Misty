@@ -4,6 +4,8 @@ import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 import { loadingIdState, tempChanges } from '../../util';
 import DynamicUI from './DynamicUI';
+import "../../index.css";
+
 
 const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
 
@@ -88,7 +90,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
             border-t-8 border-t-purple-900
             w-full h-full'>
             <div
-                className={"flex flex-col min-w-96 items-center"}
+                className={"render-view-container flex flex-col items-center"}
                 ref={nodeRef}
             >
                 <div className='w-full flex relative items-center'>

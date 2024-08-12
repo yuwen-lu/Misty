@@ -274,3 +274,8 @@ code {
     opacity: 0.4;
   }
 }
+
+.render-view-container {
+  min-width: 360px;
+  max-height: 960px;
+}
