@@ -290,7 +290,7 @@ const FlowComponent: React.FC = () => {
             }
         }
 
-
+        updatedCode = updatedCode.replaceAll("fixed bottom-0", "absolute bottom-0");    // the previous will mess up react live
 
         // Remove extra closing parentheses if present
         const extraParenthesesPattern = /\)\s*\)\s*;\s*\};$/;
@@ -409,7 +409,9 @@ const FlowComponent: React.FC = () => {
 
                 console.log("Handle fetch response render code: " + renderCode);
 
-                globalBlending ? processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode) : processReplacementPromptResponse(finalResponse, renderCodeBoundingBox, renderCode);
+                // TODO Figure out how to deal with replacementPrompts
+                // globalBlending ? processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode) : processReplacementPromptResponse(finalResponse, renderCodeBoundingBox, renderCode);
+                processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode)
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {

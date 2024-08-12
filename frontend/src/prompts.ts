@@ -11,15 +11,18 @@ export const constructTextPrompt = (renderCode: string) => {
 
         A few rules:
 
-        1. return the whole component for the entire screen, with the updates;
-        2. only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
-        3. there are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 10, and portrait 0 to 6. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. Do not use any other images.
-        4. Summarize the code changes in your response, use the format "changes:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
+        - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Briefly summarize the differences between the reference image and the code, pay attention to them in your generation.
+        - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
+        - there are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 9, and portrait 0 to 7. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. Do not use any other images. Do not use placeholder image paths.
+        - Summarize the code changes in your response, use the format "categorizedChanges:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
 
         Return result in the below format, make sure you use json:
 
         {
-            updatedCode: \`() => {}\`
+            "layoutExplanation": // explain the layout of the screenshot image
+            "differences": // briefly summarize the differences between the reference image and the code 
+            updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
             categorizedChanges: [
                 {
@@ -112,7 +115,7 @@ const getPromptForBlendMode = (blendModes: string[]): string => {
     return promptText;
 };
 
-export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = ["Color"]) => {
+export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = ["Layout"]) => {
 
     return `
 
@@ -126,15 +129,98 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
 
         A few rules:
 
-        1. Return (1) the piece(s) of the original source code you are changing (please refer to the original source code and I can simply use string.replace to find the original code section), and (2) the updated code pieces;
-        2. only use tailwind, react, and react icons. Do not include any import or export statements;
-        3. Give an explanation summary of the original code piece you changed and the updated code piece in the returned result. In your response, use the field "explanations" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple". Categorize all changes of the same type (color, layout, etc.) under one bullet point.
-        4. Try to make colors and styles consistent and harmonious with the rest of the component.
-        5. Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
+
+        - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Briefly summarize the differences between the reference image and the code, pay attention to them in your generation.
+        - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
+        - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
+        - there are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 9, and portrait 0 to 7. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. Do not use any other images. Do not use placeholder image paths.
+        - Summarize the code changes in your response, use the format "categorizedChanges:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
+        - When creating a bottom navigation bar, use "absolute bottom-0" instead of "fixed bottom-0".
+        - Try to make colors and styles consistent and harmonious with the rest of the component.
+        
+        Return result as a JSON in the following format:
+        
+        {
+            "layoutExplanation": // explain the layout of the screenshot image
+            "differences": // briefly summarize the differences between the reference image and the code 
+            updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
+            // a list of objects listing the changes made, use the tailwind classes to indicate the changes
+            categorizedChanges: [
+                {
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. dark theme, spacing, layout, etc.
+                    changes: [{
+                        type: "color",
+                        before": // the tailwind class before the change,
+                        "after": // the tailwind class after the change
+                    }]
+                }
+            ]
+        }
+
+        here is a good example of the changes field:
+        categorizedChanges: [
+            {
+                category: "Dark Theme",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "color",
+                    before: "text-white",
+                    after: "text-gray-900"
+                }, {
+                    type: "border",
+                    before: "", // you can use empty before field to indicate addition of new classes
+                    after: "border-2 border-gray-300/90"
+                }, ...] // add as many as appropriate,
+            },
+            {
+                category: "Visual Hierarchy",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "font",
+                    before: "text-sm",
+                    after: "text-lg"
+                }, ...] // add as many as appropriate,
+            },
+            
+            ]
+
+        `;
+};
+
+
+export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = ["Layout"]) => {
+
+    return `
+
+        Here is my original react and tailwind source code: 
+                
+        ${renderCode}. 
+
+        ${getPromptForBlendMode(blendMode)} ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}. Change only the source code corresponding to this, and no other sections.`}
+
+        Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
+
+        A few rules:
+
+
+        - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Return (1) the piece(s) of the original source code you are changing (please refer to the original source code and I can simply use string.replace to find the original code section), and (2) the updated code pieces;
+        - only use tailwind, react, and react icons. Do not include any import or export statements;
+        - Give an explanation summary of the original code piece you changed and the updated code piece in the returned result. In your response, use the field "explanations" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple". Categorize all changes of the same type (color, layout, etc.) under one bullet point.
+        - Try to make colors and styles consistent and harmonious with the rest of the component.
+        - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
 
         Return result as a JSON in the following format:
 
         {
+            "layoutExplanation": // explain the layout of the screenshot image
             "codeChanges": [{
                 "originalCode": // original code piece
                 "replacementCode": // replacement code
@@ -143,8 +229,50 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
                 // add more if needed
             ] // always put this in a list
             
-            "explanations": // explanantion summary of the changes, just return one string
+                categorizedChanges: [
+                {
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. dark theme, spacing, layout, etc.
+                    changes: [{
+                        type: "color",
+                        before": // the tailwind class before the change,
+                        "after": // the tailwind class after the change
+                    }]
+                }
+            ]
         }
+
+        here is a good example of the changes field:
+        categorizedChanges: [
+            {
+                category: "Dark Theme",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "color",
+                    before: "text-white",
+                    after: "text-gray-900"
+                }, {
+                    type: "border",
+                    before: "", // you can use empty before field to indicate addition of new classes
+                    after: "border-2 border-gray-300/90"
+                }, ...] // add as many as appropriate,
+            },
+            {
+                category: "Visual Hierarchy",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "font",
+                    before: "text-sm",
+                    after: "text-lg"
+                }, ...] // add as many as appropriate,
+            },
+            
+            ]
 
         I will do sourceCode.replace(original_code, replacement_code) in my code, so make sure I can directly replace them and have the code still running.
 

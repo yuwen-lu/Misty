@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Paintbrush, LayoutList, Plus } from 'lucide-react';
 import { NodeProps } from 'reactflow';
 import "../../index.css";
-import { constructCodeReplacementPrompt } from '../../prompts';
+import { constructCodeReplacementPrompt, constructDragAndDropPrompt } from '../../prompts';
 import { convertToOutline, defaultBoundingBox } from '../../util';
 
 const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
@@ -28,7 +28,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
         if (selectedOptions.length > 0) {
             console.log("Final selection: " + selectedOptions);
             // handle the prompt
-            const textPrompt = constructCodeReplacementPrompt(data.renderCode, data.targetCodeDropped, selectedOptions);
+            const textPrompt = constructDragAndDropPrompt(data.renderCode, data.targetCodeDropped, selectedOptions);
 
             if (selectedOptions.length === 1 && selectedOptions[0] === "Layout") {
                 convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
