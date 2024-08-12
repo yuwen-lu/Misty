@@ -280,3 +280,14 @@ code {
   max-width: 480px;
   min-height: 960px;
 }
+
+@keyframes complexRotate {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(30deg); }
+  40% { transform: rotate(30deg); }
+  100% { transform: rotate(-330deg); }
+}
+
+.animate-complex-rotate {
+  animation: complexRotate 0.5s cubic-bezier(.3, .4, .7, 1.3) forwards;
+}

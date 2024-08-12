@@ -17,6 +17,15 @@ interface DynamicUIProps {
 
 const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, sethoverIdxList }) => {
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (isAnimating) {
+            timer = setTimeout(() => setIsAnimating(false), 500); // Total animation duration
+        }
+        return () => clearTimeout(timer);
+    }, [isAnimating]);
 
     useEffect(() => {
         if (categorizedChanges) setState(JSON.parse(JSON.stringify(categorizedChanges)));
@@ -122,6 +131,10 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     };
 
     const resetCode = () => {
+
+        if (!isAnimating) {
+            setIsAnimating(true);
+        }
         handleCodeReplacement(nodeId, blendedCode);
         sethoverIdxList([]);
         setState(JSON.parse(JSON.stringify(categorizedChanges))); // Reset to initial changes
@@ -133,9 +146,12 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                 <div className="w-full flex items-center justify-between font-semibold text-purple-900 text-xl mb-5">
                     <div className="flex-1 text-center">Applied Changes</div>
                     <button
-                        className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 hover:text-purple-700 hover:bg-purple-100 px-4 py-2 rounded'
+                        className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 px-4 py-2 rounded'
                         onClick={resetCode}>
-                        <RotateCcw />
+                        <RotateCcw
+                            className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
+                                }`}
+                        />
                         <span>Reset All</span>
                     </button>
                 </div>
