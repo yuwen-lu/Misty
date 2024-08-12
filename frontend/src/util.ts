@@ -308,15 +308,15 @@ export const findAllIndexesOfStrings = (mainString: string, ...searchStrings: st
 };
 
 export const getIndexesToChange = (prevCode: string, newCode: string, oldValue: string, newValue: string): number[] => {
-  
+
   const newCodeNewValueIdx = findAllIndexesOfStrings(newCode, newValue);
   if (!oldValue) return newCodeNewValueIdx; // this is a newly added value, just use this
 
   const prevCodeIdx = findAllIndexesOfStrings(prevCode, oldValue, newValue);
   const prevCodeOldValueIdx = findAllIndexesOfStrings(prevCode, oldValue);
-  
+
   const newCodeIdx = findAllIndexesOfStrings(newCode, oldValue, newValue);
-  
+
   const changeIdx: number[] = newCodeIdx.filter((value, pos) => {
     // we only get the idx of oldValue -> newValue
     return newCodeNewValueIdx.includes(value) && prevCodeOldValueIdx.includes(prevCodeIdx[pos]);
@@ -326,6 +326,11 @@ export const getIndexesToChange = (prevCode: string, newCode: string, oldValue: 
 };
 
 export const splitChanges = (changes: string): string[] => {
+
+  // if it's a whole tag that's added, just return the whole thing
+  if (changes.includes("<") || changes.includes("/>")) {
+    return [changes];
+  }
   // sometimes there are weird responses like size: 40, we need to change them to size-40
   const splittedChanges = changes.replaceAll(": ", "-").split(" ");
   return splittedChanges;

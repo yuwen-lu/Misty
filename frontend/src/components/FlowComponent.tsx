@@ -31,7 +31,7 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change, CategorizedChange } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { appleMapListBase64, appleFitness, groupedTableViewOrange } from '../images';
+import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, appleTvHero, appleTvHeroFull } from '../images';
 import { BookList } from './renderCode/BookList';
 
 const nodeTypes: NodeTypes = {
@@ -54,22 +54,22 @@ const initialNodes: Node[] = [
         id: "2",
         type: 'imageDisplayNode',
         draggable: true,
-        position: { x: 800, y: 200 },
-        data: { image: groupedTableViewOrange },
+        position: { x: 800, y: 100 },
+        data: { image: appleTvHeroFull },
     },
     {
         id: "3",
         type: 'imageDisplayNode',
         draggable: true,
-        position: { x: 1500, y: 200 },
-        data: { image: appleMapListBase64 },
+        position: { x: 800, y: 1000 },
+        data: { image: appleTvHero },
     },
     {
         id: "4",
         type: 'imageDisplayNode',
         draggable: true,
-        position: { x: 900, y: 700 },
-        data: { image: appleFitness },
+        position: { x: 1300, y: 100 },
+        data: { image: appleTvCard },
     },
 ];
 
@@ -190,30 +190,10 @@ const FlowComponent: React.FC = () => {
         });
     };
 
-    // TODO Urgent helper function can be removed
-    const printCodeRenderNodeContentList = (list: codeRenderNodeContent[]) => {
-        list.forEach((item, index) => {
-            console.log(`Item ${index + 1}:`);
-            console.log(`  Code: ${item.code}`);
-            console.log(`  Prev Code: ${item.prevCode}`);
-            console.log(`  Node ID: ${item.nodeId}`);
-            console.log(`  Categorized Changes:`);
-            item.categorizedChanges.forEach((change, changeIndex) => {
-                console.log(`    Change ${changeIndex + 1}:`);
-                console.log(`      Category: ${change.category}`);
-                change.changes.forEach((c, cIndex) => {
-                    console.log(`      Change ${cIndex + 1}: Before: ${c.before}, After: ${c.after}`);
-                });
-            });
-        });
-    };
-    
-
     // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
         console.log("renderCodeContentList updated: ");
-        printCodeRenderNodeContentList(renderCodeContentList);
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {

@@ -37,22 +37,18 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 const afterTarget = resultCode.slice(targetIdx);
                 const classNameMatchIdx = beforeTarget.lastIndexOf(classNameStartString) + classNameStartString.length;
                 let quoteChar = resultCode.charAt(classNameMatchIdx); // need to figure out if it's ' or "
-                console.log("quote char is " + quoteChar);
                 const classNameMatchEndIdx = afterTarget.indexOf(quoteChar) + beforeTarget.length;
 
                 if (classNameMatchIdx !== -1 && classNameMatchEndIdx !== -1) {
                     const matchedClassName = resultCode.slice(classNameMatchIdx, classNameMatchEndIdx + 1); // + 1 to include the ending quote
                     let updatedClassName = matchedClassName;
-                    console.log("here is the matched class names: " + matchedClassName);
                     newOriginalClassNames.push(matchedClassName);
                     if (matchedClassName.includes("bg-")) {
                         updatedClassName = updatedClassName.slice(1, -1);   // first, remove the quotes
                         updatedClassName = updatedClassName.split(' ').filter(cls => !cls.startsWith('bg-')).join(' ');
                         updatedClassName = quoteChar + updatedClassName + quoteChar;    // add the quotes back
-                        console.log("bg removed: " + updatedClassName);
                     }
                     updatedClassName = updatedClassName.slice(0, 1) + "highlight-gray " + updatedClassName.slice(1);
-                    console.log("highlight-gray added: " + updatedClassName);
                     newReplacementClassNames.push(updatedClassName);
                     resultCode = resultCode.replaceAll(matchedClassName, updatedClassName);
                 }
@@ -61,7 +57,6 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
             setReplacementClassNames(newReplacementClassNames);
             setCode(resultCode);
         } else if (code.match(/className=(["'])highlight-gray.*?\1/)) {
-            console.log("code includes highlight-gray in className, removing...");
             // Recover the original className strings
             let recoveredCode = resultCode;
             originalClassNames.forEach((originalClassName, idx) => {

@@ -17,7 +17,6 @@ interface DynamicUIProps {
 
 const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, sethoverIdxList }) => {
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
-    const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
     useEffect(() => {
         if (categorizedChanges) setState(JSON.parse(JSON.stringify(categorizedChanges)));
@@ -130,7 +129,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
     return (
         <>
-            {state.length === 0 ? <></> : <div className="ml-20 max-w-xl relative">
+            {state.length === 0 ? <></> : <div className="ml-20 w-auto relative">
                 <div className="w-full flex items-center justify-between font-semibold text-purple-900 text-xl mb-5">
                     <div className="flex-1 text-center">Applied Changes</div>
                     <button
