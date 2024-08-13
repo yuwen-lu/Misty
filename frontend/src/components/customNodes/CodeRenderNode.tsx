@@ -83,7 +83,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
             // Add the new edge
             data.addNewEdge(newEdge);
         }
-    }, [data, id]);
+    }, [data.renderCode, data.sourceNodeId, id]);
 
     const handleToggle = () => {
         setIsMobile(!isMobile);

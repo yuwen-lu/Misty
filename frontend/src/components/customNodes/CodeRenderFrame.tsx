@@ -120,8 +120,9 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
             {/* removed for now: ${isMobile ? "max-w-md" : "max-w-screen-md"}  */}
 
             <div className={`absolute w-full h-full text-purple-400/80 ${checkIsLoading() ? "visible text-glow" : "invisible"}`}>
-                {checkIsLoading() ? response : ""}
+                {checkIsLoading() ? (response.length > 2000 ? response.slice(2000) : response) : ""}
             </div>
+
             <div className={`${checkIsLoading() ? "invisible" : ""}`}>
                 <LiveProvider
                     code={isDragging ? addEventHandlersToCode(renderCode) : renderCode}

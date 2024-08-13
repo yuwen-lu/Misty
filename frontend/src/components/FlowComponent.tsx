@@ -565,7 +565,11 @@ const FlowComponent: React.FC = () => {
     }
 
     const addNewEdge = (edge: Edge) => {
-        setEdges((eds) => addEdge(edge, eds));
+        const edgeExists = edges.find(edg => edg.id === edge.id)
+        if (!edgeExists) {
+            setEdges((eds) => addEdge(edge, eds));
+            console.log("New edge added? id: " + edge.id);
+        }
     }
 
     const removeNode = (id: string) => {

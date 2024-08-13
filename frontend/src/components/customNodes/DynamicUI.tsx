@@ -152,7 +152,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                             className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
                                 }`}
                         />
-                        <span>Reset All</span>
+                        <span>Reset All Changes</span>
                     </button>
                 </div>
 
