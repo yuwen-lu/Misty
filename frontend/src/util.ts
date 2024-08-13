@@ -253,7 +253,10 @@ export interface codeRenderNodeContent {
   code: string,
   prevCode: string,
   nodeId: string | null,
-  categorizedChanges: CategorizedChange[] // the changes that render dynamic UI
+  categorizedChanges: CategorizedChange[], // the changes that render dynamic UI
+  sourceNodeId: string,
+  textPrompt: string,
+  base64Image: string
 }
 
 

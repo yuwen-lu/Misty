@@ -81,7 +81,8 @@ const initialConfirmationPopupNodeDataPackage = {
         x: 0,
         y: 0,
     },
-    subImageScreenshot: ""
+    subImageScreenshot: "",
+    sourceNodeId: ""
 }
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
@@ -95,7 +96,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{ code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [] }]);
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{ code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" }]);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -183,7 +184,10 @@ const FlowComponent: React.FC = () => {
                         renderCode: renderCode,
                         prevCode: renderContent.prevCode,
                         blendedCode: renderCode,    // when we create a new node, we record its original updated code after blending, so we can reset when needed
-                        categorizedChanges: renderContent.categorizedChanges
+                        categorizedChanges: renderContent.categorizedChanges,
+                        textPrompt: renderContent.textPrompt,
+                        base64Image: renderContent.base64Image,
+                        sourceNodeId: renderContent.sourceNodeId,
                     },
                 };
             }
@@ -268,7 +272,7 @@ const FlowComponent: React.FC = () => {
 
     };
 
-    const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
+    const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string, textPrompt: string, base64Image: string, sourceNodeId: string) => {
         // 1. fetch the parsed Result
         const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse);
         let updatedCode = parsedData.updatedCode.trim();
@@ -316,7 +320,10 @@ const FlowComponent: React.FC = () => {
             code: updatedCode,
             prevCode: renderCode,
             nodeId: `code-${renderCodeContentList.length}`,
-            categorizedChanges: categorizedChanges
+            categorizedChanges: categorizedChanges,
+            sourceNodeId: sourceNodeId,
+            textPrompt: textPrompt,
+            base64Image: base64Image,
         }
 
         addRenderCodeContent(newRenderCodeContent);
@@ -357,7 +364,7 @@ const FlowComponent: React.FC = () => {
     };
 
     // code block to handle API calls
-    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = false, renderCodeBoundingBox: BoundingBox, renderCode: string, targetNodeId = "", globalBlending = false) => {
+    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = true, renderCodeBoundingBox: BoundingBox, renderCode: string, targetNodeId = "", globalBlending = false, sourceNodeId: string) => {
 
         // set the loading status here
         targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, true) : updateLoadingState(targetNodeId, true);
@@ -411,7 +418,7 @@ const FlowComponent: React.FC = () => {
 
                 // TODO Figure out how to deal with replacementPrompts
                 // globalBlending ? processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode) : processReplacementPromptResponse(finalResponse, renderCodeBoundingBox, renderCode);
-                processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode)
+                processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode, textPrompt, base64Image, sourceNodeId);
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
@@ -462,15 +469,53 @@ const FlowComponent: React.FC = () => {
 
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => {
-            // remove the code content that corresponds to the node that is removed
-            changes.forEach(change => {
-                if (change.type === "remove") {
-                    setRenderCodeContentListState(list => list.filter(code => code.nodeId !== change.id))
-                    console.log("node " + change.id + " removed");
-                }
-            })
+
             // update nodes
             setNodes((nds) => applyNodeChanges(changes, nds));
+
+            let removedNodeId: string[] = [];
+            // remove the code content that corresponds to the node that is removed
+            changes.forEach(change => {
+                console.log("node change!!! " + change.type);
+                if (change.type === "remove") {
+                    setRenderCodeContentListState(list => list.filter(code => code.nodeId !== change.id))
+                    removedNodeId.push(change.id);
+                } else if (change.type === "add" && change.item.type === "codeRenderNode") {
+                    // console.log("Node added! " + change.item);
+                    // const newNode = change.item;
+                    // const sourceNodeId = newNode.data.sourceNodeId;
+                    // // when a node is added, we 
+                    // const newEdgeId = `e-${sourceNodeId}-${newNode.id}`;
+                    // let edgeExists = false;
+
+                    // edges.forEach(ed => {
+                    //     if (ed.id === newEdgeId) edgeExists = true;
+                    // })
+
+                    // if (!edgeExists) {
+                    //     const newEdge = {
+                    //         id: newEdgeId,
+                    //         source: sourceNodeId,
+                    //         target: newNode.id,
+                    //     };
+                    //     console.log("New edge added? id: " + newEdge.id);
+
+                    //     // Add the new edge
+                    //     setEdges((eds) => [...eds, newEdge]);
+                    // }
+                }
+            })
+
+            // update edges too
+            console.log("Removed nodes: " + removedNodeId.join(" "));
+            // setEdges((eds) => eds.filter(ed => {
+            //     if (ed.sourceNode && ed.targetNode) {
+            //         console.log("Edge removed! " + ed.id);
+            //         return removedNodeId.includes(ed.sourceNode.id) || removedNodeId.includes(ed.targetNode.id);
+            //     } else {
+            //         return false;
+            //     }
+            // }))
         },
         [],
     );
@@ -482,7 +527,6 @@ const FlowComponent: React.FC = () => {
         setEdges((eds) => addEdge(connection, eds));
         // when a new node connect to the code render node, update the source code render
         if (connection.targetHandle === "render-t") {
-            // TODO handle different node inputs: if it's an subimage node, maybe blend the prominent style in;
             // if it's a whole image node, maybe do some implicit intent reasoning
             console.log("seems like a source node. id: " + connection.source);
             const sourceNode = nodes.find((node) => node.id === connection.source);
@@ -493,7 +537,7 @@ const FlowComponent: React.FC = () => {
                 const referenceImageBase64 = sourceNode.data.image;
                 const textPrompt = constructTextPrompt(targetNode.data.renderCode);
                 // we have to pass the targetNode.id in here because of some weird state not updating & async function call issues
-                handleFetchResponse(textPrompt, referenceImageBase64, true, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, targetNode.id, true);  // TODO Add the bbox of rendercode node
+                handleFetchResponse(textPrompt, referenceImageBase64, true, targetRenderCodeNodeBbox ? targetRenderCodeNodeBbox : defaultBoundingBox, targetNode.data.renderCode, targetNode.id, true, sourceNode.id);  // TODO Add the bbox of rendercode node
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
@@ -536,7 +580,7 @@ const FlowComponent: React.FC = () => {
                 });
 
                 const newEdge = {
-                    id: `e${sourceId}-${newNodeId}`,
+                    id: `e-${sourceId}-${newNodeId}`,
                     source: sourceId,
                     target: validNewNodeId,
                 };
@@ -550,7 +594,7 @@ const FlowComponent: React.FC = () => {
         setNodes((nds) => nds.filter(node => node.id !== id));
     }
 
-    const showBlendingConfirmationPopup = (popUpPosition: coordinatePositionType, viewportX: number, viewportY: number, zoom: number, subImageScreenshot: string) => {
+    const showBlendingConfirmationPopup = (popUpPosition: coordinatePositionType, viewportX: number, viewportY: number, zoom: number, subImageScreenshot: string, sourceNodeId: string) => {
 
         const posX = (popUpPosition.x - viewportX) / zoom;  // adjust for window transform and zoom for react flow
         const posY = (popUpPosition.y - viewportY) / zoom;
@@ -575,6 +619,7 @@ const FlowComponent: React.FC = () => {
                             targetCodeRenderNodeId: targetCodeRenderNodeId,
                             subImageScreenshot: subImageScreenshot,
                             targetRenderCodeNodeBbox: targetRenderCodeNodeBbox,
+                            sourceNodeId: sourceNodeId
                         },
                     }
                 );
@@ -585,7 +630,7 @@ const FlowComponent: React.FC = () => {
 
     // when the blendingOptionPosition changes, that means we can show the popup
     useEffect(() => {
-        showBlendingConfirmationPopup(newConfirmationPopupNodeDataPackage.mousePosition, x, y, zoom, newConfirmationPopupNodeDataPackage.subImageScreenshot);
+        showBlendingConfirmationPopup(newConfirmationPopupNodeDataPackage.mousePosition, x, y, zoom, newConfirmationPopupNodeDataPackage.subImageScreenshot, newConfirmationPopupNodeDataPackage.sourceNodeId);
 
     }, [newConfirmationPopupNodeDataPackage]);
 

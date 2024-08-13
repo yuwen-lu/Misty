@@ -144,6 +144,12 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     id="render-t"
                     isConnectable={true}
                 />
+                <Handle
+                    type="source"
+                    position={Position.Right}
+                    id="render-s"
+                    isConnectable={true}
+                />
             </div >
             <DynamicUI
                 nodeId={id}

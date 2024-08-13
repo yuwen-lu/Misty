@@ -4,7 +4,7 @@ import { LuEqual } from 'react-icons/lu';
 import 'reactflow/dist/style.css';
 import '../../index.css';
 
-const SubImageNode: React.FC<NodeProps> = ({ data }) => {
+const SubImageNode: React.FC<NodeProps> = ({ id, data }) => {
     const [localIsDragging, setLocalIsDragging] = useState<boolean | null>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -98,6 +98,7 @@ const SubImageNode: React.FC<NodeProps> = ({ data }) => {
             const newConfirmationPopupNodeDataPackage = {
                 mousePosition: mousePosition,
                 subImageScreenshot: data.image,
+                sourceNodeId: id,
             }
             data.setNewConfirmationPopupNodeDataPackage(newConfirmationPopupNodeDataPackage);
         }

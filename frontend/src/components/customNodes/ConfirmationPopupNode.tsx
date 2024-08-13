@@ -34,12 +34,12 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
                 convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
                     console.log("processed outline for the subimage: " + outlineBase64); // Processed base64-encoded outline image
                     // send the outline image to openai
-                    data.callOpenAI(textPrompt, outlineBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId);
+                    data.callOpenAI(textPrompt, outlineBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
                 }).catch((err) => {
                     console.error(err);
                 });
             } else {
-                data.callOpenAI(textPrompt, data.subImageScreenshot, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId);
+                data.callOpenAI(textPrompt, data.subImageScreenshot, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
             }
 
             
