@@ -156,41 +156,71 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                     </button>
                 </div>
 
-                {state.map((category, categoryIndex) => (
-                    <div key={category.category} className="mb-6 w-full flex flex-col items-start">
-                        <div className="font-semibold text-purple-900 mb-2 flex items-center">
-                            {category.category}
-                        </div>
-                        {category.changes.map((change, changeIndex) => (
-                            <div
-                                key={changeIndex}
-                                className="flex items-center ml-4 mb-4"
-                                onMouseEnter={() => sethoverIdxList(getIndexesToChange(prevCode, newCode, change.before, change.after))}
-                                onMouseLeave={() => sethoverIdxList([])}
-                                onClick={() => sethoverIdxList([])}
-                            >
-                                {change.before ? <div className="mr-4 text-black">Before: <span className="font-mono">{change.before}</span></div> : <></>}
-                                <div className="mr-4 text-black flex items-center flex-wrap	">
-                                    <span>{change.before ? "After: " : "Added: "}</span>
-                                    {splitChanges(change.after).map((changeItem, changeItemIndex) =>
-                                        <select
-                                            key={changeItemIndex}
-                                            className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
-                                            value={changeItem}
-                                            onChange={(event) => handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex, change.before === undefined || change.before === "")}
-                                        >
-                                            {getDropdownOptions(changeItem).map(option => (
-                                                <option key={option} value={option}>
-                                                    {option}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    )}
-                                </div>
+                {state.map((category, categoryIndex) => {
+                    const shouldShowCategory = category.changes.some(change => {
+                        const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
+                        return shouldShowAfter || change.before;
+                    });
+
+                    if (!shouldShowCategory) {
+                        return null; // Hide the entire category if no changes should be shown
+                    }
+
+                    return (
+                        <div key={category.category} className="mb-6 w-full flex flex-col items-start">
+                            <div className="font-semibold text-purple-900 mb-2 flex items-center">
+                                {category.category}
                             </div>
-                        ))}
-                    </div>
-                ))}
+                            {category.changes.map((change, changeIndex) => {
+                                const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
+
+                                if (!change.before && !shouldShowAfter) {
+                                    return null; // Hide the entire block if there's nothing to show
+                                }
+
+                                return (
+                                    <div
+                                        key={changeIndex}
+                                        className="flex items-center ml-4 mb-4"
+                                        onMouseEnter={() => sethoverIdxList(getIndexesToChange(prevCode, newCode, change.before, change.after))}
+                                        onMouseLeave={() => sethoverIdxList([])}
+                                        onClick={() => sethoverIdxList([])}
+                                    >
+                                        {change.before && shouldShowAfter && (
+                                            <div className="mr-4 text-black">
+                                                Before: <span className="font-mono">{change.before}</span>
+                                            </div>
+                                        )}
+                                        {shouldShowAfter && (
+                                            <div className="mr-4 text-black flex items-center flex-wrap">
+                                                <span>{change.before ? "After: " : "Added: "}</span>
+                                                {splitChanges(change.after).map((changeItem, changeItemIndex) =>
+                                                    getDropdownOptions(changeItem).length > 1 && (
+                                                        <select
+                                                            key={changeItemIndex}
+                                                            className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
+                                                            value={changeItem}
+                                                            onChange={(event) =>
+                                                                handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex, change.before === undefined || change.before === "")
+                                                            }
+                                                        >
+                                                            {getDropdownOptions(changeItem).map(option => (
+                                                                <option key={option} value={option}>
+                                                                    {option}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    );
+                })}
+
             </div>}
         </>
     );
