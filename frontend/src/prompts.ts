@@ -131,7 +131,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
 
 
         - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
-        - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Base your later generation of categorizedChanges based on these categories.
+        - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Pay attention to ${blendMode.join(" ")}. Base your later generation of categorizedChanges based on these categories.
         - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
         - Only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
         - There are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 9, and portrait 0 to 7. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. Do not use any other images. Do not use placeholder image paths.

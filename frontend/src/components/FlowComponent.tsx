@@ -606,7 +606,7 @@ const FlowComponent: React.FC = () => {
                 id: `${nds.length + 1}`,
                 type: 'imageDisplayNode',
                 draggable: true,
-                position: { x: 800, y: nds.length * 100 + 100 },
+                position: { x: 800, y: 500 },
                 data: { image: imageUrl, onSubImageConfirmed: createSubImages },
             })
         );
