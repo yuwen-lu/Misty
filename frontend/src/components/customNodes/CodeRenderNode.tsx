@@ -25,9 +25,9 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
 
         if (hoverIdxList.length === 0) {
             setCode(data.renderCode);   // reset
-            return ;
+            return;
         }
- 
+
         if (hoverIdxList.length > 0) {
             for (let i = hoverIdxList.length - 1; i >= 0; i--) {
                 let targetIdx = hoverIdxList[i];
@@ -69,28 +69,40 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
 
     useEffect(() => {
         setCode(data.renderCode);
-    }, [data.renderCode]);
 
-    const handleToggle = () => {
-        setIsMobile(!isMobile);
-    };
+        const sourceNodeId = data.sourceNodeId;
+        const newEdgeId = `e-${sourceNodeId}-${id}`;
+        const newEdge = {
+            id: newEdgeId,
+            source: sourceNodeId,
+            target: id,
+        };
+        console.log("New edge added? id: " + newEdge.id);
 
-    return (
-        <div className='flex flex-row px-20 py-5 
+        // Add the new edge
+        data.addNewEdge(newEdge);
+    }, [data, id]);
+
+const handleToggle = () => {
+    setIsMobile(!isMobile);
+};
+
+return (
+    <div className='flex flex-row px-20 py-5 
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
             border-t-8 border-t-purple-900
             w-full h-full'>
-            <div
-                className={"render-view-container flex flex-col items-center"}
-                ref={nodeRef}
-            >
-                <div className='w-full flex relative items-center'>
-                    {/* <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl my-5'> */}
-                    <div className='w-full text-center font-semibold text-purple-900 text-xl mb-5'>
-                        Code Render
-                    </div>
-                    {/* </div> */}
-                    {/* <button
+        <div
+            className={"render-view-container flex flex-col items-center"}
+            ref={nodeRef}
+        >
+            <div className='w-full flex relative items-center'>
+                {/* <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl my-5'> */}
+                <div className='w-full text-center font-semibold text-purple-900 text-xl mb-5'>
+                    Code Render
+                </div>
+                {/* </div> */}
+                {/* <button
                     onClick={handleToggle}
                     className="ml-auto flex items-center justify-center px-1 py-1 bg-stone-700 rounded-full border border-stone-500 hover:bg-stone-600"
                 >
@@ -102,65 +114,59 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     </div>
                 </button> */}
 
-                </div>
-                <CodeRenderFrame
-                    nodeId={id}
-                    isMobile={isMobile}
-                    response={data.response}
-                    renderCode={code}
-                    isDragging={data.isDragging}
-                    setTargetBlendCode={data.setTargetBlendCode}
-                    setTargetCodeDropped={data.setTargetCodeDropped}
-                    setTargetRenderCodeNodeBbox={data.setTargetRenderCodeNodeBbox}
-                    codeRenderNodeRef={nodeRef}
-                    loadingStates={data.loadingStates}
-                    updateLoadingState={data.updateLoadingState}
-                    setTargetCodeRenderNodeId={data.setTargetCodeRenderNodeId}
-                    abortController={data.abortController} />
-                <div className='flex flex-row'>
-                    <button
-                        className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
-                        onClick={() => {
-                            if (!data.codePanelVisible) {   // if the code panel is not currently visible, we set the display code to this code piece
-                                data.setDisplayCode(code);
-                            } else {
-                                data.setDisplayCode("");
-                            }
-                            data.toggleCodePanelVisible();
-                        }}
-                    >
-                        <LuTerminal />
-                        <span className='ml-2'>{data.codePanelVisible ? "Hide" : "Show"} Code</span>
-                    </button>
-                </div>
-                <NodeResizeControl style={{ background: 'transparent', border: 'none' }} minWidth={500} minHeight={900}>
-                    <div style={{ color: "#ddd", position: 'absolute', right: 7, bottom: 5, visibility: selected ? "visible" : "hidden" }}>
-                        <LuEqual />
-                    </div>
-                </NodeResizeControl>
-                <Handle
-                    type="target"
-                    position={Position.Left}
-                    id="render-t"
-                    isConnectable={true}
-                />
-                <Handle
-                    type="source"
-                    position={Position.Right}
-                    id="render-s"
-                    isConnectable={true}
-                />
-            </div >
-            <DynamicUI
+            </div>
+            <CodeRenderFrame
                 nodeId={id}
-                prevCode={data.prevCode}    // this is the original source code for blending
-                blendedCode={data.blendedCode}  // blended code, needed for resetting the node
-                newCode={code}   // current code to display. will be the same as blendedCode, if no dynamic UI tweaks are performed
-                categorizedChanges={data.categorizedChanges}
-                handleCodeReplacement={data.handleCodeReplacement}
-                sethoverIdxList={sethoverIdxList} />
-        </div>
-    );
+                isMobile={isMobile}
+                response={data.response}
+                renderCode={code}
+                isDragging={data.isDragging}
+                setTargetBlendCode={data.setTargetBlendCode}
+                setTargetCodeDropped={data.setTargetCodeDropped}
+                setTargetRenderCodeNodeBbox={data.setTargetRenderCodeNodeBbox}
+                codeRenderNodeRef={nodeRef}
+                loadingStates={data.loadingStates}
+                updateLoadingState={data.updateLoadingState}
+                setTargetCodeRenderNodeId={data.setTargetCodeRenderNodeId}
+                abortController={data.abortController} />
+            <div className='flex flex-row'>
+                <button
+                    className={"flex items-center rounded-lg mt-6 mx-2 px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"}
+                    onClick={() => {
+                        if (!data.codePanelVisible) {   // if the code panel is not currently visible, we set the display code to this code piece
+                            data.setDisplayCode(code);
+                        } else {
+                            data.setDisplayCode("");
+                        }
+                        data.toggleCodePanelVisible();
+                    }}
+                >
+                    <LuTerminal />
+                    <span className='ml-2'>{data.codePanelVisible ? "Hide" : "Show"} Code</span>
+                </button>
+            </div>
+            <NodeResizeControl style={{ background: 'transparent', border: 'none' }} minWidth={500} minHeight={900}>
+                <div style={{ color: "#ddd", position: 'absolute', right: 7, bottom: 5, visibility: selected ? "visible" : "hidden" }}>
+                    <LuEqual />
+                </div>
+            </NodeResizeControl>
+            <Handle
+                type="target"
+                position={Position.Left}
+                id="render-t"
+                isConnectable={true}
+            />
+        </div >
+        <DynamicUI
+            nodeId={id}
+            prevCode={data.prevCode}    // this is the original source code for blending
+            blendedCode={data.blendedCode}  // blended code, needed for resetting the node
+            newCode={code}   // current code to display. will be the same as blendedCode, if no dynamic UI tweaks are performed
+            categorizedChanges={data.categorizedChanges}
+            handleCodeReplacement={data.handleCodeReplacement}
+            sethoverIdxList={sethoverIdxList} />
+    </div>
+);
 };
 
 

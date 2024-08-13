@@ -476,46 +476,20 @@ const FlowComponent: React.FC = () => {
             let removedNodeId: string[] = [];
             // remove the code content that corresponds to the node that is removed
             changes.forEach(change => {
-                console.log("node change!!! " + change.type);
                 if (change.type === "remove") {
                     setRenderCodeContentListState(list => list.filter(code => code.nodeId !== change.id))
                     removedNodeId.push(change.id);
-                } else if (change.type === "add" && change.item.type === "codeRenderNode") {
-                    // console.log("Node added! " + change.item);
-                    // const newNode = change.item;
-                    // const sourceNodeId = newNode.data.sourceNodeId;
-                    // // when a node is added, we 
-                    // const newEdgeId = `e-${sourceNodeId}-${newNode.id}`;
-                    // let edgeExists = false;
-
-                    // edges.forEach(ed => {
-                    //     if (ed.id === newEdgeId) edgeExists = true;
-                    // })
-
-                    // if (!edgeExists) {
-                    //     const newEdge = {
-                    //         id: newEdgeId,
-                    //         source: sourceNodeId,
-                    //         target: newNode.id,
-                    //     };
-                    //     console.log("New edge added? id: " + newEdge.id);
-
-                    //     // Add the new edge
-                    //     setEdges((eds) => [...eds, newEdge]);
-                    // }
                 }
             })
 
             // update edges too
-            console.log("Removed nodes: " + removedNodeId.join(" "));
-            // setEdges((eds) => eds.filter(ed => {
-            //     if (ed.sourceNode && ed.targetNode) {
-            //         console.log("Edge removed! " + ed.id);
-            //         return removedNodeId.includes(ed.sourceNode.id) || removedNodeId.includes(ed.targetNode.id);
-            //     } else {
-            //         return false;
-            //     }
-            // }))
+            setEdges((eds) => eds.filter(ed => {
+                if (ed.sourceNode && ed.targetNode) {
+                    return !removedNodeId.includes(ed.sourceNode.id) && !removedNodeId.includes(ed.targetNode.id);
+                } else {
+                    return true;
+                }
+            }))
         },
         [],
     );
@@ -588,6 +562,10 @@ const FlowComponent: React.FC = () => {
                 setEdges((eds) => addEdge(newEdge, eds));
             }
         });
+    }
+
+    const addNewEdge = (edge: Edge) => {
+        setEdges((eds) => addEdge(edge, eds));
     }
 
     const removeNode = (id: string) => {
@@ -686,7 +664,7 @@ const FlowComponent: React.FC = () => {
                                 setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
                                 setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates,
                                 updateLoadingState: updateLoadingState, abortController: abortController,
-                                handleCodeReplacement: handleCodeReplacement
+                                handleCodeReplacement: handleCodeReplacement, addNewEdge: addNewEdge
                             }
                         }
                     } else if (node.type === 'imageDisplayNode') {
