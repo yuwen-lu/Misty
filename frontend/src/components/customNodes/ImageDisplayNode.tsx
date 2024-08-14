@@ -225,8 +225,17 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
           <span className='ml-2'>Done</span>
         </button>
       </div>
-
       <Handle
+        className="bg-blue-900 opacity-50"
+        style={{
+          width: '20px',       
+          height: '60px',      
+          borderRadius: '5px', 
+          borderWidth: '2px',
+          borderColor: 'white',
+          borderStyle: 'solid',
+          marginRight: '-5px', 
+        }}
         type="source"
         position={Position.Right}
         id="b"

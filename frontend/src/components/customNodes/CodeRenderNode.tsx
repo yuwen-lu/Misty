@@ -194,6 +194,16 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     position={Position.Left}
                     id="render-t"
                     isConnectable={true}
+                    style={{
+                        width: '20px',       
+                        height: '60px',      
+                        borderRadius: '5px',  
+                        borderWidth: '2px',
+                        borderColor: 'white',
+                        borderStyle: 'solid',
+                        marginLeft: '-5px',
+                    }}
+                    className="bg-purple-900 opacity-50"
                 />
             </div >
             <DynamicUI

@@ -33,6 +33,7 @@ import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, Cod
 import ErrorPopup from './ErrorPopup';
 import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, appleTvHero, appleTvHeroFull } from '../images';
 import { BookList } from './renderCode/BookList';
+import ButtonEdge from './ButtonEdge';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -41,6 +42,10 @@ const nodeTypes: NodeTypes = {
     explanationNode: ExplanationNode,
     codeRenderNode: CodeRenderNode,
     confirmationPopupNode: ConfirmationPopupNode,
+};
+
+const edgeTypes = {
+    button: ButtonEdge,
 };
 
 const initialNodes: Node[] = [
@@ -741,6 +746,7 @@ const FlowComponent: React.FC = () => {
                 )}
                 edges={edges}
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
