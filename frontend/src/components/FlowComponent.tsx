@@ -172,7 +172,8 @@ const FlowComponent: React.FC = () => {
                     data: {
                         ...existingNode.data,
                         renderCode: renderCode,
-                        blendedCode: renderContent.blendedCode ? existingNode.data.blendedCode : renderContent.blendedCode,     // only update when the field is set, the field is only set through re-generation
+                        blendedCode: renderContent.blendedCode ? renderContent.blendedCode : existingNode.data.blendedCode,     // only update when the field is set, the field is only set through re-generation
+                        categorizedChanges: renderContent.categorizedChanges,
                     },
                 };
             } else {
@@ -199,6 +200,8 @@ const FlowComponent: React.FC = () => {
     // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
+        console.log("renderCodeContentList updated, current length " + renderCodeContentList.length);
+        renderCodeContentList.forEach(renderCodeContent => console.log("id: " + renderCodeContent.nodeId + ", blendedCode: " + renderCodeContent.blendedCode));
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
@@ -457,7 +460,7 @@ const FlowComponent: React.FC = () => {
                                 ? {
                                     ...content,
                                     code: updatedCode, // Update with the processed code
-                                    blendedCode: updatedCode,   // this field is optional and only gets set through regeneration
+                                    blendedCode: updatedCode,   // this field is optional and only gets set through regeneration 
                                     prevCode: renderCode, // Set the previous code
                                     categorizedChanges: parsedData.categorizedChanges, // Update categorized changes
                                     response: finalResponse, // Store the final response

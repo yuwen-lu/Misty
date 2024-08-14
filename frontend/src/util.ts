@@ -330,7 +330,7 @@ export const findAllIndexesOfStrings = (mainString: string, ...searchStrings: st
     let position: number = mainString.indexOf(searchString);
     // console.log("looking for string " + searchString + " in string " + mainString.slice(0, 100));
     while (position !== -1) {
-      console.log("Finding position: " + position);
+      // console.log("Finding position: " + position);
       indexes.push(position);
       position = mainString.indexOf(searchString, position + searchString.length);
     }
