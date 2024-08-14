@@ -78,8 +78,6 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 source: sourceNodeId,
                 target: id,
             };
-            console.log("New edge added? id: " + newEdge.id);
-
             // Add the new edge
             data.addNewEdge(newEdge);
         }

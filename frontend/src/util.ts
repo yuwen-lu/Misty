@@ -242,6 +242,36 @@ export async function convertToOutline(base64Image: string): Promise<string> {
   });
 }
 
+export async function blurImage(base64Image: string, blurAmount: number = 4): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const img = new Image();
+    img.src = base64Image;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        return reject(new Error('Failed to get 2D context'));
+      }
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      // Apply blur effect
+      ctx.filter = `blur(${blurAmount}px)`;
+      ctx.drawImage(canvas, 0, 0);
+
+      const blurredBase64 = canvas.toDataURL();
+      resolve(blurredBase64);
+    };
+
+    img.onerror = (err) => {
+      reject(err);
+    };
+  });
+}
 
 
 export interface loadingIdState {

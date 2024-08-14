@@ -28,7 +28,7 @@ import DynamicUI from './customNodes/DynamicUI';
 import CodeEditorPanel from './CodeEditorPanel';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent } from "../util";
+import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent, blurImage } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change, CategorizedChange } from '../prompts';
 import ErrorPopup from './ErrorPopup';
 import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, appleTvHero, appleTvHeroFull } from '../images';
@@ -375,9 +375,14 @@ const FlowComponent: React.FC = () => {
         setAbortController(controller);
 
         try {
+
+            const blurredBase64 = await blurImage(base64Image);
+
+            console.log("processed blurred image: " + blurredBase64); 
+
             const messageData = {
                 message: textPrompt,
-                image: base64Image,
+                image: blurredBase64,
                 json_mode: jsonMode
             };
 
@@ -568,7 +573,7 @@ const FlowComponent: React.FC = () => {
         const edgeExists = edges.find(edg => edg.id === edge.id)
         if (!edgeExists) {
             setEdges((eds) => addEdge(edge, eds));
-            console.log("New edge added? id: " + edge.id);
+            console.log("New edge added, id: " + edge.id);
         }
     }
 

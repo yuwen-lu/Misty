@@ -72,6 +72,10 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
     useEffect(() => {
         if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
     }, []);
+    
+    useEffect(() => {
+        console.log("Response length:" + response.length);
+    }, [response]);
 
     const cancelBlending = () => {
         updateLoadingState(nodeId, false);
@@ -120,7 +124,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
             {/* removed for now: ${isMobile ? "max-w-md" : "max-w-screen-md"}  */}
 
             <div className={`absolute w-full h-full text-purple-400/80 ${checkIsLoading() ? "visible text-glow" : "invisible"}`}>
-                {checkIsLoading() ? (response.length > 2000 ? response.slice(2000) : response) : ""}
+                {checkIsLoading() ? (response.length > 1500 ? response.slice(1500 * Math.floor(response.length/1500)) : response) : ""}
             </div>
 
             <div className={`${checkIsLoading() ? "invisible" : ""}`}>

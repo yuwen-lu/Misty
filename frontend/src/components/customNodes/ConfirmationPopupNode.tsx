@@ -3,7 +3,7 @@ import { Paintbrush, LayoutList, Plus } from 'lucide-react';
 import { NodeProps } from 'reactflow';
 import "../../index.css";
 import { constructCodeReplacementPrompt, constructDragAndDropPrompt } from '../../prompts';
-import { convertToOutline, defaultBoundingBox } from '../../util';
+import { blurImage, convertToOutline, defaultBoundingBox } from '../../util';
 
 const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -22,34 +22,46 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
             setSelectedOptions([...selectedOptions, selection]);
         }
     };
-
     const handleBlend = () => {
         // if nothing is selected, we don't do anything
         if (selectedOptions.length > 0) {
             console.log("Final selection: " + selectedOptions);
+
             // handle the prompt
             const textPrompt = constructDragAndDropPrompt(data.renderCode, data.targetCodeDropped, selectedOptions);
 
-            if (selectedOptions.length === 1 && selectedOptions[0] === "Layout") {
-                convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
-                    console.log("processed outline for the subimage: " + outlineBase64); // Processed base64-encoded outline image
-                    // send the outline image to openai
-                    data.callOpenAI(textPrompt, outlineBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
-                }).catch((err) => {
-                    console.error(err);
-                });
-            } else {
-                data.callOpenAI(textPrompt, data.subImageScreenshot, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
-            }
+            const selectionIsLayout = selectedOptions.length === 1 && selectedOptions[0] === "Layout";
+            let blurAmount = 4;
+            if (selectionIsLayout) blurAmount = 2;  // to avoid downgrading the image quality, it's sensitive when it's an outline image
 
-            
+            // Blur the image first
+            blurImage(data.subImageScreenshot, blurAmount).then((blurredBase64) => {
+            console.log("processed blurred image: " + blurredBase64); // Processed base64-encoded blurred image
+
+                // If the only selected option is "Layout", convert to outline
+                if (selectionIsLayout) {
+                    convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
+                        console.log("processed outline for the subimage: " + outlineBase64); // Processed base64-encoded outline image
+                        // send the outline image to OpenAI. we do not blur this becuase otherwise the image quality will be really bad
+                        data.callOpenAI(textPrompt, outlineBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
+
+                    }).catch((err) => {
+                        console.error(err);
+                    });
+                } else {
+                    // Otherwise, send the blurred image to OpenAI
+                    data.callOpenAI(textPrompt, blurredBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
+                }
+            }).catch((err) => {
+                console.error(err);
+            });
 
             // dismiss the node
             setSelectedOptions([]);
             data.removeNode(id);
         }
-
     };
+
 
     const cancelBlend = () => {
         console.log("confirmation popup closed");
