@@ -117,10 +117,11 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
     }
 
     return (
-        <div className='flex flex-row px-20 py-5 
+        <div className={`flex flex-row px-20 py-5 
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
-            border-t-8 border-t-purple-900
-            w-full h-full'>
+                border-t-8 border-t-purple-900
+            w-full h-full 
+            transition-all duration-300 ease-in-out ${selected ? 'shadow-2xl transform scale-105' : ''}`}>
             <div
                 className={"render-view-container flex flex-col items-center"}
                 ref={nodeRef}
@@ -195,9 +196,9 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                     id="render-t"
                     isConnectable={true}
                     style={{
-                        width: '20px',       
-                        height: '60px',      
-                        borderRadius: '5px',  
+                        width: '20px',
+                        height: '60px',
+                        borderRadius: '5px',
                         borderWidth: '2px',
                         borderColor: 'white',
                         borderStyle: 'solid',

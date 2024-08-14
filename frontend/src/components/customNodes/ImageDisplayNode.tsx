@@ -5,7 +5,7 @@ import { BoundingBox, cropImage } from "../../util";
 import 'reactflow/dist/style.css';
 import '../../index.css';
 
-const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
+const ImageDisplayNode: React.FC<NodeProps> = ({ id, data, selected }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
@@ -181,7 +181,8 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data }) => {
                       px-20 py-5 
                       text-white bg-blue-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
                       border-t-8 border-t-blue-900
-                      w-full h-full`}>
+                      w-full h-full 
+                      transition-all duration-300 ease-in-out ${selected ? 'shadow-2xl transform scale-105 ' : ''}`}>
 
       <div className='font-semibold text-blue-900 text-xl mb-5'>
         Drag To Select
