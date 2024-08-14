@@ -1,4 +1,3 @@
-// TODO give some images for the model to use
 export const constructTextPrompt = (renderCode: string) => {
 
     return `Here is my react and tailwind code: 
@@ -26,7 +25,7 @@ export const constructTextPrompt = (renderCode: string) => {
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
             categorizedChanges: [
                 {
-                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. dark theme, spacing, layout, etc.
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. "Color: Changed light to dark theme", "Layout: Increased spacing between elements", "Visual details: Increased corner roundedness", "Image: Decreased image size", "Font: Changed font appearance", etc.
                     changes: [{
                         type: "color",
                         before": // the tailwind class before the change,
@@ -39,7 +38,7 @@ export const constructTextPrompt = (renderCode: string) => {
         here is a good example of the changes field:
         categorizedChanges: [
             {
-                category: "Dark Theme",
+                category: "Color: Changed light to dark theme",
                 changes: [{
                     type: "color",
                     before: "bg-black",
@@ -55,7 +54,7 @@ export const constructTextPrompt = (renderCode: string) => {
                 }, ...] // add as many as appropriate,
             },
             {
-                category: "Visual Hierarchy",
+                category: "Font: Changed font appearance",
                 changes: [{
                     type: "color",
                     before: "bg-black",
@@ -148,7 +147,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
             categorizedChanges: [
                 {
-                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. dark theme, spacing, layout, etc.
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. "Color: Changed light to dark theme", "Layout: Increased spacing between elements", "Visual details: Increased corner roundedness", "Image: Decreased image size", "Font: Changed font appearance", etc.
                     changes: [{
                         type: "color",
                         before": // the tailwind class before the change,
@@ -161,7 +160,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
         here is a good example of the changes field:
         categorizedChanges: [
             {
-                category: "Dark Theme",
+                category: "Color: Changed light to dark theme",
                 changes: [{
                     type: "color",
                     before: "bg-black",
@@ -177,7 +176,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
                 }, ...] // add as many as appropriate,
             },
             {
-                category: "Visual Hierarchy",
+                category: "Font: Changed font appearance",
                 changes: [{
                     type: "color",
                     before: "bg-black",
@@ -231,7 +230,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
             
                 categorizedChanges: [
                 {
-                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. dark theme, spacing, layout, etc.
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. "Color: Changed light to dark theme", "Layout: Increased spacing between elements", "Visual details: Increased corner roundedness", "Image: Decreased image size", "Font: Changed font appearance", etc.
                     changes: [{
                         type: "color",
                         before": // the tailwind class before the change,
@@ -244,7 +243,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
         here is a good example of the changes field:
         categorizedChanges: [
             {
-                category: "Dark Theme",
+                category: "Color: Changed light to dark theme",
                 changes: [{
                     type: "color",
                     before: "bg-black",
@@ -260,7 +259,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
                 }, ...] // add as many as appropriate,
             },
             {
-                category: "Visual Hierarchy",
+                category: "Font: Changed font appearance",
                 changes: [{
                     type: "color",
                     before: "bg-black",

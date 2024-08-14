@@ -170,9 +170,14 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
                     return (
                         <div key={category.category} className="mb-6 w-full flex flex-col items-start">
-                            <div className="font-semibold text-purple-900 mb-2 flex items-center">
-                                {category.category}
+                            
+                            <div className="font-semibold text-sm text-gray-500 mb-2 flex items-center">
+                                {category.category.split(": ")[0].toUpperCase()}
                             </div>
+                            <div className="font-semibold text-purple-900 mb-2 flex items-center">
+                                {category.category.split(": ")[1]}
+                            </div>
+                            
                             {category.changes.map((change, changeIndex) => {
                                 const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
 

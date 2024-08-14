@@ -263,11 +263,11 @@ const FlowComponent: React.FC = () => {
                 setShowError(true);
             }
         }
-        // 3. add explanations  TODO now it might be the field of "changes"
+        // URGENT TODO COME BACK AND FIX THIS, PLUS TEST AGAIN THE WHOLE FUNCTION
+        // 3. add explanations  
         const explanations: string = parsedData.explanations;
         addExplanationsNode([explanations], renderCodeBoundingBox);   // TODO set this position to between the old and new render node, plus the explanation format is now different
 
-        // URGENT TODO COME BACK AND FIX THIS, PLUS TEST AGAIN THE WHOLE FUNCTION
         // const newRenderCodeContent: codeRenderNodeContent = {
         //     code: currentRenderCode,
         //     changes: explanations
