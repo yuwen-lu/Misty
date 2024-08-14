@@ -43,14 +43,14 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
                     convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
                         console.log("processed outline for the subimage: " + outlineBase64); // Processed base64-encoded outline image
                         // send the outline image to OpenAI. we do not blur this becuase otherwise the image quality will be really bad
-                        data.callOpenAI(textPrompt, outlineBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
+                        data.handleFetchResponse(textPrompt, outlineBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
 
                     }).catch((err) => {
                         console.error(err);
                     });
                 } else {
                     // Otherwise, send the blurred image to OpenAI
-                    data.callOpenAI(textPrompt, blurredBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
+                    data.handleFetchResponse(textPrompt, blurredBase64, true, data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox, data.renderCode, data.targetCodeRenderNodeId, data.sourceNodeId);
                 }
             }).catch((err) => {
                 console.error(err);

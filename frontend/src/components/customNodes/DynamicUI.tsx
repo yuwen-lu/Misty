@@ -143,16 +143,18 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     return (
         <>
             {state.length === 0 ? <></> : <div className="ml-20 w-auto relative">
-                <div className="w-full flex items-center justify-between font-semibold text-purple-900 text-xl mb-5">
-                    <div className="flex-1 text-center">Applied Changes</div>
+                <div className='w-full flex relative items-begin mb-6'>
+                    <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl '>
+                        Applied Changes
+                    </div>
                     <button
-                        className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 px-4 rounded'
+                        className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
                         onClick={resetCode}>
                         <RotateCcw
                             className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
                                 }`}
                         />
-                        <span>Reset All Changes</span>
+                        <span>Reset All</span>
                     </button>
                 </div>
 

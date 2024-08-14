@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NodeProps, Handle, Position, NodeResizeControl } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
-import { loadingIdState, tempChanges } from '../../util';
+import { defaultBoundingBox, loadingIdState, tempChanges } from '../../util';
 import DynamicUI from './DynamicUI';
 import "../../index.css";
+import { RotateCcw, Sparkles } from 'lucide-react';
 
 
 const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
@@ -12,10 +13,20 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
     const [isMobile, setIsMobile] = useState<boolean>(true);
     const [code, setCode] = useState<string>("");
     const [hoverIdxList, sethoverIdxList] = useState<number[]>([]);
+    const [isAnimating, setIsAnimating] = useState(false);
+
     const nodeRef = useRef<HTMLDivElement>(null);
 
     const [originalClassNames, setOriginalClassNames] = useState<string[]>([]);
     const [replacementClassNames, setReplacementClassNames] = useState<string[]>([]);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (isAnimating) {
+            timer = setTimeout(() => setIsAnimating(false), 500); // Total animation duration
+        }
+        return () => clearTimeout(timer);
+    }, [isAnimating]);
 
     const classNameStartString = "className=";
     useEffect(() => {
@@ -87,6 +98,24 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
         setIsMobile(!isMobile);
     };
 
+    const regenerateCode = () => {
+        if (!isAnimating) {
+            setIsAnimating(true);
+        }
+        // Call the handleFetchResponse with the regenerate flag set to true
+        data.handleFetchResponse(
+            data.textPrompt,
+            data.base64Image,
+            true,
+            undefined,  // renderCodeBoundingBox, not used in this case, use default value
+            code,  // this is the current code that might be regenerated
+            id,    // the id of the current node
+            true,   // global blending
+            data.sourceNodeId,
+            true   // isRegenerate flag set to true
+        );
+    }
+
     return (
         <div className='flex flex-row px-20 py-5 
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
@@ -96,11 +125,21 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 className={"render-view-container flex flex-col items-center"}
                 ref={nodeRef}
             >
-                <div className='w-full flex relative items-center'>
-                    {/* <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl my-5'> */}
-                    <div className='w-full text-center font-semibold text-purple-900 text-xl mb-5'>
+                <div className='w-full flex relative items-begin mb-6'>
+                    <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl '>
+                        {/* <div className='w-full text-center font-semibold text-purple-900 text-xl mb-5'> */}
                         Code Render
                     </div>
+
+                    {data.categorizedChanges.length > 0 ? <button
+                        className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
+                        onClick={regenerateCode}>
+                        <Sparkles
+                            className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
+                                }`}
+                        />
+                        <span>Regenerate</span>
+                    </button> : <div className='invisible'>btn placeholder for space</div>}
                     {/* </div> */}
                     {/* <button
                     onClick={handleToggle}

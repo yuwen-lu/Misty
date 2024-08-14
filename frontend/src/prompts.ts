@@ -20,7 +20,7 @@ export const constructTextPrompt = (renderCode: string) => {
         Return result in the below format, make sure you use json:
 
         {
-            "layoutExplanation": // explain the layout of the screenshot image
+            "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
             "differences": // briefly summarize the differences between the reference image and the code 
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
@@ -142,7 +142,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
         Return result as a JSON in the following format:
         
         {
-            "layoutExplanation": // explain the layout of the screenshot image
+            "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
             "differences": // briefly summarize the differences between the reference image and the code 
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
@@ -220,7 +220,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
         Return result as a JSON in the following format:
 
         {
-            "layoutExplanation": // explain the layout of the screenshot image
+            "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
             "codeChanges": [{
                 "originalCode": // original code piece
                 "replacementCode": // replacement code

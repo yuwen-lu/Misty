@@ -279,6 +279,7 @@ code {
   min-width: 360px;
   max-width: 480px;
   min-height: 960px;
+  max-height: 1440px;
 }
 
 @keyframes complexRotate {

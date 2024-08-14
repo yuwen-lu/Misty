@@ -166,11 +166,13 @@ const FlowComponent: React.FC = () => {
 
             if (existingNode) {
                 // Update the existing node with the new code
+                console.log("updating existing node, blendedCode is \n" + renderContent.blendedCode);
                 return {
                     ...existingNode,
                     data: {
                         ...existingNode.data,
                         renderCode: renderCode,
+                        blendedCode: renderContent.blendedCode ? existingNode.data.blendedCode : renderContent.blendedCode,     // only update when the field is set, the field is only set through re-generation
                     },
                 };
             } else {
@@ -272,11 +274,8 @@ const FlowComponent: React.FC = () => {
 
     };
 
-    const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string, textPrompt: string, base64Image: string, sourceNodeId: string) => {
-        // 1. fetch the parsed Result
-        const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse);
-        let updatedCode = parsedData.updatedCode.trim();
-
+    const processParsedCode = (code: string) => {
+        let updatedCode = code.trim();
         // Check if updatedCode is wrapped in backticks
         if (updatedCode.startsWith('`') && updatedCode.endsWith('`')) {
             // Remove the backticks
@@ -312,14 +311,22 @@ const FlowComponent: React.FC = () => {
             setShowError(true);
         }
 
-        console.log("displaying...\n" + parsedData)
+        return updatedCode;
+    }
+
+    const processGlbalBlendingResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string, textPrompt: string, base64Image: string, sourceNodeId: string) => {
+        // fetch the parsed Result
+        const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse);
+        let updatedCode = processParsedCode(parsedData.updatedCode);
+
+        console.log("displaying updated code...\n" + parsedData)
 
         const categorizedChanges: CategorizedChange[] = parsedData.categorizedChanges;
 
         const newRenderCodeContent: codeRenderNodeContent = {
+            nodeId: `code-${renderCodeContentList.length}`,
             code: updatedCode,
             prevCode: renderCode,
-            nodeId: `code-${renderCodeContentList.length}`,
             categorizedChanges: categorizedChanges,
             sourceNodeId: sourceNodeId,
             textPrompt: textPrompt,
@@ -363,9 +370,25 @@ const FlowComponent: React.FC = () => {
         });
     };
 
-    // code block to handle API calls
-    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = true, renderCodeBoundingBox: BoundingBox, renderCode: string, targetNodeId = "", globalBlending = false, sourceNodeId: string) => {
+    /**
+     * handleFetchResponse sends a request to a backend API and processes the response to update a node's state in the React Flow diagram.
+     *
+     * @param {string} textPrompt - The prompt or message that is sent to the backend API, typically constructed based on the node's content.
+     * @param {string} [base64Image=""] - A base64-encoded image string included in the request, used for image-based reasoning or blending tasks.
+     * @param {boolean} [jsonMode=true] - A flag indicating whether the API response should be expected in JSON format.
+     * @param {BoundingBox} [renderCodeBoundingBox=defaultBoundingBox] - The bounding box (position and size) of the node where the code will be rendered.
+     * @param {string} renderCode - The current code associated with the node that triggered the API call, used to apply the API response (e.g., blending or replacing code).
+     * @param {string} [targetNodeId=""] - The ID of the target node in the React Flow diagram to be updated based on the API response.
+     * @param {boolean} [globalBlending=false] - A flag indicating whether the operation involves global blending of code or a more specific code replacement task.
+     * @param {string} sourceNodeId - The ID of the source node from which the operation was initiated, used for context in blending operations.
+     * @param {boolean} [isRegenerate=false] - A flag indicating whether the function is regenerating a previous request, potentially altering behavior such as skipping unnecessary steps.
+     *
+     * This function processes the response from the API, performs code transformations, and updates the relevant node with new code and related data.
+     */
 
+    const handleFetchResponse = async (textPrompt: string, base64Image = "", jsonMode = true, renderCodeBoundingBox = defaultBoundingBox, renderCode: string, targetNodeId = "", globalBlending = false, sourceNodeId: string, isRegenerate = false) => {
+
+        console.log("Taget node id " + targetNodeId);
         // set the loading status here
         targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, true) : updateLoadingState(targetNodeId, true);
 
@@ -378,7 +401,7 @@ const FlowComponent: React.FC = () => {
 
             const blurredBase64 = await blurImage(base64Image);
 
-            console.log("processed blurred image: " + blurredBase64); 
+            console.log("processed blurred image: " + blurredBase64);
 
             const messageData = {
                 message: textPrompt,
@@ -419,11 +442,33 @@ const FlowComponent: React.FC = () => {
                     setResponse((prevResponse) => prevResponse + decodedChunk);
                 }
 
-                console.log("Handle fetch response render code: " + renderCode);
-
                 // TODO Figure out how to deal with replacementPrompts
                 // globalBlending ? processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode) : processReplacementPromptResponse(finalResponse, renderCodeBoundingBox, renderCode);
-                processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode, textPrompt, base64Image, sourceNodeId);
+                if (isRegenerate) {
+                    // Fetch the parsed Result
+                    const parsedData: ParsedGlobalBlendingData = parseResponse(finalResponse);
+                    let updatedCode = processParsedCode(parsedData.updatedCode);
+
+                    // Update the existing renderCodeContentList entry instead of adding a new one
+                    console.log("yo, finished fetch response, here's the updated blendedCode: " + updatedCode);
+                    setRenderCodeContentListState((prevList) =>
+                        prevList.map((content) =>
+                            content.nodeId === targetNodeId
+                                ? {
+                                    ...content,
+                                    code: updatedCode, // Update with the processed code
+                                    blendedCode: updatedCode,   // this field is optional and only gets set through regeneration
+                                    prevCode: renderCode, // Set the previous code
+                                    categorizedChanges: parsedData.categorizedChanges, // Update categorized changes
+                                    response: finalResponse, // Store the final response
+                                }
+                                : content
+                        )
+                    );
+                } else {
+                    processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode, textPrompt, base64Image, sourceNodeId);
+                }
+
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === 'AbortError') {
@@ -504,7 +549,7 @@ const FlowComponent: React.FC = () => {
     );
     const onConnect: OnConnect = (connection) => {
         setEdges((eds) => addEdge(connection, eds));
-        // when a new node connect to the code render node, update the source code render
+        console.log("connection added: \n" + JSON.stringify(connection));
         if (connection.targetHandle === "render-t") {
             // if it's a whole image node, maybe do some implicit intent reasoning
             console.log("seems like a source node. id: " + connection.source);
@@ -520,8 +565,16 @@ const FlowComponent: React.FC = () => {
             } else {
                 console.log("Error: cannot find source node. current nodes: \n" + nodes);
             }
+            setEdges((eds) =>
+                eds.filter((e) =>
+                    e.source !== connection.source ||
+                    e.sourceHandle !== connection.sourceHandle ||
+                    e.target !== connection.target ||
+                    e.targetHandle !== connection.targetHandle
+                )
+            );  // remove the edge if it's just connecting to blend
         }
-        console.log("connection added: \n" + JSON.stringify(connection));
+
     };
 
     const createSubImages = (sourceId: string, imageUrlList: string[]) => {
@@ -602,7 +655,7 @@ const FlowComponent: React.FC = () => {
                             removeNode: removeNode,
                             renderCode: targetBlendCode,
                             targetCodeDropped: targetCodeDropped,
-                            callOpenAI: handleFetchResponse,
+                            handleFetchResponse: handleFetchResponse,
                             targetCodeRenderNodeId: targetCodeRenderNodeId,
                             subImageScreenshot: subImageScreenshot,
                             targetRenderCodeNodeBbox: targetRenderCodeNodeBbox,
@@ -673,7 +726,7 @@ const FlowComponent: React.FC = () => {
                                 setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
                                 setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates,
                                 updateLoadingState: updateLoadingState, abortController: abortController,
-                                handleCodeReplacement: handleCodeReplacement, addNewEdge: addNewEdge
+                                handleCodeReplacement: handleCodeReplacement, addNewEdge: addNewEdge, handleFetchResponse: handleFetchResponse
                             }
                         }
                     } else if (node.type === 'imageDisplayNode') {

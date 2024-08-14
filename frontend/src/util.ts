@@ -282,6 +282,7 @@ export interface loadingIdState {
 export interface codeRenderNodeContent {
   code: string,
   prevCode: string,
+  blendedCode?: string,
   nodeId: string | null,
   categorizedChanges: CategorizedChange[], // the changes that render dynamic UI
   sourceNodeId: string,
