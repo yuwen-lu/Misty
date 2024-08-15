@@ -171,7 +171,6 @@ const FlowComponent: React.FC = () => {
 
             if (existingNode) {
                 // Update the existing node with the new code
-                console.log("updating existing node, blendedCode is \n" + renderContent.blendedCode);
                 return {
                     ...existingNode,
                     data: {
@@ -205,8 +204,8 @@ const FlowComponent: React.FC = () => {
     // Initialize nodes with positions, and update whenever the code list gets updated
     useEffect(() => {
         setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
-        console.log("renderCodeContentList updated, current length " + renderCodeContentList.length);
-        renderCodeContentList.forEach(renderCodeContent => console.log("id: " + renderCodeContent.nodeId + ", blendedCode: " + renderCodeContent.blendedCode));
+        // console.log("renderCodeContentList updated, current length " + renderCodeContentList.length);
+        // renderCodeContentList.forEach(renderCodeContent => console.log("id: " + renderCodeContent.nodeId + ", blendedCode: " + renderCodeContent.blendedCode));
     }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {

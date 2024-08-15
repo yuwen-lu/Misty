@@ -86,15 +86,39 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     };
 
     const getDropdownOptions = (currentValue: string) => {
-        const prefix = currentValue.split('-')[0];
+        const [prefix, variant] = currentValue.split('-');
         let options = [];
+    
         switch (prefix) {
             case 'bg':
-            case 'text':
-            case 'border':
                 options = Object.keys(colorList).flatMap(color =>
-                    Object.keys(colorList[color]).map(shade => `${prefix}-${color}-${shade}`)
-                ).concat([`${prefix}-white`, `${prefix}-black`]);
+                    Object.keys(colorList[color]).map(shade => `bg-${color}-${shade}`)
+                ).concat(['bg-white', 'bg-black']);
+                break;
+            case 'text':
+                if (variant === 'sm' || variant === 'lg' || variant === 'xl' || variant === 'base') {
+                    // Handle text sizes
+                    options = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl', '8xl', '9xl'].map(size => `text-${size}`);
+                } else {
+                    // Handle text colors
+                    options = Object.keys(colorList).flatMap(color =>
+                        Object.keys(colorList[color]).map(shade => `text-${color}-${shade}`)
+                    ).concat(['text-white', 'text-black']);
+                }
+                break;
+            case 'border':
+                if (['t', 'b', 'l', 'r', 'x', 'y'].includes(variant)) {
+                    // Handle border positions
+                    options = ['t', 'b', 'l', 'r', 'x', 'y'].map(pos => `border-${pos}`);
+                } else if (variant === undefined) {
+                    // General border class (e.g., `border`)
+                    options = ['border', 'border-t', 'border-b', 'border-l', 'border-r', 'border-x', 'border-y'];
+                } else {
+                    // Handle border colors
+                    options = Object.keys(colorList).flatMap(color =>
+                        Object.keys(colorList[color]).map(shade => `border-${color}-${shade}`)
+                    ).concat(['border-transparent', 'border-current', 'border-black', 'border-white']);
+                }
                 break;
             case 'mt':
             case 'mb':
@@ -112,23 +136,26 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                 options = ['0', '1', '2', '3', '4', '5', '6', '8', '10', '12', '16', '20', '24', '32', '40', '48', '56', '64'].map(size => `${prefix}-${size}`);
                 break;
             case 'shadow':
-                options = ['sm', 'md', 'lg', 'xl', '2xl', 'inner', 'none'].map(shadow => `${prefix}-${shadow}`);
+                options = ['sm', 'md', 'lg', 'xl', '2xl', 'inner', 'none'].map(shadow => `shadow-${shadow}`);
                 break;
             case 'font':
-                options = ['none', 'thin', 'extralight', 'light', 'normal', 'medium', 'semibold', 'bold', 'extrabold', 'black'].map(weight => `${prefix}-${weight}`);
+                options = ['thin', 'extralight', 'light', 'normal', 'medium', 'semibold', 'bold', 'extrabold', 'black'].map(weight => `font-${weight}`);
                 break;
             case 'rounded':
-                options = ['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map(size => `${prefix}-${size}`);
+                options = ['none', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map(size => `rounded-${size}`);
                 break;
             default:
                 options = [currentValue];
                 break;
         }
+    
         if (!options.includes(currentValue)) {
             options.unshift(currentValue);
         }
+    
         return options;
-    };
+    };    
+
 
     const resetCode = () => {
 
@@ -143,7 +170,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     return (
         <>
             {state.length === 0 ? <></> : <div className="ml-20 w-auto relative">
-                <div className='w-full flex relative items-begin mb-6'>
+                <div className='w-full min-w-xl flex relative items-begin mb-6'>
                     <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl '>
                         Applied Changes
                     </div>
@@ -170,14 +197,14 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
                     return (
                         <div key={category.category} className="mb-6 w-full flex flex-col items-start">
-                            
+
                             <div className="font-semibold text-sm text-gray-500 mb-2 flex items-center">
                                 {category.category.split(": ")[0].toUpperCase()}
                             </div>
                             <div className="font-semibold text-purple-900 mb-2 flex items-center">
                                 {category.category.split(": ")[1]}
                             </div>
-                            
+
                             {category.changes.map((change, changeIndex) => {
                                 const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
 
