@@ -7,6 +7,7 @@ import { indentUnit } from "@codemirror/language";
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { xcodeLight, xcodeDark } from '@uiw/codemirror-theme-xcode';
 import { LuCheck, LuEqual, LuMoon, LuSave, LuSun } from 'react-icons/lu';
+import { formatCode } from '../util';
 
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
@@ -53,14 +54,21 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
         [setCode]
     );
 
-
     // when the user press cmd+s, we handle the save event by re-render the code and show a popup
-    const handleSave = useCallback(() => {
-        const newCode = viewRef.current?.state.doc.toString() || '';
+    const handleSave = useCallback(async () => {
+        let newCode = viewRef.current?.state.doc.toString() || '';
+        try {
+            newCode = await formatCode(newCode);
+        } catch (err) {
+            console.log("error in format code: " + err);
+        }
+
         setCode(newCode);
         setShowSavePopup(true);
         setTimeout(() => setShowSavePopup(false), 800); // Hide popup after 2 seconds
+
     }, [setCode]);
+
 
     // Initialize the editor view once
     useEffect(() => {
@@ -90,7 +98,7 @@ const CodeEditorPanel: React.FC<CodeEditorPanelProps> = React.memo(({ code, setC
                                 return true;
                             },
                             preventDefault: true
-                        }
+                        },
                     ]),
                     EditorView.domEventHandlers({
                         keydown: (event) => {

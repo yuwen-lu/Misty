@@ -147,7 +147,7 @@ const FlowComponent: React.FC = () => {
                 return prevList.map((content) => {
                     return {
                         ...content,
-                        code: content.code.trim() === displayCode.trim() ? newCode : content.code,
+                        code: content.code.trim() === displayCode.trim() ? newCode.replaceAll(`{" "}`, "") : content.code,
                     };
                 });
             });
@@ -312,6 +312,7 @@ const FlowComponent: React.FC = () => {
         const regexPattern = /^\(\)\s*=>\s*\{\s*([\s\S]*?)\s*\};?$/;
 
         // Test if the updatedCode matches the regex pattern
+        // TODO if this does not match the format, maybe we should just return null?
         if (!regexPattern.test(updatedCode.trim())) {
             // Handle the case where the code does not match the desired format
             console.log('code does not match the desired format in regex');
@@ -325,6 +326,12 @@ const FlowComponent: React.FC = () => {
         // fetch the parsed Result
         const parsedData: ParsedGlobalBlendingData = parseResponse(finishedResponse);
         let updatedCode = processParsedCode(parsedData.updatedCode);
+
+        try {
+            updatedCode = await formatCode(updatedCode);
+        } catch (err) {
+            console.log("error in format code: " + err);
+        }
 
         console.log("displaying updated code...\n" + parsedData)
 
