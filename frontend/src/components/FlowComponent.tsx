@@ -31,7 +31,7 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent, blurImage } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change, CategorizedChange } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, appleTvHero, appleTvHeroFull } from '../images';
+import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow } from '../images';
 import { BookList } from './renderCode/BookList';
 import ButtonEdge from './ButtonEdge';
 
@@ -66,16 +66,65 @@ const initialNodes: Node[] = [
         id: "3",
         type: 'imageDisplayNode',
         draggable: true,
-        position: { x: 800, y: 1000 },
+        position: { x: 1300, y: 100 },
         data: { image: appleTvHero },
     },
     {
         id: "4",
         type: 'imageDisplayNode',
         draggable: true,
-        position: { x: 1300, y: 100 },
+        position: { x: 1800, y: 100 },
         data: { image: appleTvCard },
     },
+    {
+        id: "5",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 800, y: 1000 },
+        data: { image: appleNewsMySportsBase64 },
+    },
+    {
+        id: "6",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 1300, y: 1000 },
+        data: { image: appleMusicPlayNextBase64 },
+    },
+    {
+        id: "7",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 1800, y: 1000 },
+        data: { image: appleNewsCards },
+    },
+    {
+        id: "8",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 800, y: 1900 },
+        data: { image: appleBookStore },
+    },
+    {
+        id: "9",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 1300, y: 1900 },
+        data: { image: appleNewsTrending },
+    },
+    {
+        id: "10",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 1800, y: 1900 },
+        data: { image: appleMusicPlay },
+    },
+    {
+        id: "11",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 2300, y: 1000 },
+        data: { image: appleBookReadingNow },
+    }
 ];
 
 const initialEdges: Edge[] = [
@@ -158,8 +207,8 @@ const FlowComponent: React.FC = () => {
     // Function to get initial positions for nodes
     const getInitialPositions = () => {
         return renderCodeContentList.map((_, idx) => ({
-            x: 2200 + 1000 * idx,
-            y: 100
+            x: 3200 + 1000 * idx,
+            y: 300
         }));
     };
 
