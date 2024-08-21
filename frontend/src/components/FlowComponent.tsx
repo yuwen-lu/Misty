@@ -34,6 +34,7 @@ import ErrorPopup from './ErrorPopup';
 import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow } from '../images';
 import { BookList } from './renderCode/BookList';
 import ButtonEdge from './ButtonEdge';
+import { TrailList } from './renderCode/TrailList';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -143,6 +144,11 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
     animated: true,
 };
 
+const initialCodeToRender: codeRenderNodeContent[] = [
+    { code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+];
+
 const FlowComponent: React.FC = () => {
 
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -150,7 +156,7 @@ const FlowComponent: React.FC = () => {
     const [isDragging, setIsDragging] = useState(false);  // when we drag subimagenode (washi tape)
     const [newConfirmationPopupNodeDataPackage, setNewConfirmationPopupNodeDataPackage] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
-    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>([{ code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" }]);
+    const [renderCodeContentList, setRenderCodeContentListState] = useState<codeRenderNodeContent[]>(initialCodeToRender);
     const [displayCode, setDisplayCode] = useState<string>(""); // for the edit code panel
 
     // the below states are used to know what code is being blended, i.e. used in the api call. but ideally they should be managed as an object, maybe using redux, to avoid conflicted user operations
@@ -350,6 +356,7 @@ const FlowComponent: React.FC = () => {
         }
 
         updatedCode = updatedCode.replaceAll("fixed bottom-0", "absolute bottom-0");    // the previous will mess up react live
+        updatedCode = updatedCode.replaceAll("fixed inset-x-0 bottom-0", "absolute inset-x-0 bottom-0");    // the previous will mess up react live
 
         // Remove extra closing parentheses if present
         const extraParenthesesPattern = /\)\s*\)\s*;\s*\};$/;
