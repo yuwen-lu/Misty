@@ -35,6 +35,7 @@ import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, 
 import { BookList } from './renderCode/BookList';
 import ButtonEdge from './ButtonEdge';
 import { TrailList } from './renderCode/TrailList';
+import { RideSearch } from './renderCode/RideSearch';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -147,6 +148,7 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 const initialCodeToRender: codeRenderNodeContent[] = [
     { code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
     { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    { code: RideSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
 
 const FlowComponent: React.FC = () => {

@@ -32,14 +32,14 @@ export const TrailList: string = `() => {
                         alt="Hiking Trail"
                         className="w-full h-40 object-cover"
                     />
-                    <div className="p-4">
-                        <h3 className="font-semibold text-lg">
+                    <div className="p-4 text-gray-500">
+                        <h3 className="font-semibold text-md">
                             Steep Ravine, Dipsea and Matt Davis
                         </h3>
-                        <p className="text-gray-500">
+                        <p>
                             Stinson Beach, California
                         </p>
-                        <div className="flex items-center text-gray-500 mt-2">
+                        <div className="flex items-center mt-1">
                             <span className="mr-2">⭐ 4.8</span>
                             <span className="mr-2">• Moderate</span>
                             <span>• 6.60 mi • Est. 3h 41m</span>
@@ -54,12 +54,12 @@ export const TrailList: string = `() => {
                         alt="Hiking Trail"
                         className="w-full h-40 object-cover"
                     />
-                    <div className="p-4">
-                        <h3 className="font-semibold text-lg">
+                    <div className="p-4  text-gray-500">
+                        <h3 className="font-semibold text-md">
                             Bear Mountain, Appalachian Trail
                         </h3>
-                        <p className="text-gray-500">Bear Mountain, New York</p>
-                        <div className="flex items-center text-gray-500 mt-2">
+                        <p>Bear Mountain, New York</p>
+                        <div className="flex items-center mt-1">
                             <span className="mr-2">⭐ 4.7</span>
                             <span className="mr-2">• Hard</span>
                             <span>• 4.00 mi • Est. 2h 20m</span>
@@ -74,12 +74,12 @@ export const TrailList: string = `() => {
                         alt="Hiking Trail"
                         className="w-full h-40 object-cover"
                     />
-                    <div className="p-4">
-                        <h3 className="font-semibold text-lg">
+                    <div className="p-4 text-gray-500">
+                        <h3 className="font-semibold text-md">
                             Sunset Ridge, Griffith Park
                         </h3>
-                        <p className="text-gray-500">Los Angeles, California</p>
-                        <div className="flex items-center text-gray-500 mt-2">
+                        <p>Los Angeles, California</p>
+                        <div className="flex items-center mt-1">
                             <span className="mr-2">⭐ 4.9</span>
                             <span className="mr-2">• Easy</span>
                             <span>• 3.20 mi • Est. 1h 30m</span>
