@@ -49,23 +49,23 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
         blurImage(data.subImageScreenshot, blurAmount).then((blurredBase64) => {
             console.log("processed blurred image: " + blurredBase64);
 
-            if (selectionIsLayout) {
-                convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
-                    console.log("processed outline for the subimage: " + outlineBase64);
-                    data.handleFetchResponse(
-                        textPrompt,
-                        outlineBase64,
-                        true,
-                        data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox,
-                        data.renderCode,
-                        data.targetCodeRenderNodeId,
-                        data.sourceNodeId
-                    );
+            // if (selectionIsLayout) {
+            //     convertToOutline(data.subImageScreenshot).then((outlineBase64) => {
+            //         console.log("processed outline for the subimage: " + outlineBase64);
+            //         data.handleFetchResponse(
+            //             textPrompt,
+            //             outlineBase64,
+            //             true,
+            //             data.targetRenderCodeNodeBbox ? data.targetRenderCodeNodeBbox : defaultBoundingBox,
+            //             data.renderCode,
+            //             data.targetCodeRenderNodeId,
+            //             data.sourceNodeId
+            //         );
 
-                }).catch((err) => {
-                    console.error(err);
-                });
-            } else {
+            //     }).catch((err) => {
+            //         console.error(err);
+            //     });
+            // } else {
                 data.handleFetchResponse(
                     textPrompt,
                     blurredBase64,
@@ -75,7 +75,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
                     data.targetCodeRenderNodeId,
                     data.sourceNodeId,
                 );
-            }
+            // }
         }).catch((err) => {
             console.error(err);
         });

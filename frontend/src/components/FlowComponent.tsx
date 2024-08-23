@@ -364,6 +364,9 @@ const FlowComponent: React.FC = () => {
 
     const processParsedCode = (code: string) => {
         let updatedCode = code.trim();
+
+        updatedCode.replaceAll('```', "");
+
         // Check if updatedCode is wrapped in backticks
         if (updatedCode.startsWith('`') && updatedCode.endsWith('`')) {
             // Remove the backticks
@@ -381,6 +384,10 @@ const FlowComponent: React.FC = () => {
             }
         }
 
+        if (updatedCode.includes('export')) {
+            updatedCode = updatedCode.split('export')[0];
+        }
+
         updatedCode = updatedCode.replaceAll("fixed bottom-0", "absolute bottom-0");    // the previous will mess up react live
         updatedCode = updatedCode.replaceAll("fixed inset-x-0 bottom-0", "absolute inset-x-0 bottom-0");    // the previous will mess up react live
 
@@ -395,7 +402,7 @@ const FlowComponent: React.FC = () => {
 
         // Test if the updatedCode matches the regex pattern
         // TODO if this does not match the format, maybe we should just return null?
-        if (!regexPattern.test(updatedCode.trim())) {
+        if (!regexPattern.test(updatedCode)) {
             // Handle the case where the code does not match the desired format
             console.log('code does not match the desired format in regex');
             setShowError(true);
@@ -489,6 +496,7 @@ const FlowComponent: React.FC = () => {
         targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, true) : updateLoadingState(targetNodeId, true);
 
         console.log("calling api, node " + targetCodeRenderNodeId + " started! ");
+        console.log("prompt: " + textPrompt);
         setResponse('');
         const controller = new AbortController();
         setAbortController(controller);
@@ -564,6 +572,84 @@ const FlowComponent: React.FC = () => {
                 } else {
                     processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode, textPrompt, base64Image, sourceNodeId);
                 }
+
+            }
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error fetching response from OpenAI API');
+                console.log("error openai api call: " + err);
+            }
+
+        } finally {
+            targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, false) : updateLoadingState(targetNodeId, false);
+            setAbortController(null);
+        }
+    };
+
+    const fixCodeNotRendering = async (code: string, targetNodeId: string) => {
+
+        console.log("Taget node id " + targetNodeId);
+        // set the loading status here
+        targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, true) : updateLoadingState(targetNodeId, true);
+        setResponse('');
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        try {
+
+            const messageData = {
+                message: "This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. \n" + code,
+                json_mode: false
+            };
+
+            // call the api and stream
+            const response = await fetch('http://127.0.0.1:5000/api/chat', {
+                signal: controller.signal,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(messageData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Here we start prepping for the streaming response
+            if (response.body) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let loopRunner = true;
+                let finalResponse = '';
+
+                while (loopRunner) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        loopRunner = false;
+                        break;
+                    }
+                    const decodedChunk = decoder.decode(value, { stream: true });
+                    // console.log("new chunk: " + decodedChunk);
+                    finalResponse += decodedChunk;
+                    setResponse((prevResponse) => prevResponse + decodedChunk);
+                }
+
+                finalResponse = processParsedCode(finalResponse);
+
+                setRenderCodeContentListState((prevList) =>
+                    prevList.map((content) =>
+                        content.nodeId === targetNodeId
+                            ? {
+                                ...content,
+                                code: finalResponse, // Update with the processed code
+                                blendedCode: finalResponse,   // this field is optional and only gets set through regeneration 
+                            }
+                            : content
+                    )
+                );
 
             }
         } catch (err) {
@@ -822,7 +908,8 @@ const FlowComponent: React.FC = () => {
                                 setTargetCodeDropped: setTargetCodeDropped, setTargetRenderCodeNodeBbox: setTargetRenderCodeNodeBbox,
                                 setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates,
                                 updateLoadingState: updateLoadingState, abortController: abortController,
-                                handleCodeReplacement: handleCodeReplacement, addNewEdge: addNewEdge, handleFetchResponse: handleFetchResponse
+                                handleCodeReplacement: handleCodeReplacement, addNewEdge: addNewEdge, handleFetchResponse: handleFetchResponse,
+                                fixCodeNotRendering: fixCodeNotRendering,
                             }
                         }
                     } else if (node.type === 'imageDisplayNode') {

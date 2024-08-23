@@ -5,7 +5,7 @@ import CodeRenderFrame from './CodeRenderFrame';
 import { defaultBoundingBox, loadingIdState, tempChanges } from '../../util';
 import DynamicUI from './DynamicUI';
 import "../../index.css";
-import { RotateCcw, Sparkles } from 'lucide-react';
+import { RotateCcw, Sparkles, Hammer } from 'lucide-react';
 
 
 const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) => {
@@ -14,6 +14,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
     const [code, setCode] = useState<string>("");
     const [hoverIdxList, sethoverIdxList] = useState<number[]>([]);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [isAnimatingHammer, setIsAnimatingHammer] = useState(false);
 
     const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -25,8 +26,11 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
         if (isAnimating) {
             timer = setTimeout(() => setIsAnimating(false), 500); // Total animation duration
         }
+        if (isAnimatingHammer) {
+            timer = setTimeout(() => setIsAnimatingHammer(false), 500); // Total animation duration
+        }
         return () => clearTimeout(timer);
-    }, [isAnimating]);
+    }, [isAnimating, isAnimatingHammer]);
 
     const classNameStartString = "className=";
     useEffect(() => {
@@ -116,6 +120,14 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
         );
     }
 
+    const fixCodeNotRendering = () => {
+        if (!isAnimatingHammer) {
+            setIsAnimatingHammer(true);
+        }
+        data.fixCodeNotRendering(code, id);
+    }
+
+
     return (
         <div className={`flex flex-row px-20 py-5 
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
@@ -132,15 +144,26 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
                         Code Render
                     </div>
 
-                    {data.categorizedChanges.length > 0 ? <button
-                        className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
-                        onClick={regenerateCode}>
-                        <Sparkles
-                            className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
-                                }`}
-                        />
-                        <span>Regenerate</span>
-                    </button> : <div className='invisible'>btn placeholder for space</div>}
+                    {data.categorizedChanges.length > 0 ? <div className='ml-auto flex'>
+                        <button
+                            className='flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
+                            onClick={regenerateCode}>
+                            <Sparkles
+                                className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
+                                    }`}
+                            />
+                            <span>Regenerate</span>
+                        </button>
+                        <button
+                            className='flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
+                            onClick={fixCodeNotRendering}>
+                            <Hammer
+                                className={`transition-all duration-1500 ease-in-out ${isAnimatingHammer ? 'animate-complex-rotate' : ''
+                                    }`}
+                            />
+                            <span>Fix</span>
+                        </button>
+                    </div> : <div className='invisible'>btn placeholder for space</div>}
                     {/* </div> */}
                     {/* <button
                     onClick={handleToggle}

@@ -169,8 +169,8 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
     return (
         <>
-            {state.length === 0 ? <></> : <div className="ml-20 w-auto relative">
-                <div className='w-full min-w-xl flex relative items-begin mb-6'>
+            {state.length === 0 ? <></> : <div className="ml-20 w-full min-w-xl relative">
+                <div className='flex relative items-begin mb-6'>
                     <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl '>
                         Applied Changes
                     </div>

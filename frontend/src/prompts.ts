@@ -6,11 +6,12 @@ export const constructTextPrompt = (renderCode: string) => {
 
         Help me create a new component page that blends the content of the above code with the visual style, layout, and appearance of the reference image. Change only the source code corresponding to this, and no other sections.
 
-        Preserve the content in the UI of the code, fully follow the layout and visual style of the reference image, optionally add more content where the original code's content cannot fill in all fields in the reference image's layout. Do not use content from the reference image, just use its layout and visual style. 
+        Preserve the content in the UI of the code, follow the layout and visual style of the reference image, optionally add more content where the original code's content cannot fill in all fields in the reference image's layout. Do not use content from the reference image, just use its layout and visual style. 
 
         A few rules:
 
         - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Make sure all text is legible on the background.
         - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Base your later generation of categorizedChanges based on these categories.
         - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
         - when adding icons, pick from this list of lucide react icons, do not use others: LuActivity, LuAirplay, LuAlertCircle, LuAlignCenter, LuAlignJustify, LuAlignLeft, LuAlignRight, LuAnchor, LuAperture, LuArchive, LuArrowDown, LuArrowLeft, LuArrowRight, LuArrowUp, LuAtSign, LuAward, LuBarChart, LuBattery, LuBell, LuBluetooth, LuBook, LuBookmark, LuBox, LuBriefcase, LuCalendar, LuCamera, LuCheck, LuCheckCircle, LuChevronDown, LuChevronLeft, LuChevronRight, LuChevronUp, LuClipboard, LuClock, LuCloud, LuCode, LuCompass, LuCopy, LuCreditCard, LuCrop
@@ -131,6 +132,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
 
 
         - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Make sure all text is legible on the background.
         - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Pay attention to ${blendMode.join(" ")}. Base your later generation of categorizedChanges based on these categories.
         - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
         - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
@@ -213,6 +215,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
 
 
         - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Make sure all text is legible on the background.
         - Return (1) the piece(s) of the original source code you are changing (please refer to the original source code and I can simply use string.replace to find the original code section), and (2) the updated code pieces;
         - only use tailwind, react, and react icons. Do not include any import or export statements;
         - when adding icons, pick from this list of lucide react icons, do not use others: LuActivity, LuAirplay, LuAlertCircle, LuAlignCenter, LuAlignJustify, LuAlignLeft, LuAlignRight, LuAnchor, LuAperture, LuArchive, LuArrowDown, LuArrowLeft, LuArrowRight, LuArrowUp, LuAtSign, LuAward, LuBarChart, LuBattery, LuBell, LuBluetooth, LuBook, LuBookmark, LuBox, LuBriefcase, LuCalendar, LuCamera, LuCheck, LuCheckCircle, LuChevronDown, LuChevronLeft, LuChevronRight, LuChevronUp, LuClipboard, LuClock, LuCloud, LuCode, LuCompass, LuCopy, LuCreditCard, LuCrop
