@@ -156,13 +156,15 @@ export const escapeRegex = (str: string): string => {
 };
 
 export const formatCode = async (code: string): Promise<string> => {
-  const formattedCode = prettier.format(code, {
+  // Format the code using Prettier
+  const formattedCode = await prettier.format(code, {
     parser: "babel",
     tabWidth: 4,
-    plugins: [parserBabel, prettierPluginEstree]
+    plugins: [parserBabel, prettierPluginEstree],
   });
-  return formattedCode.replaceAll("{\" \"}", "");
-}
+  console.log("formattedCode: " + formattedCode);
+  return formattedCode.replace(/{" "}/g, "");;
+};
 
 /**
  * Converts a base64-encoded image into an outline image and returns the processed base64 string.

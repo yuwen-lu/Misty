@@ -262,16 +262,11 @@ const FlowComponent: React.FC = () => {
     const memoizedNodes = useMemo(() => getCodeRenderNodes(getInitialPositions()), [renderCodeContentList]);
 
     useEffect(() => {
-        console.log("useEffect called");
-
         setNodes((prevNodes) => {
             // Create a new list of nodes by either keeping the existing one or replacing it if necessary
             const updatedNodes = memoizedNodes.map((newNode) => {
                 const existingNode = prevNodes.find((n) => n.id === newNode.id);
                 if (existingNode) {
-                    console.log("existing code: " + existingNode.data.renderCode);
-                    console.log("existing node type: " + typeof(existingNode))
-                    console.log("new code: " + newNode.data.renderCode);
                     if (existingNode.data.renderCode !== newNode.data.renderCode) {
                         console.log("Updating node with id " + newNode.id + " due to code change...");
                         return newNode; // Replace with updated node
