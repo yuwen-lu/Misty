@@ -262,19 +262,37 @@ const FlowComponent: React.FC = () => {
     const memoizedNodes = useMemo(() => getCodeRenderNodes(getInitialPositions()), [renderCodeContentList]);
 
     useEffect(() => {
-    
-        // Incrementally add nodes if needed
-        memoizedNodes.forEach((node) => {
-            setNodes((prevNodes) => {
-                if (!prevNodes.find((n) => n.id === node.id)) {
-                    return [...prevNodes, node];
+        console.log("useEffect called");
+
+        setNodes((prevNodes) => {
+            // Create a new list of nodes by either keeping the existing one or replacing it if necessary
+            const updatedNodes = memoizedNodes.map((newNode) => {
+                const existingNode = prevNodes.find((n) => n.id === newNode.id);
+                if (existingNode) {
+                    console.log("existing code: " + existingNode.data.renderCode);
+                    console.log("existing node type: " + typeof(existingNode))
+                    console.log("new code: " + newNode.data.renderCode);
+                    if (existingNode.data.renderCode !== newNode.data.renderCode) {
+                        console.log("Updating node with id " + newNode.id + " due to code change...");
+                        return newNode; // Replace with updated node
+                    } else {
+                        return existingNode; // Keep the existing node
+                    }
+                } else {
+                    console.log("Adding new node with id " + newNode.id + "...");
+                    return newNode; // Add new node
                 }
-                return prevNodes;
             });
+
+            // Include any nodes from prevNodes that weren't in memoizedNodes
+            const remainingOldNodes = prevNodes.filter(
+                (oldNode) => !memoizedNodes.some((newNode) => newNode.id === oldNode.id)
+            );
+
+            return [...remainingOldNodes, ...updatedNodes];
         });
-        console.log("useeffect called");
     }, [memoizedNodes]);
-    
+
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it
