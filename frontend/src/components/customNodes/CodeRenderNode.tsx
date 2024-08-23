@@ -8,7 +8,7 @@ import "../../index.css";
 import { RotateCcw, Sparkles } from 'lucide-react';
 
 
-const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
+const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) => {
 
     const [isMobile, setIsMobile] = useState<boolean>(true);
     const [code, setCode] = useState<string>("");
@@ -217,7 +217,7 @@ const CodeRenderNode: React.FC<NodeProps> = ({ id, data, selected }) => {
                 sethoverIdxList={sethoverIdxList} />
         </div>
     );
-};
+});
 
 
 export default CodeRenderNode;

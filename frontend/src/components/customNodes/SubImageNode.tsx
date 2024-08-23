@@ -4,7 +4,7 @@ import { LuEqual } from 'react-icons/lu';
 import 'reactflow/dist/style.css';
 import '../../index.css';
 
-const SubImageNode: React.FC<NodeProps> = ({ id, data }) => {
+const SubImageNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     const [localIsDragging, setLocalIsDragging] = useState<boolean | null>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -204,6 +204,6 @@ const SubImageNode: React.FC<NodeProps> = ({ id, data }) => {
 
         </div >
     );
-};
+});
 
 export default SubImageNode;

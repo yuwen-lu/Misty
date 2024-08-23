@@ -5,7 +5,7 @@ import { BoundingBox, cropImage } from "../../util";
 import 'reactflow/dist/style.css';
 import '../../index.css';
 
-const ImageDisplayNode: React.FC<NodeProps> = ({ id, data, selected }) => {
+const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
@@ -244,6 +244,6 @@ const ImageDisplayNode: React.FC<NodeProps> = ({ id, data, selected }) => {
       />
     </div>
   );
-};
+});
 
 export default ImageDisplayNode;

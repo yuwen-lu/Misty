@@ -59,34 +59,33 @@ export const RideSearch = `() => {
             <div className="w-full max-w-sm mx-auto mt-6 p-4 bg-white text-gray-700">
                 <div className="flex flex-col space-y-2">
                     <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24}/>
-                        <div className="ml-5 flex flex-col space-y-1"> 
-                            <div className="grow">Lumen Field, Seattle → U District, University of Washington</div>
-                            <div className="text-gray-500">Sat 16 June</div>
+                        <LuClock size={24} />
+                        <div className="ml-5 flex flex-1 flex-col space-y-1">
+                            <div className="text-sm">Lumen Field, Seattle → U District, University of Washington</div>
+                            <div className="text-xs text-gray-500">Sat 16 June</div>
                         </div>
-                            <LuChevronRight size={24}/>
+                        <LuChevronRight size={24} />
                     </div>
                     <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24}/>
-                        <div className="ml-5 flex flex-col space-y-1"> 
-                            <div className="grow">Kings Station, Seattle, WA → SEA Airport, Departure</div>
-                            <div className="text-gray-500">Sun 17 June</div>
+                        <LuClock size={24} />
+                        <div className="ml-5 flex flex-1 flex-col space-y-1">
+                            <div className="text-sm">Kings Station, Seattle, WA → SEA Airport, Departure</div>
+                            <div className="text-xs text-gray-500">Sun 17 June</div>
                         </div>
-                            <LuChevronRight size={24}/>
+                        <LuChevronRight size={24} />
                     </div>
                     <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24}/>
-                        <div className="ml-5 flex flex-col space-y-1"> 
-                            <div className="grow">Kerry Park, Seattle → Space Needle, Seattle</div>
-                            <div className="text-gray-500">Mon 18 June</div>
+                        <LuClock size={24} />
+                        <div className="ml-5 flex flex-1 flex-col space-y-1">
+                            <div className="text-sm">Kerry Park, Seattle → Space Needle, Seattle</div>
+                            <div className="text-xs text-gray-500">Mon 18 June</div>
                         </div>
-                            <LuChevronRight size={24}/>
+                        <LuChevronRight size={24} />
                     </div>
-                            
-                </ul>
+                </div>
             </div>
+
         </div>
     );
 };
-
 `

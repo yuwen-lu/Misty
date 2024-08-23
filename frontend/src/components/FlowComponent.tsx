@@ -258,12 +258,23 @@ const FlowComponent: React.FC = () => {
         });
     };
 
-    // Initialize nodes with positions, and update whenever the code list gets updated
+    // Initialize nodes with positions, and update whenever the code list gets updated. usememo can avoid performance issues
+    const memoizedNodes = useMemo(() => getCodeRenderNodes(getInitialPositions()), [renderCodeContentList]);
+
     useEffect(() => {
-        setNodes((nodes) => [...nodes, ...getCodeRenderNodes(getInitialPositions())]);
-        // console.log("renderCodeContentList updated, current length " + renderCodeContentList.length);
-        // renderCodeContentList.forEach(renderCodeContent => console.log("id: " + renderCodeContent.nodeId + ", blendedCode: " + renderCodeContent.blendedCode));
-    }, [renderCodeContentList]);
+    
+        // Incrementally add nodes if needed
+        memoizedNodes.forEach((node) => {
+            setNodes((prevNodes) => {
+                if (!prevNodes.find((n) => n.id === node.id)) {
+                    return [...prevNodes, node];
+                }
+                return prevNodes;
+            });
+        });
+        console.log("useeffect called");
+    }, [memoizedNodes]);
+    
 
     const processReplacementPromptResponse = async (finishedResponse: string, renderCodeBoundingBox: BoundingBox, renderCode: string) => {
         // when reposne is updated from the api call, we post process it

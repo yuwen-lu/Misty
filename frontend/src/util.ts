@@ -161,7 +161,7 @@ export const formatCode = async (code: string): Promise<string> => {
     tabWidth: 4,
     plugins: [parserBabel, prettierPluginEstree]
   });
-  return formattedCode;
+  return formattedCode.replaceAll("{\" \"}", "");
 }
 
 /**
