@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Brackets, Type, MoonStar, RotateCcw } from 'lucide-react';
+import { Eye, Brackets, Type, MoonStar, RotateCcw, ChevronRight } from 'lucide-react';
 import { formatCode, getIndexesToChange, splitChanges } from '../../util';
 import { colorList } from "../../utilColors";
 import "../../index.css";
@@ -18,6 +18,7 @@ interface DynamicUIProps {
 const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, sethoverIdxList }) => {
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -88,7 +89,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     const getDropdownOptions = (currentValue: string) => {
         const [prefix, variant] = currentValue.split('-');
         let options = [];
-    
+
         switch (prefix) {
             case 'bg':
                 options = Object.keys(colorList).flatMap(color =>
@@ -148,13 +149,13 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                 options = [currentValue];
                 break;
         }
-    
+
         if (!options.includes(currentValue)) {
             options.unshift(currentValue);
         }
-    
+
         return options;
-    };    
+    };
 
 
     const resetCode = () => {
@@ -169,93 +170,102 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
     return (
         <>
-            {state.length === 0 ? <></> : <div className="ml-20 w-full min-w-xl relative">
-                <div className='flex relative items-begin mb-6'>
-                    <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl '>
-                        Applied Changes
+            {state.length === 0 ? <></> :
+                <div className={`relative ${isExpanded ? 'flex w-full min-w-xl' : ''}`}>
+                    <div className={`h-full flex items-center ${isExpanded ? 'ml-7 mr-5' : 'absolute left-7'}`} >
+                        <button
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className="text-purple-900">
+                            <ChevronRight className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} size={32} />
+                        </button>
                     </div>
-                    <button
-                        className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
-                        onClick={resetCode}>
-                        <RotateCcw
-                            className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
-                                }`}
-                        />
-                        <span>Reset All</span>
-                    </button>
-                </div>
-
-                {state.map((category, categoryIndex) => {
-                    const shouldShowCategory = category.changes.some(change => {
-                        const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
-                        return shouldShowAfter || change.before;
-                    });
-
-                    if (!shouldShowCategory) {
-                        return null; // Hide the entire category if no changes should be shown
-                    }
-
-                    return (
-                        <div key={category.category} className="mb-6 w-full flex flex-col items-start">
-
-                            <div className="font-semibold text-sm text-gray-500 mb-2 flex items-center">
-                                {category.category.split(": ")[0].toUpperCase()}
+                    {isExpanded && <div className='flex flex-col'>
+                        <div className='relative items-begin mb-6'>
+                            <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl '>
+                                Applied Changes
                             </div>
-                            <div className="font-semibold text-purple-900 mb-2 flex items-center">
-                                {category.category.split(": ")[1]}
-                            </div>
+                            <button
+                                className='ml-auto flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
+                                onClick={resetCode}>
+                                <RotateCcw
+                                    className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
+                                        }`}
+                                />
+                                <span>Reset All</span>
+                            </button>
+                        </div>
 
-                            {category.changes.map((change, changeIndex) => {
+                        {state.map((category, categoryIndex) => {
+                            const shouldShowCategory = category.changes.some(change => {
                                 const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
+                                return shouldShowAfter || change.before;
+                            });
 
-                                if (!change.before && !shouldShowAfter) {
-                                    return null; // Hide the entire block if there's nothing to show
-                                }
+                            if (!shouldShowCategory) {
+                                return null; // Hide the entire category if no changes should be shown
+                            }
 
-                                return (
-                                    <div
-                                        key={changeIndex}
-                                        className="flex items-center ml-4 mb-4"
-                                        onMouseEnter={() => sethoverIdxList(getIndexesToChange(prevCode, newCode, change.before, change.after))}
-                                        onMouseLeave={() => sethoverIdxList([])}
-                                        onClick={() => sethoverIdxList([])}
-                                    >
-                                        {change.before && shouldShowAfter && (
-                                            <div className="mr-4 text-black">
-                                                Before: <span className="font-mono">{change.before}</span>
-                                            </div>
-                                        )}
-                                        {shouldShowAfter && (
-                                            <div className="mr-4 text-black flex items-center flex-wrap">
-                                                <span>{change.before ? "After: " : "Added: "}</span>
-                                                {splitChanges(change.after).map((changeItem, changeItemIndex) =>
-                                                    getDropdownOptions(changeItem).length > 1 && (
-                                                        <select
-                                                            key={changeItemIndex}
-                                                            className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
-                                                            value={changeItem}
-                                                            onChange={(event) =>
-                                                                handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex, change.before === undefined || change.before === "")
-                                                            }
-                                                        >
-                                                            {getDropdownOptions(changeItem).map(option => (
-                                                                <option key={option} value={option}>
-                                                                    {option}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                    )
+                            return (
+                                <div key={category.category} className="mb-6 w-full flex flex-col items-start">
+
+                                    <div className="font-semibold text-sm text-gray-500 mb-2 flex items-center">
+                                        {category.category.split(": ")[0].toUpperCase()}
+                                    </div>
+                                    <div className="font-semibold text-purple-900 mb-2 flex items-center">
+                                        {category.category.split(": ")[1]}
+                                    </div>
+
+                                    {category.changes.map((change, changeIndex) => {
+                                        const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
+
+                                        if (!change.before && !shouldShowAfter) {
+                                            return null; // Hide the entire block if there's nothing to show
+                                        }
+
+                                        return (
+                                            <div
+                                                key={changeIndex}
+                                                className="flex items-center ml-4 mb-4"
+                                                onMouseEnter={() => sethoverIdxList(getIndexesToChange(prevCode, newCode, change.before, change.after))}
+                                                onMouseLeave={() => sethoverIdxList([])}
+                                                onClick={() => sethoverIdxList([])}
+                                            >
+                                                {change.before && shouldShowAfter && (
+                                                    <div className="mr-4 text-black">
+                                                        Before: <span className="font-mono">{change.before}</span>
+                                                    </div>
+                                                )}
+                                                {shouldShowAfter && (
+                                                    <div className="mr-4 text-black flex items-center flex-wrap">
+                                                        <span>{change.before ? "After: " : "Added: "}</span>
+                                                        {splitChanges(change.after).map((changeItem, changeItemIndex) =>
+                                                            getDropdownOptions(changeItem).length > 1 && (
+                                                                <select
+                                                                    key={changeItemIndex}
+                                                                    className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
+                                                                    value={changeItem}
+                                                                    onChange={(event) =>
+                                                                        handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex, change.before === undefined || change.before === "")
+                                                                    }
+                                                                >
+                                                                    {getDropdownOptions(changeItem).map(option => (
+                                                                        <option key={option} value={option}>
+                                                                            {option}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                            )
+                                                        )}
+                                                    </div>
                                                 )}
                                             </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    );
-                })}
-
-            </div>}
+                                        );
+                                    })}
+                                </div>
+                            );
+                        })}
+                    </div>}
+                </div>}
         </>
     );
 };

@@ -135,7 +135,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
             w-full h-full 
             transition-all duration-300 ease-in-out ${selected ? 'shadow-2xl transform scale-105' : ''}`}>
             <div
-                className={"render-view-container flex flex-col items-center"}
+                className="render-view-container flex flex-col items-center"
                 ref={nodeRef}
             >
                 <div className='w-full flex relative items-begin mb-6'>
@@ -161,7 +161,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
                                 className={`transition-all duration-1500 ease-in-out ${isAnimatingHammer ? 'animate-complex-rotate' : ''
                                     }`}
                             />
-                            <span>Fix</span>
+                            <span>Fix Render</span>
                         </button>
                     </div> : <div className='invisible'>btn placeholder for space</div>}
                     {/* </div> */}

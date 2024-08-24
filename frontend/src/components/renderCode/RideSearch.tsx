@@ -1,12 +1,14 @@
 export const RideSearch = `() => {
     return (
         <div className="bg-white flex flex-col items-center">
-            <img
-                src="/stock/portrait2.jpg"
-                alt="Rides"
-                className="w-full h-1/2 z-0 absolute"
-            />
-            <div className="w-5/6 max-w-sm mx-auto p-6 bg-white/95 rounded-lg shadow-lg z-10 mt-40">
+            {/*
+                <img
+                    src="/stock/portrait2.jpg"
+                    alt="Rides"
+                    className="w-full h-1/2 z-0 absolute"
+                />
+            */}
+            <div className="w-full p-6 bg-white/95 rounded-lg shadow-lg z-10 mt-10">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
                     Pick your next ride
                 </h2>
@@ -82,9 +84,32 @@ export const RideSearch = `() => {
                         </div>
                         <LuChevronRight size={24} />
                     </div>
+                    <div className="mx-2 flex justify-between items-center">
+                        <LuClock size={24} />
+                        <div className="ml-5 flex flex-1 flex-col space-y-1">
+                            <div className="text-sm">Pike Place Market, Seattle → Chihuly Garden and Glass</div>
+                            <div className="text-xs text-gray-500">Tue 19 June</div>
+                        </div>
+                        <LuChevronRight size={24} />
+                    </div>
+                    <div className="mx-2 flex justify-between items-center">
+                        <LuClock size={24} />
+                        <div className="ml-5 flex flex-1 flex-col space-y-1">
+                            <div className="text-sm">Gas Works Park, Seattle → Fremont Troll, Seattle</div>
+                            <div className="text-xs text-gray-500">Wed 20 June</div>
+                        </div>
+                        <LuChevronRight size={24} />
+                    </div>
+                    <div className="mx-2 flex justify-between items-center">
+                        <LuClock size={24} />
+                        <div className="ml-5 flex flex-1 flex-col space-y-1">
+                            <div className="text-sm">Washington Park Arboretum → Capitol Hill, Seattle</div>
+                            <div className="text-xs text-gray-500">Thu 21 June</div>
+                        </div>
+                        <LuChevronRight size={24} />
+                    </div>
                 </div>
             </div>
-
         </div>
     );
 };

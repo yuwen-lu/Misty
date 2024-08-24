@@ -214,11 +214,23 @@ const FlowComponent: React.FC = () => {
 
     // Function to get initial positions for nodes
     const getInitialPositions = () => {
-        return renderCodeContentList.map((_, idx) => ({
-            x: 3200 + 1000 * idx,
-            y: 300
-        }));
+        const nodesPerRow = 3; // Number of nodes per row
+        const horizontalSpacing = 800; // Spacing between nodes horizontally
+        const verticalSpacing = 1200; // Spacing between nodes vertically
+        const startX = 3200; // Initial x position
+        const startY = 300;  // Initial y position
+
+        return renderCodeContentList.map((_, idx) => {
+            const row = Math.floor(idx / nodesPerRow); // Determine the current row
+            const col = idx % nodesPerRow; // Determine the current column
+
+            return {
+                x: startX + col * horizontalSpacing, // Calculate x based on column
+                y: startY + row * verticalSpacing,    // Calculate y based on row
+            };
+        });
     };
+
 
     const getCodeRenderNodes = (initialPositions: coordinatePositionType[]) => {
         return renderCodeContentList.map((renderContent, idx) => {
@@ -366,6 +378,7 @@ const FlowComponent: React.FC = () => {
         let updatedCode = code.trim();
 
         updatedCode.replaceAll('```', "");
+        updatedCode.replaceAll('``', "");
 
         // Check if updatedCode is wrapped in backticks
         if (updatedCode.startsWith('`') && updatedCode.endsWith('`')) {

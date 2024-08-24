@@ -277,7 +277,7 @@ code {
 
 .render-view-container {
   min-width: 360px;
-  max-width: 480px;
+  max-width: 540px;
   min-height: 960px;
   max-height: 1440px;
 }
@@ -291,4 +291,9 @@ code {
 
 .animate-complex-rotate {
   animation: complexRotate 0.5s cubic-bezier(.3, .4, .7, 1.3) forwards;
+}
+
+.code-render-container {
+  width: 540px;
+  height: 960px;
 }
