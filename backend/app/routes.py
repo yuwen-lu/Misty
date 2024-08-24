@@ -18,8 +18,8 @@ def chat():
     load_dotenv()  # Load environment variables from .env file
     ORGANIZATION_ID = os.getenv('ORGANIZATION_ID')
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-    MODEL = "gpt-4o"
-    
+    MODEL = "gpt-4o-mini"
+
     # Strip the prefix of the base64 image
     if image:
         image = image.split("base64,")[-1]
@@ -28,7 +28,7 @@ def chat():
     def generate():
         # construct the message body based on whether there are images sent
         # start with the system prompt
-        user_message_body = [{"role": "system", "content": "You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them understand design decisions and design options better, and create web UI development code that matches their requirements. Use React and TailwindCSS in your implementation. Be helpful in answer other design-related questions too. Be concise in your response. Be specific and avoid generic terms such as usability or user friendly. Do not provide information you are not asked about."}, ]
+        user_message_body = [{"role": "system", "content": "You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about."}, ]
         
         # then append the text prompt
         if image:
@@ -55,7 +55,7 @@ def chat():
             model=MODEL,
             messages=user_message_body,
             stream=True,
-            response_format= {"type": "json_object"} if json_mode else {},
+            response_format= {"type": "json_object"} if json_mode else {"type": "text"},
         )
 
         for chunk in stream:
