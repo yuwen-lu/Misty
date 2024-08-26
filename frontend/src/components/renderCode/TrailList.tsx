@@ -1,6 +1,16 @@
 export const TrailList: string = `() => {
+    const [isModalOpen, setIsModalOpen] = useState(true);
+
+    const handleDelete = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     return (
-        <div className="bg-white p-4">
+        <div className="bg-white p-4 relative">
             <div className="flex justify-between items-center mb-4">
                 <input
                     type="text"
@@ -36,14 +46,18 @@ export const TrailList: string = `() => {
                         <h3 className="font-semibold text-md">
                             Steep Ravine, Dipsea and Matt Davis
                         </h3>
-                        <p>
-                            Stinson Beach, California
-                        </p>
+                        <p>Stinson Beach, California</p>
                         <div className="flex items-center mt-1">
                             <span className="mr-2">⭐ 4.8</span>
                             <span className="mr-2">• Moderate</span>
                             <span>• 6.60 mi • Est. 3h 41m</span>
                         </div>
+                        <button
+                            onClick={handleDelete}
+                            className="mt-2 text-red-500"
+                        >
+                            Delete
+                        </button>
                     </div>
                 </div>
 
@@ -54,7 +68,7 @@ export const TrailList: string = `() => {
                         alt="Hiking Trail"
                         className="w-full h-40 object-cover"
                     />
-                    <div className="p-4  text-gray-500">
+                    <div className="p-4 text-gray-500">
                         <h3 className="font-semibold text-md">
                             Bear Mountain, Appalachian Trail
                         </h3>
@@ -64,6 +78,12 @@ export const TrailList: string = `() => {
                             <span className="mr-2">• Hard</span>
                             <span>• 4.00 mi • Est. 2h 20m</span>
                         </div>
+                        <button
+                            onClick={handleDelete}
+                            className="mt-2 text-red-500"
+                        >
+                            Delete
+                        </button>
                     </div>
                 </div>
 
@@ -84,9 +104,40 @@ export const TrailList: string = `() => {
                             <span className="mr-2">• Easy</span>
                             <span>• 3.20 mi • Est. 1h 30m</span>
                         </div>
+                        <button
+                            onClick={handleDelete}
+                            className="mt-2 text-red-500"
+                        >
+                            Delete
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white text-black p-6 rounded-lg shadow-lg">
+                        <h3 className="text-lg font-medium mb-4">
+                            Are you sure you want to delete?
+                        </h3>
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={closeModal}
+                                className="px-4 py-2 bg-gray-200 rounded-lg"
+                            >
+                                No
+                            </button>
+                            <button
+                                onClick={closeModal}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                            >
+                                Yes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

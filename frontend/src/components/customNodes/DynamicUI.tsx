@@ -175,11 +175,11 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                     <div className={`h-full flex items-center ${isExpanded ? 'ml-7 mr-5' : 'absolute left-7'}`} >
                         <button
                             onClick={() => setIsExpanded(!isExpanded)}
-                            className="text-purple-900">
+                            className="text-purple-900 h-full">
                             <ChevronRight className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} size={32} />
                         </button>
                     </div>
-                    {isExpanded && <div className='flex flex-col'>
+                    {isExpanded && <div className='flex flex-col  grow'>
                         <div className='relative items-begin mb-6'>
                             <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl '>
                                 Applied Changes

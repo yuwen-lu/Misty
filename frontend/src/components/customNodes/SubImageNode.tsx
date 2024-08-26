@@ -157,11 +157,10 @@ const SubImageNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         <div ref={nodeRef} className="relative max-w-md mx-auto my-8">
             <Handle type="target" position={Position.Left} />
             <Handle type="source" position={Position.Right} />
-            <div className="absolute inset-0 bg-blue-900/70 transform rotate-1 rounded-sm"></div>
-            <div className="relative bg-blue-900/70 p-5 text-white font-handwriting transform -rotate-1 rounded-sm shadow-lg">
-                <div className="absolute top-0 left-0 right-0 h-2 bg-white/20 rounded-t-sm"></div>
-                <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/20 rounded-b-sm"></div>
-                <div className='flex flex-col items-center text-white bg-blue-900/70'>
+
+            <div
+                className='flex flex-col items-center bg-blue-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
+                      border-t-8 border-t-blue-900 text-blue-900 text-xl mb-5'>
                     <div className="w-full h-1 p-4 border-transparent border-4 react-flow-drag-handle cursor-move flex items-center justify-center">
                         <LuEqual className="react-flow-drag-handle" size={24} />
                     </div>
@@ -175,7 +174,15 @@ const SubImageNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
                             alt="cropped_image"
                         />
                     </div>
-                </div>
+
+
+                {/* <div className="absolute inset-0 bg-blue-900/70 transform rotate-1 rounded-sm"></div>
+                <div className="relative bg-blue-900/70 p-5 text-white font-handwriting transform -rotate-1 rounded-sm shadow-lg">
+                    <div className="absolute top-0 left-0 right-0 h-2 bg-white/20 rounded-t-sm"></div>
+                    <div className="absolute bottom-0 left-0 right-0 h-2 bg-white/20 rounded-b-sm"></div>
+
+
+                </div> */}
             </div>
             {localIsDragging && (
                 <div
@@ -191,7 +198,7 @@ const SubImageNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
                         // transform: 'translate(-50%, -50%)',
                         opacity: 0.8,
                     }}>
-                    <div className="bg-blue-900/70 p-2 rounded-sm shadow-lg">
+                    <div className="bg-blue-700/10 p-2 rounded-sm shadow-lg">
                         <img
                             className='rounded-md w-full h-32'
                             src={data.image}

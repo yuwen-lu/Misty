@@ -73,6 +73,10 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
         if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
     }, []);
 
+    useEffect(() => {
+        if (isDragging) console.log("updated code: " + addEventHandlersToCode(renderCode));
+    }, [isDragging])
+
     const cancelBlending = () => {
         updateLoadingState(nodeId, false);
         abortController && abortController.abort();

@@ -18,7 +18,7 @@ def chat():
     load_dotenv()  # Load environment variables from .env file
     ORGANIZATION_ID = os.getenv('ORGANIZATION_ID')
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-    MODEL = "gpt-4o-mini"
+    MODEL = "gpt-4o"
 
     # Strip the prefix of the base64 image
     if image:

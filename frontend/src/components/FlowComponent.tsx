@@ -947,6 +947,9 @@ const FlowComponent: React.FC = () => {
                 defaultEdgeOptions={defaultEdgeOptions}>
                 <Background />
                 <Controls />
+                <div className='fixed p-5 top-0 rounded-b-md w-full bg-zinc-900 flex items-center z-50 font-semibold text-white'>
+                    Misty
+                </div>
                 {showCodePanel(displayCode)}
                 <div>
                     {showError && (

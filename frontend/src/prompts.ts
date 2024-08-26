@@ -22,7 +22,7 @@ export const constructTextPrompt = (renderCode: string) => {
 
         {
             "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
-            "differences": // briefly summarize the differences between the reference image and the code 
+            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, font, etc.
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
             categorizedChanges: [
@@ -147,7 +147,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
         
         {
             "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
-            "differences": // briefly summarize the differences between the reference image and the code 
+            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, font, etc.
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
             categorizedChanges: [

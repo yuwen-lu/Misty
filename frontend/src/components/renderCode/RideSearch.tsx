@@ -51,7 +51,7 @@ export const RideSearch = `() => {
                         />
                     </div> */}
                     <button
-                        type="submit"
+                        disabled={true}
                         className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
                     >
                         Search
@@ -63,48 +63,76 @@ export const RideSearch = `() => {
                     <div className="mx-2 flex justify-between items-center">
                         <LuClock size={24} />
                         <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">Lumen Field, Seattle → U District, University of Washington</div>
-                            <div className="text-xs text-gray-500">Sat 16 June</div>
+                            <div className="text-sm">
+                                Lumen Field, Seattle → U District, University of
+                                Washington
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Sat 16 June
+                            </div>
                         </div>
                         <LuChevronRight size={24} />
                     </div>
                     <div className="mx-2 flex justify-between items-center">
                         <LuClock size={24} />
                         <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">Kings Station, Seattle, WA → SEA Airport, Departure</div>
-                            <div className="text-xs text-gray-500">Sun 17 June</div>
+                            <div className="text-sm">
+                                Kings Station, Seattle, WA → SEA Airport,
+                                Departure
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Sun 17 June
+                            </div>
                         </div>
                         <LuChevronRight size={24} />
                     </div>
                     <div className="mx-2 flex justify-between items-center">
                         <LuClock size={24} />
                         <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">Kerry Park, Seattle → Space Needle, Seattle</div>
-                            <div className="text-xs text-gray-500">Mon 18 June</div>
+                            <div className="text-sm">
+                                Kerry Park, Seattle → Space Needle, Seattle
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Mon 18 June
+                            </div>
                         </div>
                         <LuChevronRight size={24} />
                     </div>
                     <div className="mx-2 flex justify-between items-center">
                         <LuClock size={24} />
                         <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">Pike Place Market, Seattle → Chihuly Garden and Glass</div>
-                            <div className="text-xs text-gray-500">Tue 19 June</div>
+                            <div className="text-sm">
+                                Pike Place Market, Seattle → Chihuly Garden and
+                                Glass
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Tue 19 June
+                            </div>
                         </div>
                         <LuChevronRight size={24} />
                     </div>
                     <div className="mx-2 flex justify-between items-center">
                         <LuClock size={24} />
                         <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">Gas Works Park, Seattle → Fremont Troll, Seattle</div>
-                            <div className="text-xs text-gray-500">Wed 20 June</div>
+                            <div className="text-sm">
+                                Gas Works Park, Seattle → Fremont Troll, Seattle
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Wed 20 June
+                            </div>
                         </div>
                         <LuChevronRight size={24} />
                     </div>
                     <div className="mx-2 flex justify-between items-center">
                         <LuClock size={24} />
                         <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">Washington Park Arboretum → Capitol Hill, Seattle</div>
-                            <div className="text-xs text-gray-500">Thu 21 June</div>
+                            <div className="text-sm">
+                                Washington Park Arboretum → Capitol Hill,
+                                Seattle
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Thu 21 June
+                            </div>
                         </div>
                         <LuChevronRight size={24} />
                     </div>
@@ -113,4 +141,5 @@ export const RideSearch = `() => {
         </div>
     );
 };
+
 `

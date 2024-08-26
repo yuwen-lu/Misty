@@ -147,21 +147,21 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
                     {data.categorizedChanges.length > 0 ? <div className='ml-auto flex'>
                         <button
                             className='flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
-                            onClick={regenerateCode}>
-                            <Sparkles
-                                className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
-                                    }`}
-                            />
-                            <span>Regenerate</span>
-                        </button>
-                        <button
-                            className='flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
                             onClick={fixCodeNotRendering}>
                             <Hammer
                                 className={`transition-all duration-1500 ease-in-out ${isAnimatingHammer ? 'animate-complex-rotate' : ''
                                     }`}
                             />
                             <span>Fix Render</span>
+                        </button>
+                        <button
+                            className='flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
+                            onClick={regenerateCode}>
+                            <Sparkles
+                                className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''
+                                    }`}
+                            />
+                            <span>Regenerate</span>
                         </button>
                     </div> : <div className='invisible'>btn placeholder for space</div>}
                     {/* </div> */}

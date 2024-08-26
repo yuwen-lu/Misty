@@ -185,7 +185,7 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
                       transition-all duration-300 ease-in-out ${selected ? 'shadow-2xl transform scale-105 ' : ''}`}>
 
       <div className='font-semibold text-blue-900 text-xl mb-5'>
-        Drag To Select
+        Reference Example
       </div>
 
       <div className='image-display-section relative cursor-crosshair'>
