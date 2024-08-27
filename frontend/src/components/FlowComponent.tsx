@@ -619,7 +619,7 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            const response = await fetch('http://127.0.0.1:5000/api/chat', {
+            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
