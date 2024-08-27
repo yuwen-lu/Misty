@@ -527,7 +527,7 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            const response = await fetch('http://127.0.0.1:5000/api/chat', {
+            const response = await fetch('https://yuwen-misty-backend.us-west-2d.app.apple.com/api/chat', {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
