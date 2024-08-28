@@ -1,14 +1,12 @@
 export const RideSearch = `() => {
     return (
         <div className="bg-white flex flex-col items-center">
-            {/*
-                <img
-                    src="/stock/portrait2.jpg"
-                    alt="Rides"
-                    className="w-full h-1/2 z-0 absolute"
-                />
-            */}
-            <div className="w-full p-6 bg-white/95 rounded-lg shadow-lg z-10 mt-10">
+            <img
+                src="/stock/nature_portrait7.jpg"
+                alt="Rides"
+                className="w-full h-full z-0 object-cover absolute"
+            />
+            <div className="w-full p-6 bg-white/95 rounded-lg shadow-lg z-10 mt-40">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
                     Pick your next ride
                 </h2>
@@ -57,86 +55,6 @@ export const RideSearch = `() => {
                         Search
                     </button>
                 </form>
-            </div>
-            <div className="w-full max-w-sm mx-auto mt-6 p-4 bg-white text-gray-700">
-                <div className="flex flex-col space-y-2">
-                    <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24} />
-                        <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">
-                                Lumen Field, Seattle → U District, University of
-                                Washington
-                            </div>
-                            <div className="text-xs text-gray-500">
-                                Sat 16 June
-                            </div>
-                        </div>
-                        <LuChevronRight size={24} />
-                    </div>
-                    <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24} />
-                        <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">
-                                Kings Station, Seattle, WA → SEA Airport,
-                                Departure
-                            </div>
-                            <div className="text-xs text-gray-500">
-                                Sun 17 June
-                            </div>
-                        </div>
-                        <LuChevronRight size={24} />
-                    </div>
-                    <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24} />
-                        <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">
-                                Kerry Park, Seattle → Space Needle, Seattle
-                            </div>
-                            <div className="text-xs text-gray-500">
-                                Mon 18 June
-                            </div>
-                        </div>
-                        <LuChevronRight size={24} />
-                    </div>
-                    <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24} />
-                        <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">
-                                Pike Place Market, Seattle → Chihuly Garden and
-                                Glass
-                            </div>
-                            <div className="text-xs text-gray-500">
-                                Tue 19 June
-                            </div>
-                        </div>
-                        <LuChevronRight size={24} />
-                    </div>
-                    <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24} />
-                        <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">
-                                Gas Works Park, Seattle → Fremont Troll, Seattle
-                            </div>
-                            <div className="text-xs text-gray-500">
-                                Wed 20 June
-                            </div>
-                        </div>
-                        <LuChevronRight size={24} />
-                    </div>
-                    <div className="mx-2 flex justify-between items-center">
-                        <LuClock size={24} />
-                        <div className="ml-5 flex flex-1 flex-col space-y-1">
-                            <div className="text-sm">
-                                Washington Park Arboretum → Capitol Hill,
-                                Seattle
-                            </div>
-                            <div className="text-xs text-gray-500">
-                                Thu 21 June
-                            </div>
-                        </div>
-                        <LuChevronRight size={24} />
-                    </div>
-                </div>
             </div>
         </div>
     );

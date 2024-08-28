@@ -49,6 +49,21 @@ export const TrailList: string = `
                         difficulty: "Easy",
                         distance: "3.20 mi",
                         time: "Est. 1h 30m",
+                    },{
+                        name: "Yosemite Falls Trail",
+                        location: "Yosemite National Park, California",
+                        rating: 4.8,
+                        difficulty: "Hard",
+                        distance: "7.20 mi",
+                        time: "Est. 6h 00m",
+                    },
+                    {
+                        name: "Angel's Landing",
+                        location: "Zion National Park, Utah",
+                        rating: 4.9,
+                        difficulty: "Hard",
+                        distance: "5.40 mi",
+                        time: "Est. 4h 00m",
                     },
                 ].map((trail, index) => (
                     <div
