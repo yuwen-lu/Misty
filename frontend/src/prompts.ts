@@ -10,7 +10,7 @@ export const constructTextPrompt = (renderCode: string) => {
 
         A few rules:
 
-        - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - First, explain in concise language the design of the reference screenshot. Use it as a basis of your generation.
         - Make sure all text is legible on the background.
         - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Base your later generation of categorizedChanges based on these categories.
         - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
@@ -21,7 +21,7 @@ export const constructTextPrompt = (renderCode: string) => {
         Return result in the below format, make sure you use json:
 
         {
-            "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
+            "designExplanation": // explain the design of the screenshot image, focus on layout and color, be really concise, less than 30 words
             "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, font, etc.
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
@@ -146,7 +146,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
         Return result as a JSON in the following format:
         
         {
-            "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
+            "designExplanation": // explain the design of the screenshot image, focus on layout and color, be really concise, less than 30 words
             "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, font, etc.
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
@@ -226,7 +226,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
         Return result as a JSON in the following format:
 
         {
-            "layoutExplanation": // explain the layout of the screenshot image, be really concise, less than 30 words
+            "designExplanation": // explain the design of the screenshot image, focus on layout and color, be really concise, less than 30 words
             "codeChanges": [{
                 "originalCode": // original code piece
                 "replacementCode": // replacement code

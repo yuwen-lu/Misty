@@ -33,6 +33,7 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
   };
 
   useEffect(() => {
+    console.log("useeffect, imageDisplayNode, 3");
     const handleLoad = () => {
       if (imgRef.current && canvasRef.current) {
         const img = imgRef.current;
@@ -58,6 +59,9 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
   }, []);
 
   useEffect(() => {
+
+    console.log("useeffect, imageDisplayNode, 1");
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
@@ -66,6 +70,7 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
   }, [boundingBox, startPoint, endPoint, isDrawing]);
 
   useEffect(() => {
+    console.log("useeffect, imageDisplayNode, 2");
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -130,6 +135,7 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
 
 
   useEffect(() => {
+    console.log("useeffect, imageDisplayNode, [subimagelist]");
     if (subImageList.length > 0) {
       data.onSubImageConfirmed(id, subImageList);
       clearCanvas();

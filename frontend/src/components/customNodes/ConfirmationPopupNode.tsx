@@ -94,6 +94,7 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     };
 
     useEffect(() => {
+        console.log("useeffect, confirmationpopupnode, 1");
         const handleClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             const optionTitle = target.getAttribute('data-title');

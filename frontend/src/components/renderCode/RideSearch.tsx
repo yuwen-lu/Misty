@@ -2,7 +2,7 @@ export const RideSearch = `() => {
     return (
         <div className="bg-white flex flex-col items-center">
             <img
-                src="/stock/nature_portrait7.jpg"
+                src="/stock/portrait7.jpg"
                 alt="Rides"
                 className="w-full h-full z-0 object-cover absolute"
             />

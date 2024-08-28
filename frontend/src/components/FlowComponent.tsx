@@ -176,6 +176,7 @@ const FlowComponent: React.FC = () => {
     const [abortController, setAbortController] = useState<AbortController | null>(null);
 
     useEffect(() => {
+        console.log("useeffect, flowcomponent, 3");
         // Cleanup on unmount
         return () => {
             if (abortController) {
@@ -274,6 +275,7 @@ const FlowComponent: React.FC = () => {
     const memoizedNodes = useMemo(() => getCodeRenderNodes(getInitialPositions()), [renderCodeContentList]);
 
     useEffect(() => {
+        console.log("useeffect, flowcomponent, 2");
         setNodes((prevNodes) => {
             // Create a new list of nodes by either keeping the existing one or replacing it if necessary
             const updatedNodes = memoizedNodes.map((newNode) => {
@@ -619,7 +621,8 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
+            // const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
+            const response = await fetch('http://localhost:5000/api/chat', {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
@@ -866,6 +869,7 @@ const FlowComponent: React.FC = () => {
 
     // when the blendingOptionPosition changes, that means we can show the popup
     useEffect(() => {
+        console.log("useeffect, flowcomponent, 1");
         showBlendingConfirmationPopup(newConfirmationPopupNodeDataPackage.mousePosition, x, y, zoom, newConfirmationPopupNodeDataPackage.subImageScreenshot, newConfirmationPopupNodeDataPackage.sourceNodeId);
 
     }, [newConfirmationPopupNodeDataPackage]);
