@@ -123,8 +123,6 @@ const SubImageNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
     useEffect(() => {
 
-        console.log("useeffect, subimagenode, [localIsDragging, data]");
-
         // initialize local isDragging
         if (!localIsDragging) setLocalIsDragging(data.isDragging);
 

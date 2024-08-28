@@ -70,12 +70,10 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
     const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
     useEffect(() => {
-        console.log("useeffect, coderenderframe, 1");
         if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
     }, []);
 
     useEffect(() => {
-        console.log("useeffect, coderenderframe, 2");
         if (isDragging) console.log("updated code: " + addEventHandlersToCode(renderCode));
     }, [isDragging])
 

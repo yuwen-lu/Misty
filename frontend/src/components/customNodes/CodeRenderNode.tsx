@@ -22,7 +22,6 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
     const [replacementClassNames, setReplacementClassNames] = useState<string[]>([]);
 
     useEffect(() => {
-        console.log("useeffect, coderendernode, 3");
         let timer: NodeJS.Timeout;
         if (isAnimating) {
             timer = setTimeout(() => setIsAnimating(false), 500); // Total animation duration
@@ -35,7 +34,6 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
 
     const classNameStartString = "className=";
     useEffect(() => {
-        console.log("useeffect, coderendernode, 2");
         let resultCode = code;
         let newOriginalClassNames = [...originalClassNames];
         let newReplacementClassNames = [...replacementClassNames];
@@ -85,7 +83,6 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
     }, [hoverIdxList]);
 
     useEffect(() => {
-        console.log("useeffect, coderendernode, 1");
         setCode(data.renderCode);
 
         const sourceNodeId = data.sourceNodeId;

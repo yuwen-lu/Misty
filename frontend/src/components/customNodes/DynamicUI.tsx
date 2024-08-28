@@ -21,7 +21,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     const [isExpanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
-        console.log("useeffect, dynamicui, 1");
         let timer: NodeJS.Timeout;
         if (isAnimating) {
             timer = setTimeout(() => setIsAnimating(false), 500); // Total animation duration
@@ -30,7 +29,6 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     }, [isAnimating]);
 
     useEffect(() => {
-        console.log("useeffect, dynamicui, 2");
         if (categorizedChanges) setState(JSON.parse(JSON.stringify(categorizedChanges)));
     }, [categorizedChanges]);
 

@@ -1,11 +1,11 @@
 export const RideSearch = `() => {
     return (
-        <div className="bg-white flex flex-col items-center">
-            <img
+        <div className="bg-white h-full flex flex-col items-center">
+            {/*<img
                 src="/stock/portrait7.jpg"
                 alt="Rides"
                 className="w-full h-full z-0 object-cover absolute"
-            />
+            />*/}
             <div className="w-full p-6 bg-white/95 rounded-lg shadow-lg z-10 mt-40">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
                     Pick your next ride

@@ -57,76 +57,76 @@ const initialNodes: Node[] = [
         position: { x: 150, y: 100 },
         data: { onUpload: () => { } },
     },
+    // {
+    //     id: "2",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 800, y: 100 },
+    //     data: { image: appleTvHeroFull },
+    // },
+    // {
+    //     id: "3",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 1300, y: 100 },
+    //     data: { image: appleTvHero },
+    // },
     {
         id: "2",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 800, y: 100 },
-        data: { image: appleTvHeroFull },
-    },
-    {
-        id: "3",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 1300, y: 100 },
-        data: { image: appleTvHero },
-    },
-    {
-        id: "4",
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 1800, y: 100 },
         data: { image: appleTvCard },
     },
+    // {
+    //     id: "5",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 800, y: 1000 },
+    //     data: { image: appleNewsMySportsBase64 },
+    // },
+    // {
+    //     id: "6",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 1300, y: 1000 },
+    //     data: { image: appleMusicPlayNextBase64 },
+    // },
     {
-        id: "5",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 800, y: 1000 },
-        data: { image: appleNewsMySportsBase64 },
-    },
-    {
-        id: "6",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 1300, y: 1000 },
-        data: { image: appleMusicPlayNextBase64 },
-    },
-    {
-        id: "7",
+        id: "3",
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 1800, y: 1000 },
         data: { image: appleNewsCards },
     },
     {
-        id: "8",
+        id: "4",
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 800, y: 1900 },
         data: { image: appleBookStore },
     },
-    {
-        id: "9",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 1300, y: 1900 },
-        data: { image: appleNewsTrending },
-    },
-    {
-        id: "10",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 1800, y: 1900 },
-        data: { image: appleMusicPlay },
-    },
-    {
-        id: "11",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 2300, y: 1000 },
-        data: { image: appleBookReadingNow },
-    }
+    // {
+    //     id: "9",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 1300, y: 1900 },
+    //     data: { image: appleNewsTrending },
+    // },
+    // {
+    //     id: "10",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 1800, y: 1900 },
+    //     data: { image: appleMusicPlay },
+    // },
+    // {
+    //     id: "11",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 2300, y: 1000 },
+    //     data: { image: appleBookReadingNow },
+    // }
 ];
 
 const initialEdges: Edge[] = [
@@ -176,7 +176,6 @@ const FlowComponent: React.FC = () => {
     const [abortController, setAbortController] = useState<AbortController | null>(null);
 
     useEffect(() => {
-        console.log("useeffect, flowcomponent, 3");
         // Cleanup on unmount
         return () => {
             if (abortController) {
@@ -275,7 +274,6 @@ const FlowComponent: React.FC = () => {
     const memoizedNodes = useMemo(() => getCodeRenderNodes(getInitialPositions()), [renderCodeContentList]);
 
     useEffect(() => {
-        console.log("useeffect, flowcomponent, 2");
         setNodes((prevNodes) => {
             // Create a new list of nodes by either keeping the existing one or replacing it if necessary
             const updatedNodes = memoizedNodes.map((newNode) => {
@@ -529,8 +527,8 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            // const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
-            const response = await fetch('http://localhost:5000/api/chat', {
+            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
+            // const response = await fetch('http://localhost:5000/api/chat', {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
@@ -621,8 +619,8 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            // const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
-            const response = await fetch('http://localhost:5000/api/chat', {
+            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
+            // const response = await fetch('http://localhost:5000/api/chat', {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
@@ -869,7 +867,6 @@ const FlowComponent: React.FC = () => {
 
     // when the blendingOptionPosition changes, that means we can show the popup
     useEffect(() => {
-        console.log("useeffect, flowcomponent, 1");
         showBlendingConfirmationPopup(newConfirmationPopupNodeDataPackage.mousePosition, x, y, zoom, newConfirmationPopupNodeDataPackage.subImageScreenshot, newConfirmationPopupNodeDataPackage.sourceNodeId);
 
     }, [newConfirmationPopupNodeDataPackage]);
@@ -949,6 +946,7 @@ const FlowComponent: React.FC = () => {
                 selectionOnDrag
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
+                onlyRenderVisibleElements={false}
                 defaultEdgeOptions={defaultEdgeOptions}>
                 <Background />
                 <Controls />
@@ -956,13 +954,13 @@ const FlowComponent: React.FC = () => {
                     Misty
                 </div> */}
                 {showCodePanel(displayCode)}
-                <div>
+                {/* <div>
                     {showError && (
                         <ErrorPopup
                             message="Oops! That did not work as planned. Try again?"
                         />
                     )}
-                </div>
+                </div> */}
             </ReactFlow>
             {/* <TSXDiff /> */}
         </div>
