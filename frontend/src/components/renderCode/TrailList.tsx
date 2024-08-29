@@ -24,7 +24,7 @@ export const TrailList: string = `
                 </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 text-gray-800">
                 {[
                     {
                         name: "Steep Ravine, Dipsea and Matt Davis",

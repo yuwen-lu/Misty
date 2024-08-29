@@ -31,11 +31,12 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent, blurImage } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change, CategorizedChange } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { appleMapListBase64, appleFitness, groupedTableViewOrange, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow } from '../images';
+import { bottomModalBase64, bottomModalGreenBase64, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow } from '../images';
 import { BookList } from './renderCode/BookList';
 import ButtonEdge from './ButtonEdge';
 import { TrailList } from './renderCode/TrailList';
-import { RideSearch } from './renderCode/RideSearch';
+import { RestaurantSearch } from './renderCode/RestaurantSearch';
+import { AppSettings } from './renderCode/AppSettings';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -103,23 +104,23 @@ const initialNodes: Node[] = [
         id: "4",
         type: 'imageDisplayNode',
         draggable: true,
-        position: { x: 800, y: 1900 },
+        position: { x: 1200, y: 800 },
         data: { image: appleBookStore },
     },
-    // {
-    //     id: "9",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 1300, y: 1900 },
-    //     data: { image: appleNewsTrending },
-    // },
-    // {
-    //     id: "10",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 1800, y: 1900 },
-    //     data: { image: appleMusicPlay },
-    // },
+    {
+        id: "5",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 2400, y: 1400 },
+        data: { image: bottomModalBase64 },
+    },
+    {
+        id: "6",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 2400, y: 500 },
+        data: { image: bottomModalGreenBase64 },
+    },
     // {
     //     id: "11",
     //     type: 'imageDisplayNode',
@@ -148,7 +149,8 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 const initialCodeToRender: codeRenderNodeContent[] = [
     { code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
     { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    { code: RideSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    { code: RestaurantSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
 
 const FlowComponent: React.FC = () => {
