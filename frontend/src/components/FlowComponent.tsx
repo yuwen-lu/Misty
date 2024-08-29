@@ -405,8 +405,7 @@ const FlowComponent: React.FC = () => {
             updatedCode = updatedCode.split('export')[0];
         }
 
-        updatedCode = updatedCode.replaceAll("fixed bottom-0", "absolute bottom-0");    // the previous will mess up react live
-        updatedCode = updatedCode.replaceAll("fixed inset-x-0 bottom-0", "absolute inset-x-0 bottom-0");    // the previous will mess up react live
+        updatedCode = updatedCode.replaceAll("fixed", "absolute");    // the previous will mess up react live
 
         // Remove extra closing parentheses if present
         const extraParenthesesPattern = /\)\s*\)\s*;\s*\};$/;
