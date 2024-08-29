@@ -19,6 +19,10 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
     const [isAnimating, setIsAnimating] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [categoryToggles, setCategoryToggles] = useState<boolean[]>(() =>
+        categorizedChanges.map(() => true)
+    );
+
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -31,6 +35,34 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     useEffect(() => {
         if (categorizedChanges) setState(JSON.parse(JSON.stringify(categorizedChanges)));
     }, [categorizedChanges]);
+
+    const handleToggleCategory = (categoryIndex: number) => {
+        const newToggles = [...categoryToggles];
+        newToggles[categoryIndex] = !newToggles[categoryIndex];
+        setCategoryToggles(newToggles);
+
+        // If toggling off, reset the changes in this category
+        if (!newToggles[categoryIndex]) {
+            const resetCategoryChanges = state[categoryIndex].changes.map(change => ({
+                ...change,
+                after: change.before, // Revert to the original 'before' value
+            }));
+            const newState = [...state];
+            newState[categoryIndex].changes = resetCategoryChanges;
+            setState(newState);
+
+            // Apply the reset changes to the code
+            const updatedCode = newState.reduce((acc, curr, idx) => {
+                if (categoryToggles[idx]) {
+                    return curr.changes.reduce((innerAcc, change) => innerAcc.replace(change.after, change.before), acc);
+                }
+                return acc;
+            }, blendedCode);
+            handleCodeReplacement(nodeId, updatedCode);
+        }
+    };
+
+
 
     const tweakCodeDynamicUI = async (prevCode: string, newCode: string, oldValue: string, newValue: string, replacementValue: string): Promise<string> => {
         const indexesToChange: number[] = getIndexesToChange(prevCode, newCode, oldValue, newValue);
@@ -161,14 +193,31 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
 
     const resetCode = () => {
-
         if (!isAnimating) {
             setIsAnimating(true);
         }
+
+        // Reset all category toggles to `true`
+        const resetToggles = categorizedChanges.map(() => true);
+        setCategoryToggles(resetToggles);
+
+        // Reset all changes to their initial state
+        const resetChanges = categorizedChanges.map(category => ({
+            ...category,
+            changes: category.changes.map(change => ({
+                ...change,
+                after: change.before, // Reset 'after' to 'before'
+            })),
+        }));
+
+        setState(resetChanges);
+
+        // Apply the reset changes to the code
         handleCodeReplacement(nodeId, blendedCode);
+
         sethoverIdxList([]);
-        setState(JSON.parse(JSON.stringify(categorizedChanges))); // Reset to initial changes
     };
+
 
     const getTagName = (tailwindClassName: string) => {
         switch (tailwindClassName) {
@@ -259,12 +308,28 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
                             return (
                                 <div key={category.category} className="mb-6 w-full flex flex-col items-start">
-
                                     <div className="font-semibold text-sm text-gray-500 mb-2 flex items-center">
                                         {category.category.split(": ")[0].toUpperCase()}
                                     </div>
-                                    <div className="font-semibold text-purple-900 mb-2 flex items-center">
-                                        {category.category.split(": ")[1]}
+                                    <div className="flex justify-between items-center w-full">
+                                        <div className="font-semibold text-purple-900 mb-2 flex items-center">
+                                            {category.category.split(": ")[1]}
+                                        </div>
+                                        <label className="flex items-center cursor-pointer">
+                                            <div className="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={categoryToggles[categoryIndex]}
+                                                    onChange={() => handleToggleCategory(categoryIndex)}
+                                                    className="sr-only"
+                                                />
+                                                <div className="block bg-white w-14 h-8 rounded-full"></div>
+                                                <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition ${categoryToggles[categoryIndex] ? 'transform translate-x-full bg-zinc-700 important' : 'bg-zinc-200'}`}></div>
+                                            </div>
+                                            <div className="ml-3 text-gray-700 font-medium">
+                                                {categoryToggles[categoryIndex] ? 'On' : 'Off'}
+                                            </div>
+                                        </label>
                                     </div>
 
                                     {category.changes.map((change, changeIndex) => {
@@ -277,30 +342,21 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                         return (
                                             <div
                                                 key={changeIndex}
-                                                className="flex items-center ml-4 mb-4"
+                                                className={`flex items-center ml-4 mb-4 ${categoryToggles[categoryIndex] ? "visible" : "invisible"} `}
                                                 onMouseEnter={() => sethoverIdxList(getIndexesToChange(prevCode, newCode, change.before, change.after))}
                                                 onMouseLeave={() => sethoverIdxList([])}
                                                 onClick={() => sethoverIdxList([])}
                                             >
-                                                {/* {change.before && shouldShowAfter && (
-                                                    <div className="mr-4 text-black">
-                                                        Before: <span className="font-mono">{change.before}</span>
-                                                    </div>
-                                                )} */}
                                                 {shouldShowAfter && (
                                                     <div className="mr-4 text-black flex items-center flex-wrap">
-                                                        {/* <span>{change.before ? "After: " : "Added: "}</span> */}
                                                         {splitChanges(change.after).map((changeItem, changeItemIndex) => {
-                                                            // if (['mt', 'mb', 'ml', 'mr', 'mx', 'my', 'p', 'pt', 'pb', 'pl', 'pr', 'px', 'py'].includes(changeItem.split('-')[0])) {
-                                                            //     return renderSlider(changeItem, categoryIndex, changeIndex, changeItemIndex);
-                                                            // } else 
                                                             if (getDropdownOptions(changeItem).length > 1) {
                                                                 return (
-                                                                    <div className="w-full flex items-center my-2">
+                                                                    <div className="w-full flex items-center my-2" key={changeItemIndex}>
                                                                         <span className="min-w-[150px]">{getTagName(changeItem.split("-")[0])}</span>
                                                                         <select
                                                                             key={changeItemIndex}
-                                                                            className="p-2 bg-gray-800 text-white rounded-lg"
+                                                                            className="p-2 bg-zinc-700 text-white rounded-lg"
                                                                             value={changeItem}
                                                                             onChange={(event) =>
                                                                                 handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex, change.before === undefined || change.before === "")
@@ -325,6 +381,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                 </div>
                             );
                         })}
+
                     </div>}
                 </div>}
         </>
