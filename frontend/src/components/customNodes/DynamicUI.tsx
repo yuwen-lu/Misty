@@ -86,6 +86,8 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
         setState(newState);
     };
 
+    const tailwindTextSize = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl', '8xl', '9xl'];
+
     const getDropdownOptions = (currentValue: string) => {
         const [prefix, variant] = currentValue.split('-');
         let options = [];
@@ -97,9 +99,9 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                 ).concat(['bg-white', 'bg-black']);
                 break;
             case 'text':
-                if (variant === 'sm' || variant === 'lg' || variant === 'xl' || variant === 'base') {
+                if (tailwindTextSize.includes(variant) || variant === 'base') {
                     // Handle text sizes
-                    options = ['xs', 'sm', 'base', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl', '7xl', '8xl', '9xl'].map(size => `text-${size}`);
+                    options = tailwindTextSize.map(size => `text-${size}`);
                 } else {
                     // Handle text colors
                     options = Object.keys(colorList).flatMap(color =>
@@ -168,6 +170,56 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
         setState(JSON.parse(JSON.stringify(categorizedChanges))); // Reset to initial changes
     };
 
+    const getTagName = (tailwindClassName: string) => {
+        switch (tailwindClassName) {
+            case "mb":
+                return "Bottom Margin";
+            case "mt":
+                return "Top Margin";
+            case "ml":
+                return "Left Margin";
+            case "mr":
+                return "Right Margin";
+            case "mx":
+                return "Horizontal Margin (Left & Right)";
+            case "my":
+                return "Vertical Margin (Top & Bottom)";
+            case "m":
+                return "Margin";
+            case "pb":
+                return "Bottom Padding";
+            case "pt":
+                return "Top Padding";
+            case "pl":
+                return "Left Padding";
+            case "pr":
+                return "Right Padding";
+            case "px":
+                return "Horizontal Padding (Left & Right)";
+            case "py":
+                return "Vertical Padding (Top & Bottom)";
+            case "p":
+                return "Padding";
+            case "bg":
+                return "Background Color";
+            case "text":
+                return "Text Color";
+            case "border":
+                return "Border Color";
+            case "shadow":
+                return "Shadow";
+            case "rounded":
+                return "Border Radius";
+            case "font":
+                return "Font";
+            // Add more cases as needed based on your Tailwind utility classes
+            default:
+                return tailwindClassName.charAt(0).toUpperCase() + tailwindClassName.slice(1);
+        }
+    };
+
+
+
     return (
         <>
             {state.length === 0 ? <></> :
@@ -230,32 +282,41 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                                 onMouseLeave={() => sethoverIdxList([])}
                                                 onClick={() => sethoverIdxList([])}
                                             >
-                                                {change.before && shouldShowAfter && (
+                                                {/* {change.before && shouldShowAfter && (
                                                     <div className="mr-4 text-black">
                                                         Before: <span className="font-mono">{change.before}</span>
                                                     </div>
-                                                )}
+                                                )} */}
                                                 {shouldShowAfter && (
                                                     <div className="mr-4 text-black flex items-center flex-wrap">
-                                                        <span>{change.before ? "After: " : "Added: "}</span>
-                                                        {splitChanges(change.after).map((changeItem, changeItemIndex) =>
-                                                            getDropdownOptions(changeItem).length > 1 && (
-                                                                <select
-                                                                    key={changeItemIndex}
-                                                                    className="p-2 ml-2 my-2 bg-gray-800 text-white rounded-lg"
-                                                                    value={changeItem}
-                                                                    onChange={(event) =>
-                                                                        handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex, change.before === undefined || change.before === "")
-                                                                    }
-                                                                >
-                                                                    {getDropdownOptions(changeItem).map(option => (
-                                                                        <option key={option} value={option}>
-                                                                            {option}
-                                                                        </option>
-                                                                    ))}
-                                                                </select>
-                                                            )
-                                                        )}
+                                                        {/* <span>{change.before ? "After: " : "Added: "}</span> */}
+                                                        {splitChanges(change.after).map((changeItem, changeItemIndex) => {
+                                                            // if (['mt', 'mb', 'ml', 'mr', 'mx', 'my', 'p', 'pt', 'pb', 'pl', 'pr', 'px', 'py'].includes(changeItem.split('-')[0])) {
+                                                            //     return renderSlider(changeItem, categoryIndex, changeIndex, changeItemIndex);
+                                                            // } else 
+                                                            if (getDropdownOptions(changeItem).length > 1) {
+                                                                return (
+                                                                    <div className="w-full flex items-center my-2">
+                                                                        <span className="min-w-[150px]">{getTagName(changeItem.split("-")[0])}</span>
+                                                                        <select
+                                                                            key={changeItemIndex}
+                                                                            className="p-2 bg-gray-800 text-white rounded-lg"
+                                                                            value={changeItem}
+                                                                            onChange={(event) =>
+                                                                                handleSelectChange(event, categoryIndex, changeIndex, changeItemIndex, change.before === undefined || change.before === "")
+                                                                            }
+                                                                        >
+                                                                            {getDropdownOptions(changeItem).map(option => (
+                                                                                <option key={option} value={option}>
+                                                                                    {option}
+                                                                                </option>
+                                                                            ))}
+                                                                        </select>
+                                                                    </div>
+                                                                );
+                                                            }
+                                                            return null;
+                                                        })}
                                                     </div>
                                                 )}
                                             </div>

@@ -28,6 +28,7 @@
     "lucide-react": "^0.406.0",
     "openai": "^4.52.2",
     "postcss": "^8.4.38",
+    "rc-slider": "^11.1.5",
     "react": "^18.3.1",
     "react-color": "^2.19.3",
     "react-dom": "^18.3.1",

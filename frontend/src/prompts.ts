@@ -1,3 +1,45 @@
+export type Change = {
+    type: string;
+    before: string;
+    after: string;
+};
+
+export type CategorizedChange = {
+    category: string;
+    changes: Change[]
+};
+
+export interface ParsedGlobalBlendingData {
+    updatedCode: string;
+    categorizedChanges: CategorizedChange[];
+}
+
+export function parseResponse(response: string): ParsedGlobalBlendingData {
+    return JSON.parse(response) as ParsedGlobalBlendingData;
+};
+
+const getPromptForBlendMode = (blendModes: string[]): string => {
+    if (blendModes.length === 0) {
+        return "Please provide at least one blend mode.";
+    }
+
+    const blendModeDescriptions: { [key: string]: string } = {
+        "Color": "blend the prominent color of the reference image into",
+        "Layout": "blend the layout of the reference image into",
+        "Addition": "add the content of the reference image to"
+    };
+
+    let promptText = "Help me ";
+
+    if (blendModes.length === 1) {
+        promptText += blendModeDescriptions[blendModes[0]];
+    } else {
+        promptText += blendModes.map(mode => blendModeDescriptions[mode]).join(" and ");
+    }
+
+    return promptText;
+};
+
 export const constructTextPrompt = (renderCode: string) => {
 
     return `Here is my react and tailwind code: 
@@ -22,7 +64,7 @@ export const constructTextPrompt = (renderCode: string) => {
 
         {
             "designExplanation": // explain the design of the screenshot image, focus on layout and color, be really concise, less than 30 words
-            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, font, etc.
+            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, color theme, font, etc.
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
             categorizedChanges: [
@@ -69,52 +111,12 @@ export const constructTextPrompt = (renderCode: string) => {
             },
             
             ]
-        `;
+            `;
 };
 
-export type Change = {
-    type: string;
-    before: string;
-    after: string;
-};
 
-export type CategorizedChange = {
-    category: string;
-    changes: Change[]
-};
 
-export interface ParsedGlobalBlendingData {
-    updatedCode: string;
-    categorizedChanges: CategorizedChange[];
-}
-
-export function parseResponse(response: string): ParsedGlobalBlendingData {
-    return JSON.parse(response) as ParsedGlobalBlendingData;
-};
-
-const getPromptForBlendMode = (blendModes: string[]): string => {
-    if (blendModes.length === 0) {
-        return "Please provide at least one blend mode.";
-    }
-
-    const blendModeDescriptions: { [key: string]: string } = {
-        "Color": "blend the prominent color of the reference image into",
-        "Layout": "blend the layout of the reference image into",
-        "Addition": "add the content of the reference image to"
-    };
-
-    let promptText = "Help me ";
-
-    if (blendModes.length === 1) {
-        promptText += blendModeDescriptions[blendModes[0]];
-    } else {
-        promptText += blendModes.map(mode => blendModeDescriptions[mode]).join(" and ");
-    }
-
-    return promptText;
-};
-
-export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = ["Layout"], additionInput="") => {
+export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped: string, blendMode: string[] = ["Layout"], additionInput = "") => {
 
     return `
 
@@ -124,7 +126,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
 
         ${getPromptForBlendMode(blendMode)} ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}. Change sections of the source code corresponding to this, as well as sections that are of similar layout or screen position to this. For example, don't just apply to one element in a list, but apply to all list elements with similar layouts.`}
 
-        ${additionInput!== "" ? `Make sure you follow the user's instruction to add the element to this described location:  ` + additionInput + `. Adapt the content and style of the added element to the ones of the code.` : ""}
+        ${additionInput !== "" ? `Make sure you follow the user's instruction to add the element to this described location:  ` + additionInput + `. Adapt the content and style of the added element to the ones of the code.` : ""}
 
         Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
 
@@ -147,7 +149,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
         
         {
             "designExplanation": // explain the design of the screenshot image, focus on layout and color, be really concise, less than 30 words
-            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, font, etc.
+            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, color theme, font, etc.
             updatedCode: \`() => {}\`   // return the whole component for the entire screen, with the updates;
             // a list of objects listing the changes made, use the tailwind classes to indicate the changes
             categorizedChanges: [

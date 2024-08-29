@@ -23,7 +23,7 @@ export const PhoneApp: string = `() => {
 
             {/* Phone number */}
 
-            <h1 className="ml-3 text-2xl font-bold">Primary</h1>
+            <h1 className="ml-3 text-2xl font-bold">Primary Number</h1>
             <div className="px-4 py-2 flex items-center space-x-2">
                 <LuPhone className="w-4 h-4 text-gray-400" />
                 <span className="text-gray-500">(938) 800-9436</span>

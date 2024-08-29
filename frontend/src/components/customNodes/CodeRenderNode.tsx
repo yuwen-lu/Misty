@@ -39,7 +39,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
         let newReplacementClassNames = [...replacementClassNames];
 
         if (hoverIdxList.length === 0) {
-            setCode(data.renderCode);   // reset
+            setCode(data.renderCode.replaceAll("highlight-gray", ""));   // reset
             return;
         }
 
