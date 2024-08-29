@@ -37,6 +37,7 @@ import ButtonEdge from './ButtonEdge';
 import { TrailList } from './renderCode/TrailList';
 import { RestaurantSearch } from './renderCode/RestaurantSearch';
 import { AppSettings } from './renderCode/AppSettings';
+import { PhoneApp } from './renderCode/PhoneApp';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -151,6 +152,7 @@ const initialCodeToRender: codeRenderNodeContent[] = [
     { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
     { code: RestaurantSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
     { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    { code: PhoneApp, prevCode: "", nodeId: "code-4", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
 
 const FlowComponent: React.FC = () => {
