@@ -530,8 +530,8 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            // const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
-            const response = await fetch('http://localhost:5000/api/chat', {
+            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
+            // const response = await fetch('http://localhost:5000/api/chat', {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
@@ -565,7 +565,7 @@ const FlowComponent: React.FC = () => {
 
                 // TODO Figure out how to deal with replacementPrompts
                 // globalBlending ? processGlbalBlendingResponse(finalResponse, renderCodeBoundingBox, renderCode) : processReplacementPromptResponse(finalResponse, renderCodeBoundingBox, renderCode);
-                
+
                 if (isRegenerate) {
                     // Fetch the parsed Result
                     const parsedData: ParsedGlobalBlendingData = parseResponse(finalResponse);
@@ -623,8 +623,8 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            // const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
-            const response = await fetch('http://localhost:5000/api/chat', {
+            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
+            // const response = await fetch('http://localhost:5000/api/chat', {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
