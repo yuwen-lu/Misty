@@ -31,7 +31,7 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent, blurImage } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change, CategorizedChange } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { bottomModalBase64, bottomModalGreenBase64, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow, sketchLayout } from '../images';
+import { bottomModalBase64, bottomModalGreenBase64, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow, sketchLayout, sketchHeaderLayout } from '../images';
 import { BookList } from './renderCode/BookList';
 import ButtonEdge from './ButtonEdge';
 import { TrailList } from './renderCode/TrailList';
@@ -127,7 +127,7 @@ const initialNodes: Node[] = [
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 400, y: 1000 },
-        data: { image: sketchLayout },
+        data: { image: sketchHeaderLayout },
     }
 ];
 
