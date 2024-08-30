@@ -126,7 +126,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
 
         ${getPromptForBlendMode(blendMode)} ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}. Change sections of the source code corresponding to this, as well as sections that are of similar layout or screen position to this. For example, don't just apply to one element in a list, but apply to all list elements with similar layouts.`}
 
-        ${additionInput !== "" ? `Make sure you follow the user's instruction to add the element to this described location:  ` + additionInput + `. Adapt the content and style of the added element to the ones of the code.` : ""}
+        ${additionInput !== "" ? `Prioritize the user's instruction on blending details, make sure you follow it in your outputs:  ` + additionInput + `. Adapt the content and style of the added element to the ones of the code.` : ""}
 
         Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
 

@@ -25,13 +25,13 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
         }
     };
 
-    const handleBlend = () => {
+    const inputComments = () => {
         if (selectedOptions.length > 0) {
-            if (selectedOptions.includes('Addition')) {
+            // if (selectedOptions.includes('Addition')) {
                 setCurrentStep('input'); // Switch to the input step
-            } else {
-                processBlend();
-            }
+            // } else {
+            //     processBlend();
+            // }
         }
     };
 
@@ -159,24 +159,23 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
                         </button>
                         <button
                             className={`mt-5 px-5 py-3  rounded-lg text-white font-semibold transition-colors ${selectedOptions.length > 0 ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400 cursor-auto"}`}
-                            onClick={handleBlend}
+                            onClick={inputComments}
                         >
-                            Blend
+                            Next
                         </button>
                     </div>
                 </>
             ) : (
                 <>
                     <div className="font-semibold text-l mb-5 px-8">
-                        Specify addition location
+                        Additional Comment
                     </div>
                     <div className="mt-3 w-full">
-                        <label className="block text-s font-medium text-white mb-3">Placement Instructions</label>
                         <textarea
                             value={additionInput}
                             onChange={(e) => setAdditionInput(e.target.value)}
-                            placeholder={`Describe where to place the element addition, e.g., below the "favorite books" title...`}
-                            className="w-full h-24 px-2 py-1 text-gray-800 rounded-md"
+                            placeholder={`Optional comment to specify blending details, e.g., add element below the "favorite books" title...`}
+                            className="w-full h-36 px-2 py-1 text-gray-800 rounded-md"
                         />
                     </div>
 
@@ -188,11 +187,10 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
                             Back
                         </button>
                         <button
-                            className={`mt-5 px-5 py-3  rounded-lg text-white font-semibold transition-colors ${additionInput ? "bg-sky-500 hover:bg-sky-900" : "bg-slate-400 cursor-auto"}`}
+                            className={`mt-5 px-5 py-3  rounded-lg text-white font-semibold transition-colors bg-sky-500 hover:bg-sky-900`}
                             onClick={processBlend}
-                            disabled={!additionInput}
                         >
-                            Confirm
+                            Blend
                         </button>
                     </div>
                 </>
