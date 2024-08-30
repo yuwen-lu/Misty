@@ -12,10 +12,11 @@ interface DynamicUIProps {
     blendedCode: string;
     newCode: string;
     handleCodeReplacement: (nodeId: string, newCode: string) => void;
+    fetchSemanticDiffingResponse: (code: string, targetNodeId: string, prevCode: string, discardCategory: string, keepCategory: string, addCategory: string) => void;
     sethoverIdxList: (hoverIdxList: number[]) => void;
 }
 
-const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, sethoverIdxList }) => {
+const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, fetchSemanticDiffingResponse, sethoverIdxList }) => {
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
     const [isAnimating, setIsAnimating] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -36,31 +37,35 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
         if (categorizedChanges) setState(JSON.parse(JSON.stringify(categorizedChanges)));
     }, [categorizedChanges]);
 
-    const handleToggleCategory = (categoryIndex: number) => {
+    const handleToggleCategory = async (categoryIndex: number) => {
+        const category = state[categoryIndex];
         const newToggles = [...categoryToggles];
         newToggles[categoryIndex] = !newToggles[categoryIndex];
         setCategoryToggles(newToggles);
-
-        // If toggling off, reset the changes in this category
+    
+        let updatedCode = blendedCode;
+        
         if (!newToggles[categoryIndex]) {
-            const resetCategoryChanges = state[categoryIndex].changes.map(change => ({
+            // If toggling off, reset the changes in this category
+            const resetCategoryChanges = category.changes.map(change => ({
                 ...change,
                 after: change.before, // Revert to the original 'before' value
             }));
             const newState = [...state];
             newState[categoryIndex].changes = resetCategoryChanges;
             setState(newState);
-
-            // Apply the reset changes to the code
-            const updatedCode = newState.reduce((acc, curr, idx) => {
-                if (categoryToggles[idx]) {
-                    return curr.changes.reduce((innerAcc, change) => innerAcc.replace(change.after, change.before), acc);
-                }
-                return acc;
-            }, blendedCode);
-            handleCodeReplacement(nodeId, updatedCode);
+    
+            // Make the API call to discard changes in this category
+            fetchSemanticDiffingResponse(prevCode, nodeId, blendedCode, category.category, "", "");
+    
+        } else {
+            // If toggling on, reapply the changes in this category
+            fetchSemanticDiffingResponse(prevCode, nodeId, blendedCode, "", category.category, "");
         }
+    
+        handleCodeReplacement(nodeId, updatedCode);
     };
+    
 
 
 

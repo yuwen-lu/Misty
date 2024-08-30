@@ -237,6 +237,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
                 newCode={code}   // current code to display. will be the same as blendedCode, if no dynamic UI tweaks are performed
                 categorizedChanges={data.categorizedChanges}
                 handleCodeReplacement={data.handleCodeReplacement}
+                fetchSemanticDiffingResponse={data.fetchSemanticDiffingResponse}
                 sethoverIdxList={sethoverIdxList} />
         </div>
     );

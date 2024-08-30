@@ -31,7 +31,7 @@ import '../index.css';
 import { removeEscapedChars, coordinatePositionType, BoundingBox, defaultBoundingBox, formatCode, loadingIdState, codeRenderNodeContent, blurImage } from "../util";
 import { parseResponse, constructTextPrompt, parseReplacementPromptResponse, CodeChange, ParsedData, ParsedGlobalBlendingData, Change, CategorizedChange } from '../prompts';
 import ErrorPopup from './ErrorPopup';
-import { bottomModalBase64, bottomModalGreenBase64, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow } from '../images';
+import { bottomModalBase64, bottomModalGreenBase64, appleTvCard, appleTvHero, appleTvHeroFull, appleNewsMySportsBase64, appleMusicPlayNextBase64, appleNewsCards, appleBookStore, appleNewsTrending, appleMusicPlay, appleBookReadingNow, sketchLayout } from '../images';
 import { BookList } from './renderCode/BookList';
 import ButtonEdge from './ButtonEdge';
 import { TrailList } from './renderCode/TrailList';
@@ -122,13 +122,13 @@ const initialNodes: Node[] = [
         position: { x: 2400, y: 500 },
         data: { image: bottomModalGreenBase64 },
     },
-    // {
-    //     id: "11",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 2300, y: 1000 },
-    //     data: { image: appleBookReadingNow },
-    // }
+    {
+        id: "7",
+        type: 'imageDisplayNode',
+        draggable: true,
+        position: { x: 400, y: 1000 },
+        data: { image: sketchLayout },
+    }
 ];
 
 const initialEdges: Edge[] = [
@@ -154,6 +154,9 @@ const initialCodeToRender: codeRenderNodeContent[] = [
     { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
     { code: PhoneApp, prevCode: "", nodeId: "code-4", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
+
+const fetchResponseUrl = 'http://localhost:5000/api/chat';
+// const fetchResponseUrl = 'http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat';
 
 const FlowComponent: React.FC = () => {
 
@@ -379,16 +382,7 @@ const FlowComponent: React.FC = () => {
     };
 
     const processParsedCode = (code: string) => {
-        let updatedCode = code.trim();
-
-        updatedCode.replaceAll('```', "");
-        updatedCode.replaceAll('``', "");
-
-        // Check if updatedCode is wrapped in backticks
-        if (updatedCode.startsWith('`') && updatedCode.endsWith('`')) {
-            // Remove the backticks
-            updatedCode = updatedCode.slice(1, -1);
-        }
+        let updatedCode = code.trim().replaceAll(/`/g, "");
 
         // Check if updatedCode does not start with () =>
         if (!updatedCode.startsWith('() =>')) {
@@ -424,6 +418,7 @@ const FlowComponent: React.FC = () => {
             setShowError(true);
         }
 
+        console.log("still contains backticks after formatting? " + updatedCode.includes("`"));
         return updatedCode;
     }
 
@@ -530,8 +525,7 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
-            // const response = await fetch('http://localhost:5000/api/chat', {
+            const response = await fetch(fetchResponseUrl, {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
@@ -623,8 +617,7 @@ const FlowComponent: React.FC = () => {
             };
 
             // call the api and stream
-            const response = await fetch('http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat', {
-            // const response = await fetch('http://localhost:5000/api/chat', {
+            const response = await fetch(fetchResponseUrl, {
                 signal: controller.signal,
                 method: 'POST',
                 headers: {
@@ -684,6 +677,81 @@ const FlowComponent: React.FC = () => {
             setAbortController(null);
         }
     };
+
+    const fetchSemanticDiffingResponse = async (code: string, targetNodeId: string, prevCode: string, discardCategory: string, keepCategory: string, addCategory: string) => {
+        console.log("Target node id " + targetNodeId);
+
+        // Set the loading status here
+        targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, true) : updateLoadingState(targetNodeId, true);
+        setResponse('');
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        try {
+            const messageData = {
+                message: `Now I have this piece of code:\n${code} \n. It was made by changing this piece of code: \n ${prevCode} \n. Generally, these changes were being made: ${discardCategory + ", " + keepCategory}. Can you help me ${discardCategory ? `discard the ${discardCategory}` : ''}${discardCategory && keepCategory ? ', ' : ''}${keepCategory ? `keep the ${keepCategory}` : ''}${addCategory ? ` and add the ${addCategory}` : ''} categories? Return the updated code only, using a simple component format () => {return ()}.`,
+                json_mode: false
+            };
+
+            // Call the API and stream the response
+            const response = await fetch(fetchResponseUrl, {
+                signal: controller.signal,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(messageData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Handle streaming response
+            if (response.body) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let loopRunner = true;
+                let finalResponse = '';
+
+                while (loopRunner) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        loopRunner = false;
+                        break;
+                    }
+                    const decodedChunk = decoder.decode(value, { stream: true });
+                    finalResponse += decodedChunk;
+                    setResponse((prevResponse) => prevResponse + decodedChunk);
+                }
+
+                finalResponse = processParsedCode(finalResponse);
+
+                setRenderCodeContentListState((prevList) =>
+                    prevList.map((content) =>
+                        content.nodeId === targetNodeId
+                            ? {
+                                ...content,
+                                code: finalResponse, // Update with the processed code
+                                blendedCode: finalResponse,   // this field is optional and only gets set through regeneration 
+                            }
+                            : content
+                    )
+                );
+            }
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') {
+                console.log('Fetch aborted');
+            } else {
+                console.error('Error fetching response from OpenAI API');
+                console.log("error openai api call: " + err);
+            }
+        } finally {
+            targetNodeId === "" ? updateLoadingState(targetCodeRenderNodeId, false) : updateLoadingState(targetNodeId, false);
+            setAbortController(null);
+        }
+    };
+
 
 
     const addExplanationsNode = (explanations: Change[] | string[], renderCodeNodeBoundingBox: BoundingBox) => {
@@ -928,7 +996,7 @@ const FlowComponent: React.FC = () => {
                                 setTargetCodeRenderNodeId: setTargetCodeRenderNodeId, loadingStates: loadingStates,
                                 updateLoadingState: updateLoadingState, abortController: abortController,
                                 handleCodeReplacement: handleCodeReplacement, addNewEdge: addNewEdge, handleFetchResponse: handleFetchResponse,
-                                fixCodeNotRendering: fixCodeNotRendering,
+                                fixCodeNotRendering: fixCodeNotRendering, fetchSemanticDiffingResponse: fetchSemanticDiffingResponse,
                             }
                         }
                     } else if (node.type === 'imageDisplayNode') {
