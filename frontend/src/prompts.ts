@@ -137,6 +137,7 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
         - Make sure all text is legible on the background.
         - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Pay attention to ${blendMode.join(" ")}. Base your later generation of categorizedChanges based on these categories.
         - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
+- Do not use list and .map functions to represent lists. Just generate HTML elements for each of the list items.
         - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
         - when adding icons, pick from this list of lucide react icons, do not use others: LuActivity, LuAirplay, LuAlertCircle, LuAlignCenter, LuAlignJustify, LuAlignLeft, LuAlignRight, LuAnchor, LuAperture, LuArchive, LuArrowDown, LuArrowLeft, LuArrowRight, LuArrowUp, LuAtSign, LuAward, LuBarChart, LuBattery, LuBell, LuBluetooth, LuBook, LuBookmark, LuBox, LuBriefcase, LuCalendar, LuCamera, LuCheck, LuCheckCircle, LuChevronDown, LuChevronLeft, LuChevronRight, LuChevronUp, LuClipboard, LuClock, LuCloud, LuCode, LuCompass, LuCopy, LuCreditCard, LuCrop
 
@@ -224,6 +225,7 @@ export const constructCodeReplacementPrompt = (renderCode: string, targetCodeDro
         - Give an explanation summary of the original code piece you changed and the updated code piece in the returned result. In your response, use the field "explanations" followed by a numbered list of items. Be very concise in your explanations. For example, "Color change: section titles, from green to purple". Categorize all changes of the same type (color, layout, etc.) under one bullet point.
         - Try to make colors and styles consistent and harmonious with the rest of the component.
         - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
+- Do not use list and .map functions to represent lists. Just generate HTML elements for each of the list items.
 
         Return result as a JSON in the following format:
 
