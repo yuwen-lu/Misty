@@ -155,8 +155,8 @@ const initialCodeToRender: codeRenderNodeContent[] = [
     { code: PhoneApp, prevCode: "", nodeId: "code-4", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
 
-const fetchResponseUrl = 'http://localhost:5000/api/chat';
-// const fetchResponseUrl = 'http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat';
+// const fetchResponseUrl = 'http://localhost:5000/api/chat';
+const fetchResponseUrl = 'http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat';
 
 const FlowComponent: React.FC = () => {
 
