@@ -68,9 +68,6 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
   }, [boundingBox, startPoint, endPoint, isDrawing]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
     const handleMouseDown = (e: MouseEvent) => {
       setIsDrawing(true);
       setBoundingBox(null); // remove the previous box
@@ -79,44 +76,41 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
       setEndPoint({ x: offsetX, y: offsetY });
       e.stopPropagation();
     };
-
+  
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDrawing) return;
-
+  
       const { offsetX, offsetY } = e;
       setEndPoint({ x: offsetX, y: offsetY });
       e.stopPropagation();
     };
-
+  
     const handleMouseUp = (e: MouseEvent) => {
       if (isDrawing) {
         setIsDrawing(false);
         const newBox = getBoundingBoxFromPoints(startPoint, endPoint);
         if (newBox) {
-          // setBoundingBoxes((prevBoxes) => [...prevBoxes, newBox]);
           setBoundingBox(newBox);
         }
       }
       e.stopPropagation();
     };
-
-    const handleMouseLeave = (e: MouseEvent) => {
-      setIsDrawing(false);
-      e.stopPropagation();
-    };
-
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mouseleave', handleMouseLeave);
-
+  
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.addEventListener('mousedown', handleMouseDown);
+    }
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  
     return () => {
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      if (canvas) {
+        canvas.removeEventListener('mousedown', handleMouseDown);
+      }
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDrawing, startPoint, endPoint]);
+  }, [isDrawing, startPoint, endPoint]);  
 
   const getMergedSubImages = async () => {
     try {

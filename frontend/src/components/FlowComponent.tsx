@@ -858,8 +858,10 @@ const FlowComponent: React.FC = () => {
         })
 
         let currentRightEdge = 1500;
-        if (currentNode && currentNode.width) {
+        let currentTopEdge = 500;
+        if (currentNode && currentNode.width && currentNode.height) {
             currentRightEdge = currentNode.position.x + currentNode.width;
+            currentTopEdge = currentNode.position.y;
         } else {
             console.log("Cannot find the node with target id " + sourceId);
         }
@@ -874,7 +876,7 @@ const FlowComponent: React.FC = () => {
                             id: validNewNodeId,
                             type: 'subimageNode',
                             draggable: true,
-                            position: { x: currentRightEdge + 100, y: index * 100 + 100 },
+                            position: { x: currentRightEdge + 100, y: currentTopEdge + 100 },
                             data: { image: imageUrl, isDragging: isDragging, setIsDragging: setIsDragging, setNewConfirmationPopupNodeDataPackage: setNewConfirmationPopupNodeDataPackage },
                         }
                     );
