@@ -99,16 +99,16 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
     const canvas = canvasRef.current;
     if (canvas) {
       canvas.addEventListener('mousedown', handleMouseDown);
+      canvas.addEventListener('mouseup', handleMouseUp);
     }
     document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
   
     return () => {
       if (canvas) {
         canvas.removeEventListener('mousedown', handleMouseDown);
+        canvas.removeEventListener('mouseup', handleMouseUp);
       }
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDrawing, startPoint, endPoint]);  
 
