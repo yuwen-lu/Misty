@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Paintbrush, LayoutList, Plus } from 'lucide-react';
+import { Paintbrush, LayoutList, Plus, EllipsisVertical } from 'lucide-react';
 import { NodeProps } from 'reactflow';
 import "../../index.css";
 import { constructCodeReplacementPrompt, constructDragAndDropPrompt } from '../../prompts';
@@ -12,9 +12,10 @@ const ConfirmationPopupNode: React.FC<NodeProps> = ({ id, data }) => {
     const popupRef = useRef<HTMLDivElement>(null);
 
     const options = [
-        { icon: Plus, title: 'Addition', description: 'Add the selected UI elements' },
         { icon: Paintbrush, title: 'Color', description: 'Apply the colors to your design' },
         { icon: LayoutList, title: 'Layout', description: 'Arrange and structure your design elements' },
+        { icon: Plus, title: 'Content', description: 'Add the selected UI elements' },
+        { icon: EllipsisVertical, title: 'Customize', description: 'Specify a new blending aspect' },
     ];
 
     const handleSelection = (selection: string) => {

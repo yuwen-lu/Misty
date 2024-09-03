@@ -26,7 +26,8 @@ const getPromptForBlendMode = (blendModes: string[]): string => {
     const blendModeDescriptions: { [key: string]: string } = {
         "Color": "blend the prominent color of the reference image into",
         "Layout": "blend the layout of the reference image into",
-        "Addition": "add the content of the reference image to"
+        "Content": "add the content of the reference image to",
+        "Customize": "follow users' instructions below to blend the reference image into"
     };
 
     let promptText = "Help me ";
@@ -124,18 +125,16 @@ export const constructDragAndDropPrompt = (renderCode: string, targetCodeDropped
                 
         ${renderCode}. 
 
-        ${getPromptForBlendMode(blendMode)} ${targetCodeDropped === "" ? "the above code. " : `this specific piece taken from the above code: ${targetCodeDropped}. Change sections of the source code corresponding to this, as well as sections that are of similar layout or screen position to this. For example, don't just apply to one element in a list, but apply to all list elements with similar layouts.`}
+        ${getPromptForBlendMode(blendMode)} ${targetCodeDropped === "" ? " the above code. " : ` this specific piece taken from the above code: ${targetCodeDropped}. Change sections of the source code corresponding to this, as well as sections that are of similar layout or screen position to this. For example, don't just apply to one element in a list, but apply to all list elements with similar layouts. Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.`}
 
-        ${additionInput !== "" ? `Prioritize the user's instruction on blending details, make sure you follow it in your outputs:  ` + additionInput + `. Adapt the content and style of the added element to the ones of the code.` : ""}
-
-        Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
+        ${additionInput !== "" ? `The user specifically asked you to blend in this way, make sure you follow it in your outputs:  ` + additionInput + `. Adapt the content and style of the added element to the ones of the code.` : ""}
 
         A few rules:
 
 
         - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
         - Make sure all text is legible on the background.
-        - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Pay attention to ${blendMode.join(" ")}. Base your later generation of categorizedChanges based on these categories.
+        - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Pay attention to ${blendMode.filter(mode => mode !== "Customize").join(" ")}. Base your later generation of categorizedChanges based on these categories.
         - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
         - Do not use list and .map functions to represent lists. Just generate HTML elements for each of the list items.
         - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};

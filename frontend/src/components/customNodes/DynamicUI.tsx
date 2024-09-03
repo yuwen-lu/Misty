@@ -24,6 +24,9 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
         categorizedChanges.map(() => true)
     );
 
+    useEffect(() => {
+        console.log("toggles: " + categoryToggles.join(", "))
+    }, [categoryToggles])
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
