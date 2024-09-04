@@ -310,14 +310,14 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                         </div>
 
                         {state.map((category, categoryIndex) => {
-                            const shouldShowCategory = category.changes.some(change => {
-                                const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
-                                return shouldShowAfter || change.before;
-                            });
+                            // const shouldShowCategory = category.changes.some(change => {
+                            //     const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
+                            //     return shouldShowAfter || change.before;
+                            // });
 
-                            if (!shouldShowCategory) {
-                                return null; // Hide the entire category if no changes should be shown
-                            }
+                            // if (!shouldShowCategory) {
+                            //     return null; // Hide the entire category if no changes should be shown
+                            // }
 
                             return (
                                 <div key={category.category} className="mb-6 w-full flex flex-col items-start">
