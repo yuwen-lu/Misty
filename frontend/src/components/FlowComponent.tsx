@@ -108,22 +108,22 @@ const initialNodes: Node[] = [
         position: { x: 1200, y: 800 },
         data: { image: appleBookStore },
     },
+    // {
+    //     id: "5",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 2400, y: 1400 },
+    //     data: { image: bottomModalBase64 },
+    // },
+    // {
+    //     id: "6",
+    //     type: 'imageDisplayNode',
+    //     draggable: true,
+    //     position: { x: 2400, y: 500 },
+    //     data: { image: bottomModalGreenBase64 },
+    // },
     {
         id: "5",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 2400, y: 1400 },
-        data: { image: bottomModalBase64 },
-    },
-    {
-        id: "6",
-        type: 'imageDisplayNode',
-        draggable: true,
-        position: { x: 2400, y: 500 },
-        data: { image: bottomModalGreenBase64 },
-    },
-    {
-        id: "7",
         type: 'imageDisplayNode',
         draggable: true,
         position: { x: 400, y: 1000 },
@@ -150,13 +150,13 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 const initialCodeToRender: codeRenderNodeContent[] = [
     { code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
     { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    { code: RestaurantSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    { code: PhoneApp, prevCode: "", nodeId: "code-4", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    // { code: RestaurantSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    // { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    { code: PhoneApp, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
 
-// const fetchResponseUrl = 'http://localhost:5000/api/chat';
-const fetchResponseUrl = 'http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat';
+const fetchResponseUrl = 'http://localhost:5000/api/chat';
+// const fetchResponseUrl = 'http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat';
 
 const FlowComponent: React.FC = () => {
 
@@ -190,7 +190,6 @@ const FlowComponent: React.FC = () => {
             }
         };
     }, [abortController]);
-
 
     const toggleCodePanelVisible = () => {
         setCodePanelVisible(!codePanelVisible);
@@ -678,7 +677,7 @@ const FlowComponent: React.FC = () => {
         }
     };
 
-    const fetchSemanticDiffingResponse = async (code: string, targetNodeId: string, prevCode: string, discardCategory: string, keepCategory: string, addCategory: string) => {
+    const fetchSemanticDiffingResponse = async (code: string, targetNodeId: string, prevCode: string, discardCategory: string, addCategory: string, allCategories: string[]) => {
         console.log("Target node id " + targetNodeId);
 
         // Set the loading status here
@@ -689,7 +688,7 @@ const FlowComponent: React.FC = () => {
 
         try {
             const messageData = {
-                message: `Now I have this piece of code:\n${code} \n. It was made by changing this piece of code: \n ${prevCode} \n. Generally, these changes were being made: ${discardCategory + ", " + keepCategory}. Can you help me ${discardCategory ? `discard the ${discardCategory}` : ''}${discardCategory && keepCategory ? ', ' : ''}${keepCategory ? `keep the ${keepCategory}` : ''}${addCategory ? ` and add the ${addCategory}` : ''} categories? Return the updated code only, using a simple component format () => {return ()}.`,
+                message: `Now I have this piece of code:\n${code} \n. It was made by changing this piece of code: \n ${prevCode} \n. In total, these changes were being made: ${allCategories.join(", ")}. Can you help me ${discardCategory ? `discard ${discardCategory};` : ''}${addCategory ? ` add ${addCategory}?` : ''}, while keeping the rest? Return the updated code only, using a simple component format () => {return ()}.`,
                 json_mode: false
             };
 

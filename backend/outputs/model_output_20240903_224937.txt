@@ -1,0 +1,488 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+Now I have this piece of code:
+() => {
+  return (
+    <div className="bg-black w-full min-w-md text-white p-4 font-sans">
+    <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">My Books</div>
+        <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-800">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuHourglass className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">A Brief History of Time</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuCompass className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Sapiens: A Brief History of Humankind</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuFeather className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Thinking, Fast and Slow</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuScroll className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">The Selfish Gene</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Favorite Books</div>
+        <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-800">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuCable className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">The Catcher in the Rye</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBook className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">To Kill a Mockingbird</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuGlasses className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">1984 by George Orwell</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuPen className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">Pride and Prejudice</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Want to Read</div>
+        <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-800">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBrush className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">The Great Gatsby</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBrainCog className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Moby Dick</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBookOpen className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">War and Peace</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuSquare className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">The Odyssey</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+ 
+. It was made by changing this piece of code: 
+ () => {
+    return (
+        <div className="bg-white w-full min-w-md text-gray-900 p-4 font-sans">
+            
+            <div className="section mb-5">
+                
+                <div className="text-xl font-semibold mt-2 my-4">
+                    My Books
+                </div>
+                <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-100 p-4">
+                    
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuHourglass
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">
+                                A Brief History of Time
+                            </span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuCompass
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">
+                                Sapiens: A Brief History of Humankind
+                            </span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuFeather
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">
+                                Thinking, Fast and Slow
+                            </span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuScroll
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+                            
+                            <span className="w-72">The Selfish Gene</span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="section mb-5">
+                
+                <div className="text-xl font-semibold mt-2 my-4">
+                    Favorite Books
+                </div>
+                <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-100 p-4">
+                    
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuCable
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">
+                                The Catcher in the Rye
+                            </span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuBook className="text-gray-400 mr-4" size={40} />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">
+                                To Kill a Mockingbird
+                            </span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuGlasses
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">
+                                1984 by George Orwell
+                            </span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuPen className="text-gray-400 mr-4" size={40} />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+                            
+                            <span className="w-72">
+                                Pride and Prejudice
+                            </span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="section mb-5">
+                
+                <div className="text-xl font-semibold mt-2 my-4">
+                    Want to Read
+                </div>
+                <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-100 p-4">
+                    
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuBrush
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">The Great Gatsby</span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuBrainCog
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">Moby Dick</span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuBookOpen
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+                            
+                            <span className="w-72">War and Peace</span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <LuSquare
+                            className="text-gray-400 mr-4"
+                            size={40}
+                        />
+                        <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+                            
+                            <span className="w-72">The Odyssey</span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="section mb-5">
+                
+                <div className="text-xl font-semibold mt-2 my-4">
+                    Recent Reads
+                </div>
+                <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-100 p-4">
+                    
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <img
+                            src="/stock/nature_portrait0.jpg"
+                            alt="Book Cover"
+                            className="w-32 h-48 mr-4 rounded-xl"
+                        />
+                        <div className="flex flex-col justify-between py-2 pr-3 border-0 w-full">
+                            
+                            <span className="text-lg font-bold">
+                                Title A
+                            </span>
+                            <span>Author A</span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between pl-4 py-2 w-full">
+                        
+                        <img
+                            src="/stock/nature_portrait1.jpg"
+                            alt="Book Cover"
+                            className="w-32 h-48 mr-4 rounded-xl"
+                        />
+                        <div className="flex flex-col justify-between py-2 pr-3 border-0 w-full">
+                            
+                            <span className="text-lg font-bold">
+                                Title B
+                            </span>
+                            <span>Author B</span>
+                            <LuInfo className="text-blue-500" size={15} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+ 
+. In total, these changes were being made: Color: Changed dark theme to light theme, Layout: Added images and adjusted spacing, Image: Added illustrative images, Visual details: Increased corner roundedness, Background: Changed to a lighter background for sections. Can you help me discard Color: Changed dark theme to light theme;, while keeping the rest? Return the updated code only, using a simple component format () => {return ()}.
+
+Model output:
+```jsx
+import React from "react";
+import { LuHourglass, LuInfo, LuCompass, LuFeather, LuScroll, LuCable, LuBook, LuGlasses, LuPen, LuBrush, LuBrainCog, LuBookOpen, LuSquare } from "react-icons/lu";
+
+const MyComponent = () => {
+  return (
+    <div className="bg-black w-full min-w-md text-white p-4 font-sans">
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">My Books</div>
+        <div className="flex flex-col justify-items-center items-center rounded-xl bg-gray-800 p-4">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuHourglass className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">A Brief History of Time</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuCompass className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Sapiens: A Brief History of Humankind</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuFeather className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Thinking, Fast and Slow</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuScroll className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">The Selfish Gene</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Favorite Books</div>
+        <div className="flex flex-col justify-items-center items-center rounded-xl bg-gray-800 p-4">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuCable className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">The Catcher in the Rye</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBook className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">To Kill a Mockingbird</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuGlasses className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">1984 by George Orwell</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuPen className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">Pride and Prejudice</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Want to Read</div>
+        <div className="flex flex-col justify-items-center items-center rounded-xl bg-gray-800 p-4">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBrush className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">The Great Gatsby</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBrainCog className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Moby Dick</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBookOpen className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">War and Peace</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuSquare className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">The Odyssey</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Recent Reads</div>
+        <div className="flex flex-col justify-items-center items-center rounded-xl bg-gray-800 p-4">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <img
+              src="/stock/nature_portrait0.jpg"
+              alt="Book Cover"
+              className="w-32 h-48 mr-4 rounded-xl"
+            />
+            <div className="flex flex-col justify-between py-2 pr-3 border-0 w-full">
+              <span className="text-lg font-bold">Title A</span>
+              <span>Author A</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <img
+              src="/stock/nature_portrait1.jpg"
+              alt="Book Cover"
+              className="w-32 h-48 mr-4 rounded-xl"
+            />
+            <div className="flex flex-col justify-between py-2 pr-3 border-0 w-full">
+              <span className="text-lg font-bold">Title B</span>
+              <span>Author B</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MyComponent;
+```

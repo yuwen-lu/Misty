@@ -106,6 +106,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
         if (!isAnimating) {
             setIsAnimating(true);
         }
+        console.log("huh? \n" + data.base64Image);
         // Call the handleFetchResponse with the regenerate flag set to true
         data.handleFetchResponse(
             data.textPrompt,

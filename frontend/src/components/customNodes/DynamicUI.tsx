@@ -12,17 +12,16 @@ interface DynamicUIProps {
     blendedCode: string;
     newCode: string;
     handleCodeReplacement: (nodeId: string, newCode: string) => void;
-    fetchSemanticDiffingResponse: (code: string, targetNodeId: string, prevCode: string, discardCategory: string, keepCategory: string, addCategory: string) => void;
+    fetchSemanticDiffingResponse: (code: string, targetNodeId: string, prevCode: string, discardCategory: string, addCategory: string, allCategories: string[]) => void;
     sethoverIdxList: (hoverIdxList: number[]) => void;
 }
 
 const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, fetchSemanticDiffingResponse, sethoverIdxList }) => {
     const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
     const [isAnimating, setIsAnimating] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [categoryToggles, setCategoryToggles] = useState<boolean[]>(() =>
-        categorizedChanges.map(() => true)
-    );
+    const [isExpanded, setIsExpanded] = useState(true);
+    const [categoryToggles, setCategoryToggles] = useState<boolean[]>(new Array(categorizedChanges.length).fill(true));
+
 
     useEffect(() => {
         console.log("toggles: " + categoryToggles.join(", "))
@@ -42,12 +41,18 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
 
     const handleToggleCategory = async (categoryIndex: number) => {
         const category = state[categoryIndex];
+        // get all other categories too
+        let allActiveCategories: string[] = [];
+        for (let i = 0; i < state.length; i++) {
+            if (categoryToggles[i]) allActiveCategories.push(state[i].category);
+        }
+
         const newToggles = [...categoryToggles];
         newToggles[categoryIndex] = !newToggles[categoryIndex];
         setCategoryToggles(newToggles);
-    
+
         let updatedCode = blendedCode;
-        
+
         if (!newToggles[categoryIndex]) {
             // If toggling off, reset the changes in this category
             const resetCategoryChanges = category.changes.map(change => ({
@@ -57,18 +62,18 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
             const newState = [...state];
             newState[categoryIndex].changes = resetCategoryChanges;
             setState(newState);
-    
+
             // Make the API call to discard changes in this category
-            fetchSemanticDiffingResponse(prevCode, nodeId, blendedCode, category.category, "", "");
-    
+            fetchSemanticDiffingResponse(prevCode, nodeId, blendedCode, category.category, "", allActiveCategories);
+
         } else {
             // If toggling on, reapply the changes in this category
-            fetchSemanticDiffingResponse(prevCode, nodeId, blendedCode, "", category.category, "");
+            fetchSemanticDiffingResponse(prevCode, nodeId, blendedCode, "", category.category, allActiveCategories);
         }
-    
+
         handleCodeReplacement(nodeId, updatedCode);
     };
-    
+
 
 
 
@@ -283,7 +288,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                 <div className={`relative ${isExpanded ? 'flex w-full min-w-xl' : ''}`}>
                     <div className={`h-full flex items-center ${isExpanded ? 'ml-7 mr-5' : 'absolute left-7'}`} >
                         <button
-                            onClick={() => setIsExpanded( currentIsExpanded => !currentIsExpanded)}
+                            onClick={() => setIsExpanded(currentIsExpanded => !currentIsExpanded)}
                             className="text-purple-900 h-full">
                             <ChevronRight className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} size={32} />
                         </button>
@@ -340,7 +345,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                         </label>
                                     </div>
 
-                                    {category.changes.map((change, changeIndex) => {
+                                    {/* {category.changes.map((change, changeIndex) => {
                                         const shouldShowAfter = splitChanges(change.after).some(changeItem => getDropdownOptions(changeItem).length > 1);
 
                                         if (!change.before && !shouldShowAfter) {
@@ -385,7 +390,7 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
                                                 )}
                                             </div>
                                         );
-                                    })}
+                                    })} */}
                                 </div>
                             );
                         })}
