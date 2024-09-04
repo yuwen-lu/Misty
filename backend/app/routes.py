@@ -4,6 +4,7 @@ import base64
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+import pytz  # Import pytz for time zone handling
 
 main = Blueprint('main', __name__)
 
@@ -24,10 +25,14 @@ def chat():
         image = image.split("base64,")[-1]
 
     output_dir = "outputs"
-    # Get the current timestamp and format it as a string
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Get the current timestamp in Pacific Time
+    pacific_tz = pytz.timezone('America/Los_Angeles')
+    timestamp = datetime.now(pacific_tz).strftime("%Y%m%d_%H%M%S")
+    
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    
     filename = os.path.join(output_dir, f"model_output_{timestamp}.txt")
 
     # SSE streaming response
@@ -89,7 +94,6 @@ def chat():
             file.write(f"{system_prompt['content']}\n\n")
             
             # Log user prompt
-            file.write("User prompt:\n")
             if image:
                 file.write(f"Message: {message}\n")
                 file.write(f"Image: data:image/png;base64,{image}\n\n")
