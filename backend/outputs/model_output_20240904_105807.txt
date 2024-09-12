@@ -1,0 +1,87 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. 
+() => { return ( <div className='max-w-2xl mx-auto bg-white p-4'> <div className='mb-4'> <h1 className='text-2xl font-bold text-gray-900'>Most Popular</h1> <img src='/stock/nature_landscape0.jpg' alt='Nature Landscape' className='mt-2 mb-4 w-full rounded-lg shadow-md' /> <div className='mb-4 flex justify-center'> <button className='mr-2 px-3 py-1 bg-gray-100 text-gray-700 rounded'> Nearby </button> <button className='mr-2 px-3 py-1 bg-gray-100 text-gray-700 rounded'> Epic views </button> <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'> Wildflowers </button> </div> </div> <div className='space-y-4 text-gray-800'> {[ { name: 'Steep Ravine, Dipsea and Matt Davis', location: 'Stinson Beach, California', rating: 4.8, difficulty: 'Moderate', distance: '6.60 mi', time: 'Est. 3h 41m', }, { name: 'Bear Mountain, Appalachian Trail', location: 'Bear Mountain, New York', rating: 4.7, difficulty: 'Hard', distance: '4.00 mi', time: 'Est. 2h 20m', }, { name: 'Sunset Ridge, Griffith Park', location: 'Los Angeles, California', rating: 4.9, difficulty: 'Easy', distance: '3.20 mi', time: 'Est. 1h 30m', }, { name: 'Yosemite Falls Trail', location: 'Yosemite National Park, California', rating: 4.8, difficulty: 'Hard', distance: '7.20 mi', time: 'Est. 6h 00m', }, { name: 'Angel's Landing', location: 'Zion National Park, Utah', rating: 4.9, difficulty: 'Hard', distance: '5.40 mi', time: 'Est. 4h 00m', }, ].map((trail, index) => ( <div key={index} className='border border-gray-200 p-4 rounded flex items-center'> <LuMapPin className='w-6 h-6 mr-3 text-gray-500' /> <div> <h3 className='font-semibold text-lg'>{trail.name}</h3> <p className='text-gray-600'>{trail.location}</p> <div className='mt-2 text-sm text-gray-500 flex'> <span className='mr-2'>⭐ {trail.rating}</span> <span className='mr-2'>• {trail.difficulty}</span> <span> {trail.distance} • {trail.time} </span> </div> </div> <LuChevronRight className='ml-auto w-6 h-6 text-gray-500' /> </div> ))} </div> </div> ); };
+
+Model output:
+```typescript
+import React from 'react';
+import { LuMapPin, LuChevronRight } from 'react-icons/lu';
+
+const PopularTrails: React.FC = () => {
+  return (
+    <div className='max-w-2xl mx-auto bg-white p-4'>
+      <div className='mb-4'>
+        <h1 className='text-2xl font-bold text-gray-900'>Most Popular</h1>
+        <img src='/stock/nature_landscape0.jpg' alt='Nature Landscape' className='mt-2 mb-4 w-full rounded-lg shadow-md' />
+        <div className='mb-4 flex justify-center'>
+          <button className='mr-2 px-3 py-1 bg-gray-100 text-gray-700 rounded'>Nearby</button>
+          <button className='mr-2 px-3 py-1 bg-gray-100 text-gray-700 rounded'>Epic views</button>
+          <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Wildflowers</button>
+        </div>
+      </div>
+      <div className='space-y-4 text-gray-800'>
+        {[
+          {
+            name: 'Steep Ravine, Dipsea and Matt Davis',
+            location: 'Stinson Beach, California',
+            rating: 4.8,
+            difficulty: 'Moderate',
+            distance: '6.60 mi',
+            time: 'Est. 3h 41m',
+          },
+          {
+            name: 'Bear Mountain, Appalachian Trail',
+            location: 'Bear Mountain, New York',
+            rating: 4.7,
+            difficulty: 'Hard',
+            distance: '4.00 mi',
+            time: 'Est. 2h 20m',
+          },
+          {
+            name: 'Sunset Ridge, Griffith Park',
+            location: 'Los Angeles, California',
+            rating: 4.9,
+            difficulty: 'Easy',
+            distance: '3.20 mi',
+            time: 'Est. 1h 30m',
+          },
+          {
+            name: 'Yosemite Falls Trail',
+            location: 'Yosemite National Park, California',
+            rating: 4.8,
+            difficulty: 'Hard',
+            distance: '7.20 mi',
+            time: 'Est. 6h 00m',
+          },
+          {
+            name: "Angel's Landing",
+            location: 'Zion National Park, Utah',
+            rating: 4.9,
+            difficulty: 'Hard',
+            distance: '5.40 mi',
+            time: 'Est. 4h 00m',
+          },
+        ].map((trail, index) => (
+          <div key={index} className='border border-gray-200 p-4 rounded flex items-center'>
+            <LuMapPin className='w-6 h-6 mr-3 text-gray-500' />
+            <div>
+              <h3 className='font-semibold text-lg'>{trail.name}</h3>
+              <p className='text-gray-600'>{trail.location}</p>
+              <div className='mt-2 text-sm text-gray-500 flex'>
+                <span className='mr-2'>⭐ {trail.rating}</span>
+                <span className='mr-2'>• {trail.difficulty}</span>
+                <span>{trail.distance} • {trail.time}</span>
+              </div>
+            </div>
+            <LuChevronRight className='ml-auto w-6 h-6 text-gray-500' />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default PopularTrails;
+```

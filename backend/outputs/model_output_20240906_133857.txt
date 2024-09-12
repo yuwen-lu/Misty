@@ -1,0 +1,123 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. 
+() => {
+    const booksSection1 = [
+        {
+            icon: <LuHourglass />, 
+            title: "A Brief History of Time",
+            image: "landscape0.jpg",
+        },
+        {
+            icon: <LuCompass />, 
+            title: "Sapiens: A Brief History of Humankind",
+            image: "landscape1.jpg",
+        },
+        {
+            icon: <LuFeather />, 
+            title: "Thinking, Fast and Slow",
+            image: "landscape2.jpg",
+        },
+        {
+            icon: <LuScroll />, 
+            title: "The Selfish Gene",
+            image: "landscape3.jpg",
+        },
+    ];
+
+    return (
+        <div className="bg-white w-full min-w-md text-gray-900 p-4 font-sans">
+            <div className="text-4xl font-bold p-4 text-center">
+                Most Popular
+            </div>
+            <div className="w-full h-48 p-4 flex flex-col items-center justify-center bg-gray-200 rounded">
+                <img src="/stock/nature_landscape0.jpg" alt="Nature image" className="rounded-lg mb-2 w-full h-full object-cover"/>
+            </div>
+            <div className="mt-4">
+                {booksSection1.map((book, index) => (
+                    <div key={index} className="flex items-center bg-gray-100 rounded-lg my-2 p-4">
+                        <img 
+                            src={/stock/${book.image}} 
+                            alt={book.title} 
+                            className="w-16 h-16 rounded-lg"
+                        />
+                        <div className="flex flex-col ml-4">
+                            <div className="text-lg font-semibold">
+                                {book.title}
+                            </div>
+                            <div className="text-gray-500 mt-1">
+                                {book.icon}
+                            </div>
+                        </div>
+                        <LuInfo className="ml-auto text-gray-500" size={20} />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+Model output:
+```typescript
+import React from 'react';
+import { LuHourglass, LuCompass, LuFeather, LuScroll, LuInfo } from 'lucide-react';
+
+const MyComponent: React.FC = () => {
+    const booksSection1 = [
+        {
+            icon: <LuHourglass />,
+            title: "A Brief History of Time",
+            image: "landscape0.jpg",
+        },
+        {
+            icon: <LuCompass />,
+            title: "Sapiens: A Brief History of Humankind",
+            image: "landscape1.jpg",
+        },
+        {
+            icon: <LuFeather />,
+            title: "Thinking, Fast and Slow",
+            image: "landscape2.jpg",
+        },
+        {
+            icon: <LuScroll />,
+            title: "The Selfish Gene",
+            image: "landscape3.jpg",
+        },
+    ];
+
+    return (
+        <div className="bg-white w-full min-w-md text-gray-900 p-4 font-sans">
+            <div className="text-4xl font-bold p-4 text-center">
+                Most Popular
+            </div>
+            <div className="w-full h-48 p-4 flex flex-col items-center justify-center bg-gray-200 rounded">
+                <img src="/stock/nature_landscape0.jpg" alt="Nature image" className="rounded-lg mb-2 w-full h-full object-cover"/>
+            </div>
+            <div className="mt-4">
+                {booksSection1.map((book, index) => (
+                    <div key={index} className="flex items-center bg-gray-100 rounded-lg my-2 p-4">
+                        <img 
+                            src={`/stock/${book.image}`} 
+                            alt={book.title} 
+                            className="w-16 h-16 rounded-lg"
+                        />
+                        <div className="flex flex-col ml-4">
+                            <div className="text-lg font-semibold">
+                                {book.title}
+                            </div>
+                            <div className="text-gray-500 mt-1">
+                                {book.icon}
+                            </div>
+                        </div>
+                        <LuInfo className="ml-auto text-gray-500" size={20} />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default MyComponent;
+```

@@ -1,0 +1,389 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+Now I have this piece of code:
+() => {
+  return (
+    <div className="bg-white w-full min-w-md text-black p-4 font-sans">
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">My Books</div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait0.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">A Brief History of Time</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Stephen Hawking</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait1.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Sapiens: A Brief History of Humankind</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Yuval Noah Harari</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait2.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Thinking, Fast and Slow</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Daniel Kahneman</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait3.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Selfish Gene</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Richard Dawkins</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Favorite Books</div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait4.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Catcher in the Rye</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">J.D. Salinger</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait5.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">To Kill a Mockingbird</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Harper Lee</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait6.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">1984 by George Orwell</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">George Orwell</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait7.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Pride and Prejudice</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Jane Austen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Want to Read</div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait8.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Great Gatsby</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">F. Scott Fitzgerald</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait0.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Moby Dick</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Herman Melville</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait1.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">War and Peace</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Leo Tolstoy</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait2.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Odyssey</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Homer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+ 
+. It was made by changing this piece of code: 
+ () => {
+  return (
+    <div className="bg-white w-full min-w-md text-black p-4 font-sans">
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">My Books</div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait0.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">A Brief History of Time</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Stephen Hawking</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait1.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Sapiens: A Brief History of Humankind</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Yuval Noah Harari</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait2.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Thinking, Fast and Slow</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Daniel Kahneman</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait3.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Selfish Gene</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Richard Dawkins</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Favorite Books</div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait4.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Catcher in the Rye</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">J.D. Salinger</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait5.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">To Kill a Mockingbird</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Harper Lee</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait6.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">1984 by George Orwell</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">George Orwell</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait7.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Pride and Prejudice</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Jane Austen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Want to Read</div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait8.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Great Gatsby</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">F. Scott Fitzgerald</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait0.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Moby Dick</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Herman Melville</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait1.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">War and Peace</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Leo Tolstoy</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait2.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Odyssey</span>
+                <LuInfo className="text-blue-500 ml-2" size={18} />
+              </div>
+              <div className="text-sm text-gray-600">Homer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+ 
+. In total, these changes were being made: Visual details: Removed info button by eliminating LuInfo from spans. Can you help me  add Layout: Adapted the layout for title section, removed icons and added right arrow?, while keeping the rest? Return the updated code only, using a simple component format () => {return ()}.
+
+Model output:
+```jsx
+import { BsArrowRight } from "react-icons/bs"; // Importing right arrow icon
+
+const MyComponent = () => {
+  return (
+    <div className="bg-white w-full min-w-md text-black p-4 font-sans">
+      <div className="section mb-5">
+        <div className="flex justify-between items-center text-xl font-semibold mt-2 my-4">
+          <span>My Books</span>
+          <BsArrowRight className="text-right text-blue-500" size={18} />
+        </div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait0.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">A Brief History of Time</span>
+              </div>
+              <div className="text-sm text-gray-600">Stephen Hawking</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait1.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Sapiens: A Brief History of Humankind</span>
+              </div>
+              <div className="text-sm text-gray-600">Yuval Noah Harari</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait2.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Thinking, Fast and Slow</span>
+              </div>
+              <div className="text-sm text-gray-600">Daniel Kahneman</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait3.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Selfish Gene</span>
+              </div>
+              <div className="text-sm text-gray-600">Richard Dawkins</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="flex justify-between items-center text-xl font-semibold mt-2 my-4">
+          <span>Favorite Books</span>
+          <BsArrowRight className="text-right text-blue-500" size={18} />
+        </div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait4.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Catcher in the Rye</span>
+              </div>
+              <div className="text-sm text-gray-600">J.D. Salinger</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait5.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">To Kill a Mockingbird</span>
+              </div>
+              <div className="text-sm text-gray-600">Harper Lee</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait6.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">1984 by George Orwell</span>
+              </div>
+              <div className="text-sm text-gray-600">George Orwell</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/portrait7.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Pride and Prejudice</span>
+              </div>
+              <div className="text-sm text-gray-600">Jane Austen</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="flex justify-between items-center text-xl font-semibold mt-2 my-4">
+          <span>Want to Read</span>
+          <BsArrowRight className="text-right text-blue-500" size={18} />
+        </div>
+        <div className="bg-gray-100 rounded-lg shadow-md overflow-hidden">
+          <div className="flex space-x-4 overflow-auto p-2">
+            <div className="w-64">
+              <img src="/stock/portrait8.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Great Gatsby</span>
+              </div>
+              <div className="text-sm text-gray-600">F. Scott Fitzgerald</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait0.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">Moby Dick</span>
+              </div>
+              <div className="text-sm text-gray-600">Herman Melville</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait1.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">War and Peace</span>
+              </div>
+              <div className="text-sm text-gray-600">Leo Tolstoy</div>
+            </div>
+            <div className="w-64">
+              <img src="/stock/nature_portrait2.jpg" alt="Book" className="w-full h-40 object-cover rounded-md" />
+              <div className="py-2">
+                <span className="font-medium">The Odyssey</span>
+              </div>
+              <div className="text-sm text-gray-600">Homer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MyComponent;
+```

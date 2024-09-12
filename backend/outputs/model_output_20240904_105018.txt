@@ -1,0 +1,494 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+Now I have this piece of code:
+() => {
+  return (
+    <div className="bg-black w-full min-w-md text-white p-4 font-sans">
+    <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">My Books</div>
+        <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-800">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuHourglass className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">A Brief History of Time</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuCompass className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Sapiens: A Brief History of Humankind</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuFeather className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Thinking, Fast and Slow</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuScroll className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">The Selfish Gene</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Favorite Books</div>
+        <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-800">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuCable className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">The Catcher in the Rye</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBook className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">To Kill a Mockingbird</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuGlasses className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">1984 by George Orwell</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuPen className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">Pride and Prejudice</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="section mb-5">
+        <div className="text-xl font-semibold mt-2 my-4">Want to Read</div>
+        <div className="flex flex-col justify-items-center items-center rounded-lg bg-gray-800">
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBrush className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">The Great Gatsby</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBrainCog className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">Moby Dick</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuBookOpen className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 border-b border-gray-500/90 w-full">
+              <span className="w-72">War and Peace</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between pl-4 py-2 w-full">
+            <LuSquare className="text-gray-400 mr-4" size={40} />
+            <div className="flex items-center space-x-3 py-2 pr-3 border-0 w-full">
+              <span className="w-72">The Odyssey</span>
+              <LuInfo className="text-blue-500" size={15} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+ 
+. It was made by changing this piece of code: 
+ () => {
+    return (
+        <div className="bg-white w-full min-w-md text-gray-900 p-4 font-sans">
+            
+            <div className="section mb-5">
+                
+                <div className="text-2xl font-semibold mt-2 my-4">
+                    My Books
+                    <LuChevronRight
+                        className="inline-block ml-2 text-gray-900"
+                        size={20}
+                    />
+                </div>
+                <div className="flex overflow-x-scroll space-x-4 pb-4">
+                    
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="A Brief History of Time"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape0.jpg"
+                            alt="A Brief History of Time"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            A Brief History of Time
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="Sapiens: A Brief History of Humankind"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape1.jpg"
+                            alt="Sapiens"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            Sapiens: A Brief History of Humankind
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="Thinking, Fast and Slow"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape2.jpg"
+                            alt="Thinking, Fast and Slow"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            Thinking, Fast and Slow
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="The Selfish Gene"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape3.jpg"
+                            alt="The Selfish Gene"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            The Selfish Gene
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="section mb-5">
+                
+                <div className="text-2xl font-semibold mt-2 my-4">
+                    Favorite Books
+                    <LuChevronRight
+                        className="inline-block ml-2 text-gray-900"
+                        size={20}
+                    />
+                </div>
+                <div className="flex overflow-x-scroll space-x-4 pb-4">
+                    
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="The Catcher in the Rye"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape4.jpg"
+                            alt="The Catcher in the Rye"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            The Catcher in the Rye
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="To Kill a Mockingbird"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape0.jpg"
+                            alt="To Kill a Mockingbird"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            To Kill a Mockingbird
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="1984 by George Orwell"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape1.jpg"
+                            alt="1984 by George Orwell"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            1984 by George Orwell
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="Pride and Prejudice"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape2.jpg"
+                            alt="Pride and Prejudice"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            Pride and Prejudice
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="section mb-5">
+                
+                <div className="text-2xl font-semibold mt-2 my-4">
+                    Want to Read
+                    <LuChevronRight
+                        className="inline-block ml-2 text-gray-900"
+                        size={20}
+                    />
+                </div>
+                <div className="flex overflow-x-scroll space-x-4 pb-4">
+                    
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="The Great Gatsby"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape3.jpg"
+                            alt="The Great Gatsby"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            The Great Gatsby
+                        </div>
+                    </div>
+                    <div className="flex-shrink-0 w-56" aria-label="Moby Dick">
+                        
+                        <img
+                            src="/stock/nature_landscape4.jpg"
+                            alt="Moby Dick"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            Moby Dick
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="War and Peace"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape0.jpg"
+                            alt="War and Peace"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            War and Peace
+                        </div>
+                    </div>
+                    <div
+                        className="flex-shrink-0 w-56"
+                        aria-label="The Odyssey"
+                    >
+                        
+                        <img
+                            src="/stock/nature_landscape1.jpg"
+                            alt="The Odyssey"
+                            className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="mt-2 text-gray-600 text-sm">
+                            The Odyssey
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+ 
+. In total, these changes were being made: Color: Changed dark to light theme, Layout: Horizontal scrolling sections, Font: Increased font sizes and updated appearance, Visual details: Rounded corners for images, Image: Used provided stock images. Can you help me discard Color: Changed dark to light theme;, while keeping the rest? Return the updated code only, using a simple component format () => {return ()}.
+
+Model output:
+```jsx
+import React from 'react';
+import { LuHourglass, LuInfo, LuCompass, LuFeather, LuScroll, LuCable, LuBook, LuGlasses, LuPen, LuBrush, LuBrainCog, LuBookOpen, LuSquare, LuChevronRight } from 'lucide-react';
+
+const MyBookshelf = () => {
+  return (
+    <div className="bg-black w-full min-w-md text-white p-4 font-sans">
+      <div className="section mb-5">
+        <div className="text-2xl font-semibold mt-2 my-4">
+          My Books
+          <LuChevronRight
+            className="inline-block ml-2 text-gray-900"
+            size={20}
+          />
+        </div>
+        <div className="flex overflow-x-scroll space-x-4 pb-4">
+          <div className="flex-shrink-0 w-56" aria-label="A Brief History of Time">
+            <img
+              src="/stock/nature_landscape0.jpg"
+              alt="A Brief History of Time"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              A Brief History of Time
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="Sapiens: A Brief History of Humankind">
+            <img
+              src="/stock/nature_landscape1.jpg"
+              alt="Sapiens"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              Sapiens: A Brief History of Humankind
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="Thinking, Fast and Slow">
+            <img
+              src="/stock/nature_landscape2.jpg"
+              alt="Thinking, Fast and Slow"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              Thinking, Fast and Slow
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="The Selfish Gene">
+            <img
+              src="/stock/nature_landscape3.jpg"
+              alt="The Selfish Gene"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              The Selfish Gene
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="section mb-5">
+        <div className="text-2xl font-semibold mt-2 my-4">
+          Favorite Books
+          <LuChevronRight
+            className="inline-block ml-2 text-gray-900"
+            size={20}
+          />
+        </div>
+        <div className="flex overflow-x-scroll space-x-4 pb-4">
+          <div className="flex-shrink-0 w-56" aria-label="The Catcher in the Rye">
+            <img
+              src="/stock/nature_landscape4.jpg"
+              alt="The Catcher in the Rye"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              The Catcher in the Rye
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="To Kill a Mockingbird">
+            <img
+              src="/stock/nature_landscape0.jpg"
+              alt="To Kill a Mockingbird"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              To Kill a Mockingbird
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="1984 by George Orwell">
+            <img
+              src="/stock/nature_landscape1.jpg"
+              alt="1984 by George Orwell"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              1984 by George Orwell
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="Pride and Prejudice">
+            <img
+              src="/stock/nature_landscape2.jpg"
+              alt="Pride and Prejudice"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              Pride and Prejudice
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="section mb-5">
+        <div className="text-2xl font-semibold mt-2 my-4">
+          Want to Read
+          <LuChevronRight
+            className="inline-block ml-2 text-gray-900"
+            size={20}
+          />
+        </div>
+        <div className="flex overflow-x-scroll space-x-4 pb-4">
+          <div className="flex-shrink-0 w-56" aria-label="The Great Gatsby">
+            <img
+              src="/stock/nature_landscape3.jpg"
+              alt="The Great Gatsby"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              The Great Gatsby
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="Moby Dick">
+            <img
+              src="/stock/nature_landscape4.jpg"
+              alt="Moby Dick"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              Moby Dick
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="War and Peace">
+            <img
+              src="/stock/nature_landscape0.jpg"
+              alt="War and Peace"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              War and Peace
+            </div>
+          </div>
+          <div className="flex-shrink-0 w-56" aria-label="The Odyssey">
+            <img
+              src="/stock/nature_landscape1.jpg"
+              alt="The Odyssey"
+              className="w-full h-32 object-cover rounded-lg"
+            />
+            <div className="mt-2 text-gray-600 text-sm">
+              The Odyssey
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MyBookshelf;
+```

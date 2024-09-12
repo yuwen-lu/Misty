@@ -1,0 +1,82 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. 
+() => {  return (    <div className='bg-white min-h-screen text-gray-900 font-sans p-4'>      <div className='mb-5'>        <div className='mb-4'>          <div className='text-3xl font-bold'>Most Popular</div>          <div className='flex items-center justify-center bg-gray-100 mb-4 p-4 rounded-lg'>            <img src='/stock/nature_landscape0.jpg' alt='Most Popular Cover' className='w-32 h-32 object-cover rounded-full' />          </div>        </div>        <div className='space-y-4'>          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>            <img src='/stock/nature_landscape0.jpg' alt='A Brief History of Time' className='w-16 h-16 object-cover rounded-full' />            <div>              <div className='text-lg font-medium'>A Brief History of Time</div>              <div className='text-gray-500'>Stephen Hawking</div>            </div>            <LuArrowRight className='ml-auto' />          </div>          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>            <img src='/stock/nature_landscape1.jpg' alt='Sapiens' className='w-16 h-16 object-cover rounded-full' />            <div>              <div className='text-lg font-medium'>Sapiens: A Brief History of Humankind</div>              <div className='text-gray-500'>Yuval Noah Harari</div>            </div>            <LuArrowRight className='ml-auto' />          </div>          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>            <img src='/stock/nature_landscape2.jpg' alt='Thinking, Fast and Slow' className='w-16 h-16 object-cover rounded-full' />            <div>              <div className='text-lg font-medium'>Thinking, Fast and Slow</div>              <div className='text-gray-500'>Daniel Kahneman</div>            </div>            <LuArrowRight className='ml-auto' />          </div>          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>            <img src='/stock/nature_landscape3.jpg' alt='The Selfish Gene' className='w-16 h-16 object-cover rounded-full' />            <div>              <div className='text-lg font-medium'>The Selfish Gene</div>              <div className='text-gray-500'>Richard Dawkins</div>            </div>            <LuArrowRight className='ml-auto' />          </div>        </div>      </div>    </div>  );});
+
+Model output:
+```typescript
+import React from 'react';
+import { LuArrowRight } from 'react-icons/lu';
+
+const MyComponent: React.FC = () => {
+  return (
+    <div className='bg-white min-h-screen text-gray-900 font-sans p-4'>
+      <div className='mb-5'>
+        <div className='mb-4'>
+          <div className='text-3xl font-bold'>Most Popular</div>
+          <div className='flex items-center justify-center bg-gray-100 mb-4 p-4 rounded-lg'>
+            <img
+              src='/stock/nature_landscape0.jpg'
+              alt='Most Popular Cover'
+              className='w-32 h-32 object-cover rounded-full'
+            />
+          </div>
+        </div>
+        <div className='space-y-4'>
+          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>
+            <img
+              src='/stock/nature_landscape0.jpg'
+              alt='A Brief History of Time'
+              className='w-16 h-16 object-cover rounded-full'
+            />
+            <div>
+              <div className='text-lg font-medium'>A Brief History of Time</div>
+              <div className='text-gray-500'>Stephen Hawking</div>
+            </div>
+            <LuArrowRight className='ml-auto' />
+          </div>
+          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>
+            <img
+              src='/stock/nature_landscape1.jpg'
+              alt='Sapiens'
+              className='w-16 h-16 object-cover rounded-full'
+            />
+            <div>
+              <div className='text-lg font-medium'>Sapiens: A Brief History of Humankind</div>
+              <div className='text-gray-500'>Yuval Noah Harari</div>
+            </div>
+            <LuArrowRight className='ml-auto' />
+          </div>
+          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>
+            <img
+              src='/stock/nature_landscape2.jpg'
+              alt='Thinking, Fast and Slow'
+              className='w-16 h-16 object-cover rounded-full'
+            />
+            <div>
+              <div className='text-lg font-medium'>Thinking, Fast and Slow</div>
+              <div className='text-gray-500'>Daniel Kahneman</div>
+            </div>
+            <LuArrowRight className='ml-auto' />
+          </div>
+          <div className='flex items-center space-x-4 bg-gray-50 p-4 rounded-lg shadow'>
+            <img
+              src='/stock/nature_landscape3.jpg'
+              alt='The Selfish Gene'
+              className='w-16 h-16 object-cover rounded-full'
+            />
+            <div>
+              <div className='text-lg font-medium'>The Selfish Gene</div>
+              <div className='text-gray-500'>Richard Dawkins</div>
+            </div>
+            <LuArrowRight className='ml-auto' />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default MyComponent;
+```

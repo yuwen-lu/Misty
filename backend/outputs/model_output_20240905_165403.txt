@@ -1,0 +1,191 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. 
+() => { 
+ return ( 
+ <div className='max-w-2xl mx-auto bg-white p-4'> 
+ <div className='mb-4'> 
+ <input 
+ type='text' 
+ placeholder='Find parks' 
+ className='w-full p-2 border border-gray-300 rounded' 
+ /> 
+ </div> 
+ <div className='mb-4'> 
+ <button className='mr-2 px-3 py-1 bg-green-200 text-green-700 rounded flex items-center gap-2'> 
+ <LuCompass /> 
+ Nearby 
+ </button> 
+ <button className='mr-2 px-3 py-1 bg-green-200 text-green-700 rounded flex items-center gap-2'> 
+ <LuAperture /> 
+ Epic views 
+ </button> 
+ <button className='px-3 py-1 bg-green-200 text-green-700 rounded flex items-center gap-2'> 
+ <LuFlower /> 
+ Wildflowers 
+ </button> 
+ </div> 
+ <div className='space-y-4 text-gray-800'> 
+ {[ 
+ { 
+ name: 'Steep Ravine, Dipsea and Matt Davis', 
+ location: 'Stinson Beach, California', 
+ rating: 4.8, 
+ difficulty: 'Moderate', 
+ distance: '6.60 mi', 
+ time: 'Est. 3h 41m', 
+ }, 
+ { 
+ name: 'Bear Mountain, Appalachian Trail', 
+ location: 'Bear Mountain, New York', 
+ rating: 4.7, 
+ difficulty: 'Hard', 
+ distance: '4.00 mi', 
+ time: 'Est. 2h 20m', 
+ }, 
+ { 
+ name: 'Sunset Ridge, Griffith Park', 
+ location: 'Los Angeles, California', 
+ rating: 4.9, 
+ difficulty: 'Easy', 
+ distance: '3.20 mi', 
+ time: 'Est. 1h 30m', 
+ }, 
+ { 
+ name: 'Yosemite Falls Trail', 
+ location: 'Yosemite National Park, California', 
+ rating: 4.8, 
+ difficulty: 'Hard', 
+ distance: '7.20 mi', 
+ time: 'Est. 6h 00m', 
+ }, 
+ { 
+ name: 'Angel's Landing', 
+ location: 'Zion National Park, Utah', 
+ rating: 4.9, 
+ difficulty: 'Hard', 
+ distance: '5.40 mi', 
+ time: 'Est. 4h 00m', 
+ }, 
+ ].map((trail, index) => ( 
+ <div key={index} className='border border-gray-200 p-4 rounded'> 
+ <h3 className='font-semibold text-lg text-blue-700 mb-2'>{trail.name}</h3> 
+ <p className='text-gray-600'>{trail.location}</p> 
+ <img src={/stock/nature_landscape${index % 5}.jpg} alt='trail_image' className='w-full h-40 object-cover my-2' /> 
+ <div className='mt-2 text-sm text-gray-500 flex items-center'> 
+ <LuStar className='mr-1 text-yellow-500' /> 
+ <span className='mr-2'>{trail.rating}</span> 
+ <LuActivity className='mr-1 text-blue-500' /> 
+ <span className='mr-2'>{trail.difficulty}</span> 
+ <LuClock className='mr-1 text-gray-500' /> 
+ <span>{trail.distance} • {trail.time}</span> 
+ </div> 
+ <button disabled={true} className='mt-2 text-red-500 text-sm'> 
+ <LuTrash className='mr-1' /> 
+ Delete 
+ </button> 
+ </div> 
+ ))} 
+ </div> 
+ </div> 
+ ); 
+ };
+
+Model output:
+```typescript
+import React from 'react';
+import { LuCompass, LuAperture, LuFlower, LuStar, LuActivity, LuClock, LuTrash } from 'react-icons/lu';
+
+const ParkFinder: React.FC = () => {
+  return (
+    <div className='max-w-2xl mx-auto bg-white p-4'>
+      <div className='mb-4'>
+        <input
+          type='text'
+          placeholder='Find parks'
+          className='w-full p-2 border border-gray-300 rounded'
+        />
+      </div>
+      <div className='mb-4'>
+        <button className='mr-2 px-3 py-1 bg-green-200 text-green-700 rounded flex items-center gap-2'>
+          <LuCompass />
+          Nearby
+        </button>
+        <button className='mr-2 px-3 py-1 bg-green-200 text-green-700 rounded flex items-center gap-2'>
+          <LuAperture />
+          Epic views
+        </button>
+        <button className='px-3 py-1 bg-green-200 text-green-700 rounded flex items-center gap-2'>
+          <LuFlower />
+          Wildflowers
+        </button>
+      </div>
+      <div className='space-y-4 text-gray-800'>
+        {[
+          {
+            name: 'Steep Ravine, Dipsea and Matt Davis',
+            location: 'Stinson Beach, California',
+            rating: 4.8,
+            difficulty: 'Moderate',
+            distance: '6.60 mi',
+            time: 'Est. 3h 41m',
+          },
+          {
+            name: 'Bear Mountain, Appalachian Trail',
+            location: 'Bear Mountain, New York',
+            rating: 4.7,
+            difficulty: 'Hard',
+            distance: '4.00 mi',
+            time: 'Est. 2h 20m',
+          },
+          {
+            name: 'Sunset Ridge, Griffith Park',
+            location: 'Los Angeles, California',
+            rating: 4.9,
+            difficulty: 'Easy',
+            distance: '3.20 mi',
+            time: 'Est. 1h 30m',
+          },
+          {
+            name: 'Yosemite Falls Trail',
+            location: 'Yosemite National Park, California',
+            rating: 4.8,
+            difficulty: 'Hard',
+            distance: '7.20 mi',
+            time: 'Est. 6h 00m',
+          },
+          {
+            name: "Angel's Landing",
+            location: 'Zion National Park, Utah',
+            rating: 4.9,
+            difficulty: 'Hard',
+            distance: '5.40 mi',
+            time: 'Est. 4h 00m',
+          },
+        ].map((trail, index) => (
+          <div key={index} className='border border-gray-200 p-4 rounded'>
+            <h3 className='font-semibold text-lg text-blue-700 mb-2'>{trail.name}</h3>
+            <p className='text-gray-600'>{trail.location}</p>
+            <img src={`/stock/nature_landscape${index % 5}.jpg`} alt='trail_image' className='w-full h-40 object-cover my-2' />
+            <div className='mt-2 text-sm text-gray-500 flex items-center'>
+              <LuStar className='mr-1 text-yellow-500' />
+              <span className='mr-2'>{trail.rating}</span>
+              <LuActivity className='mr-1 text-blue-500' />
+              <span className='mr-2'>{trail.difficulty}</span>
+              <LuClock className='mr-1 text-gray-500' />
+              <span>{trail.distance} • {trail.time}</span>
+            </div>
+            <button disabled={true} className='mt-2 text-red-500 text-sm'>
+              <LuTrash className='mr-1' />
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ParkFinder;
+```

@@ -1,0 +1,193 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. 
+() => { 
+  return ( 
+    <div className='bg-white w-full min-w-md text-gray-900 p-6 font-sans'> 
+      <div className='section mb-7'> 
+        <div className='flex items-center justify-between'> 
+          <div className='text-2xl font-bold mt-2 my-4'>Latest Originals</div> 
+          <LuChevronRight className='text-gray-600' size={24} /> 
+        </div> 
+        <div className='flex space-x-4 overflow-auto'> 
+          <div className='flex flex-col bg-gray-100 rounded-lg'> 
+            <img src='/stock/landscape0.jpg' alt='A Brief History of Time' className='rounded-t-lg h-40 w-full object-cover' /> 
+            <div className='p-2'> 
+              <div className='flex justify-between items-center'> 
+                <span className='text-sm font-semibold'>Prehistoric Planet</span> 
+                <LuInfo className='text-blue-500' size={18} /> 
+              </div> 
+              <span className='text-xs text-gray-600'>Documentary</span> 
+              <p className='text-xs text-gray-600'>The groundbreaking series is back with new dinosaurs and new habitats.</p> 
+            </div> 
+          </div> 
+          <div className='flex flex-col bg-gray-100 rounded-lg'> 
+            <img src='/stock/landscape1.jpg' alt='Sapiens' className='rounded-t-lg h-40 w-full object-cover' /> 
+            <div className='p-2'> 
+              <div className='flex justify-between items-center'> 
+                <span className='text-sm font-semibold'>Platonic</span> 
+                <LuInfo className='text-blue-500' size={18} /> 
+              </div> 
+              <span className='text-xs text-gray-600'>Comedy</span> 
+              <p className='text-xs text-gray-600'>Seth Rogen and Rose Byrne star as two friends who reunite for a new chapter.</p> 
+            </div> 
+          </div> 
+        </div> 
+      </div> 
+ 
+      <div className='section mb-7'> 
+        <div className='flex items-center justify-between'> 
+          <div className='text-2xl font-bold mt-2 my-4'>Favorite Books</div> 
+          <LuChevronRight className='text-gray-600' size={24} /> 
+        </div> 
+        <div className='flex space-x-4 overflow-auto'> 
+          <div className='flex flex-col bg-gray-100 rounded-lg'> 
+            <img src='/stock/landscape2.jpg' alt='The Catcher in the Rye' className='rounded-t-lg h-40 w-full object-cover' /> 
+            <div className='p-2'> 
+              <div className='flex justify-between items-center'> 
+                <span className='text-sm font-semibold'>The Catcher in the Rye</span> 
+                <LuInfo className='text-blue-500' size={18} /> 
+              </div> 
+            </div> 
+          </div> 
+          <div className='flex flex-col bg-gray-100 rounded-lg'> 
+            <img src='/stock/landscape3.jpg' alt='To Kill a Mockingbird' className='rounded-t-lg h-40 w-full object-cover' /> 
+            <div className='p-2'> 
+              <div className='flex justify-between items-center'> 
+                <span className='text-sm font-semibold'>To Kill a Mockingbird</span> 
+                <LuInfo className='text-blue-500' size={18} /> 
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+      </div> 
+ 
+      <div className='section mb-7'> 
+        <div className='flex items-center justify-between'> 
+          <div className='text-2xl font-bold mt-2 my-4'>Want to Read</div> 
+          <LuChevronRight className='text-gray-600' size={24} /> 
+        </div> 
+        <div className='flex space-x-4 overflow-auto'> 
+          <div className='flex flex-col bg-gray-100 rounded-lg'> 
+            <img src='/stock/landscape4.jpg' alt='The Great Gatsby' className='rounded-t-lg h-40 w-full object-cover' /> 
+            <div className='p-2'> 
+              <div className='flex justify-between items-center'> 
+                <span className='text-sm font-semibold'>The Great Gatsby</span> 
+                <LuInfo className='text-blue-500' size={18} /> 
+              </div> 
+            </div> 
+          </div> 
+          <div className='flex flex-col bg-gray-100 rounded-lg'> 
+            <img src='/stock/landscape5.jpg' alt='Moby Dick' className='rounded-t-lg h-40 w-full object-cover' /> 
+            <div className='p-2'> 
+              <div className='flex justify-between items-center'> 
+                <span className='text-sm font-semibold'>Moby Dick</span> 
+                <LuInfo className='text-blue-500' size={18} /> 
+              </div> 
+            </div> 
+          </div> 
+        </div> 
+      </div> 
+    </div> 
+  ); 
+});
+
+Model output:
+```typescript
+import { LuChevronRight, LuInfo } from 'react-icons/lu';
+import React from 'react';
+
+const MyComponent: React.FC = () => {
+  return (
+    <div className='bg-white w-full min-w-md text-gray-900 p-6 font-sans'>
+      <div className='section mb-7'>
+        <div className='flex items-center justify-between'>
+          <div className='text-2xl font-bold mt-2 my-4'>Latest Originals</div>
+          <LuChevronRight className='text-gray-600' size={24} />
+        </div>
+        <div className='flex space-x-4 overflow-auto'>
+          <div className='flex flex-col bg-gray-100 rounded-lg'>
+            <img src='/stock/landscape0.jpg' alt='A Brief History of Time' className='rounded-t-lg h-40 w-full object-cover' />
+            <div className='p-2'>
+              <div className='flex justify-between items-center'>
+                <span className='text-sm font-semibold'>Prehistoric Planet</span>
+                <LuInfo className='text-blue-500' size={18} />
+              </div>
+              <span className='text-xs text-gray-600'>Documentary</span>
+              <p className='text-xs text-gray-600'>The groundbreaking series is back with new dinosaurs and new habitats.</p>
+            </div>
+          </div>
+          <div className='flex flex-col bg-gray-100 rounded-lg'>
+            <img src='/stock/landscape1.jpg' alt='Sapiens' className='rounded-t-lg h-40 w-full object-cover' />
+            <div className='p-2'>
+              <div className='flex justify-between items-center'>
+                <span className='text-sm font-semibold'>Platonic</span>
+                <LuInfo className='text-blue-500' size={18} />
+              </div>
+              <span className='text-xs text-gray-600'>Comedy</span>
+              <p className='text-xs text-gray-600'>Seth Rogen and Rose Byrne star as two friends who reunite for a new chapter.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className='section mb-7'>
+        <div className='flex items-center justify-between'>
+          <div className='text-2xl font-bold mt-2 my-4'>Favorite Books</div>
+          <LuChevronRight className='text-gray-600' size={24} />
+        </div>
+        <div className='flex space-x-4 overflow-auto'>
+          <div className='flex flex-col bg-gray-100 rounded-lg'>
+            <img src='/stock/landscape2.jpg' alt='The Catcher in the Rye' className='rounded-t-lg h-40 w-full object-cover' />
+            <div className='p-2'>
+              <div className='flex justify-between items-center'>
+                <span className='text-sm font-semibold'>The Catcher in the Rye</span>
+                <LuInfo className='text-blue-500' size={18} />
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-col bg-gray-100 rounded-lg'>
+            <img src='/stock/landscape3.jpg' alt='To Kill a Mockingbird' className='rounded-t-lg h-40 w-full object-cover' />
+            <div className='p-2'>
+              <div className='flex justify-between items-center'>
+                <span className='text-sm font-semibold'>To Kill a Mockingbird</span>
+                <LuInfo className='text-blue-500' size={18} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className='section mb-7'>
+        <div className='flex items-center justify-between'>
+          <div className='text-2xl font-bold mt-2 my-4'>Want to Read</div>
+          <LuChevronRight className='text-gray-600' size={24} />
+        </div>
+        <div className='flex space-x-4 overflow-auto'>
+          <div className='flex flex-col bg-gray-100 rounded-lg'>
+            <img src='/stock/landscape4.jpg' alt='The Great Gatsby' className='rounded-t-lg h-40 w-full object-cover' />
+            <div className='p-2'>
+              <div className='flex justify-between items-center'>
+                <span className='text-sm font-semibold'>The Great Gatsby</span>
+                <LuInfo className='text-blue-500' size={18} />
+              </div>
+            </div>
+          </div>
+          <div className='flex flex-col bg-gray-100 rounded-lg'>
+            <img src='/stock/landscape5.jpg' alt='Moby Dick' className='rounded-t-lg h-40 w-full object-cover' />
+            <div className='p-2'>
+              <div className='flex justify-between items-center'>
+                <span className='text-sm font-semibold'>Moby Dick</span>
+                <LuInfo className='text-blue-500' size={18} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MyComponent;
+```

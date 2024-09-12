@@ -1,0 +1,269 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. 
+() => {
+  return (
+    <div className="bg-black w-full min-w-md text-white p-4 font-sans">
+      
+      <div className="section mb-5">
+        <div className="text-2xl font-sans font-bold mt-2 my-4 flex justify-between items-center">
+          <span>My Books</span>
+          <span className="text-sm text-gray-500 cursor-pointer">View all</span>
+        </div>
+        <div className="flex flex-row overflow-x-scroll space-x-4">
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait0.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                A Brief History of Time
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Stephen Hawking
+              </div>
+            </div>
+          </div>
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait1.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                Sapiens: A Brief History of Humankind
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Yuval Noah Harari
+              </div>
+            </div>
+          </div>
+          {/* Add more book items here */}
+        </div>
+      </div>
+      
+      <div className="section mb-5">
+        <div className="text-2xl font-sans font-bold mt-2 my-4 flex justify-between items-center">
+          <span>Favorite Books</span>
+          <span className="text-sm text-gray-500 cursor-pointer">See more</span>
+        </div>
+        <div className="flex flex-row overflow-x-scroll space-x-4">
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait2.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                The Catcher in the Rye
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                J.D. Salinger
+              </div>
+            </div>
+          </div>
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait3.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                To Kill a Mockingbird
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Harper Lee
+              </div>
+            </div>
+          </div>
+          {/* Add more book items here */}
+        </div>
+      </div>
+      
+      <div className="section mb-5">
+        <div className="text-2xl font-sans font-bold mt-2 my-4 flex justify-between items-center">
+          <span>Want to Read</span>
+          <span className="text-sm text-gray-500 cursor-pointer">Explore</span>
+        </div>
+        <div className="flex flex-row overflow-x-scroll space-x-4">
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait4.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                The Great Gatsby
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                F. Scott Fitzgerald
+              </div>
+            </div>
+          </div>
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait5.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                Moby Dick
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Herman Melville
+              </div>
+            </div>
+          </div>
+          {/* Add more book items here */}
+        </div>
+      </div>
+      
+    </div>
+  );
+};
+
+
+Note: Don't forget to import your icons from react-icons.
+
+Model output:
+```typescript
+import React from 'react';
+
+const BookSection: React.FC = () => {
+  return (
+    <div className="bg-black w-full min-w-md text-white p-4 font-sans">
+      
+      <div className="section mb-5">
+        <div className="text-2xl font-sans font-bold mt-2 my-4 flex justify-between items-center">
+          <span>My Books</span>
+          <span className="text-sm text-gray-500 cursor-pointer">View all</span>
+        </div>
+        <div className="flex flex-row overflow-x-scroll space-x-4">
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait0.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                A Brief History of Time
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Stephen Hawking
+              </div>
+            </div>
+          </div>
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait1.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                Sapiens: A Brief History of Humankind
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Yuval Noah Harari
+              </div>
+            </div>
+          </div>
+          {/* Add more book items here */}
+        </div>
+      </div>
+      
+      <div className="section mb-5">
+        <div className="text-2xl font-sans font-bold mt-2 my-4 flex justify-between items-center">
+          <span>Favorite Books</span>
+          <span className="text-sm text-gray-500 cursor-pointer">See more</span>
+        </div>
+        <div className="flex flex-row overflow-x-scroll space-x-4">
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait2.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                The Catcher in the Rye
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                J.D. Salinger
+              </div>
+            </div>
+          </div>
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait3.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                To Kill a Mockingbird
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Harper Lee
+              </div>
+            </div>
+          </div>
+          {/* Add more book items here */}
+        </div>
+      </div>
+      
+      <div className="section mb-5">
+        <div className="text-2xl font-sans font-bold mt-2 my-4 flex justify-between items-center">
+          <span>Want to Read</span>
+          <span className="text-sm text-gray-500 cursor-pointer">Explore</span>
+        </div>
+        <div className="flex flex-row overflow-x-scroll space-x-4">
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait4.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                The Great Gatsby
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                F. Scott Fitzgerald
+              </div>
+            </div>
+          </div>
+          <div className="flex-shrink-0 max-w-xs rounded-lg overflow-hidden shadow-lg bg-gray-800">
+            <img
+              src="/stock/portrait5.jpg"
+              alt="Example Image"
+              className="w-full h-48 object-cover"
+            />
+            <div className="p-4">
+              <span className="text-lg font-semibold text-white">
+                Moby Dick
+              </span>
+              <div className="text-sm font-light text-gray-400">
+                Herman Melville
+              </div>
+            </div>
+          </div>
+          {/* Add more book items here */}
+        </div>
+      </div>
+      
+    </div>
+  );
+};
+
+export default BookSection;
+```

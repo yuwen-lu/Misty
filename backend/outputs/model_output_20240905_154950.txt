@@ -1,0 +1,400 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+Now I have this piece of code:
+() => {
+  return (
+    <div className='max-w-2xl mx-auto bg-white p-4'>
+      <div className='mb-4'>
+        <input
+          type='text'
+          placeholder='Find parks'
+          className='w-full p-2 border border-gray-300 rounded'
+        />
+      </div>
+      <div className='flex gap-2 mb-4 overflow-x-auto'>
+        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>
+          <LuCompass className='w-5 h-5 mr-1' /> Nearby
+        </button>
+        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>
+          <LuAperture className='w-5 h-5 mr-1' /> Epic views
+        </button>
+        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>
+          <LuFlower className='w-5 h-5 mr-1' /> Wildflowers
+        </button>
+      </div>
+      <div className='space-y-4 text-gray-800'>
+        {[
+          {
+            name: 'Steep Ravine, Dipsea and Matt Davis',
+            location: 'Stinson Beach, California',
+            rating: 4.8,
+            difficulty: 'Moderate',
+            distance: '6.60 mi',
+            time: 'Est. 3h 41m',
+          },
+          {
+            name: 'Bear Mountain, Appalachian Trail',
+            location: 'Bear Mountain, New York',
+            rating: 4.7,
+            difficulty: 'Hard',
+            distance: '4.00 mi',
+            time: 'Est. 2h 20m',
+          },
+          {
+            name: 'Sunset Ridge, Griffith Park',
+            location: 'Los Angeles, California',
+            rating: 4.9,
+            difficulty: 'Easy',
+            distance: '3.20 mi',
+            time: 'Est. 1h 30m',
+          },
+          {
+            name: 'Yosemite Falls Trail',
+            location: 'Yosemite National Park, California',
+            rating: 4.8,
+            difficulty: 'Hard',
+            distance: '7.20 mi',
+            time: 'Est. 6h 00m',
+          },
+          {
+            name: "Angel's Landing",
+            location: 'Zion National Park, Utah',
+            rating: 4.9,
+            difficulty: 'Hard',
+            distance: '5.40 mi',
+            time: 'Est. 4h 00m',
+          },
+        ].map((trail, index) => (
+          <div key={index} className='border border-gray-200 p-4 rounded flex items-start gap-4'>
+            <img
+              src={`/stock/nature_landscape${index % 5}.jpg`}
+              alt='Trail image'
+              className='w-20 h-20 rounded object-cover'
+            />
+            <div>
+              <h3 className='font-semibold text-lg'>{trail.name}</h3>
+              <p className='text-gray-600'>{trail.location}</p>
+              <div className='mt-2 text-sm text-gray-500 flex items-center'>
+                <span className='mr-2 flex items-center'>
+                  <LuStar className='w-4 h-4 text-yellow-500 mr-1' /> {trail.rating}
+                </span>
+                <span className='mr-2'>• {trail.difficulty}</span>
+                <span>{trail.distance} • {trail.time}</span>
+              </div>
+              <button disabled={true} className='mt-2 text-red-500 text-sm'>
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+ 
+. It was made by changing this piece of code: 
+ () => {
+    return (
+        <div className="max-w-2xl mx-auto bg-white p-4">
+            <div className="mb-4">
+                <input
+                    type="text"
+                    placeholder="Find parks"
+                    className="w-full p-2 border border-gray-300 rounded"
+                />
+            </div>
+            <div className="flex gap-2 mb-4 overflow-x-auto">
+                <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+                    <LuCompass className="w-5 h-5 mr-1" /> Nearby
+                </button>
+                <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+                    <LuAperture className="w-5 h-5 mr-1" /> Epic views
+                </button>
+                <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+                    <LuFlower className="w-5 h-5 mr-1" /> Wildflowers
+                </button>
+                <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+                    Fast Food
+                </button>
+                <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+                    Mexican
+                </button>
+                <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+                    Tacos
+                </button>
+            </div>
+            <div className="space-y-4 text-gray-800">
+                <div className="border border-gray-200 p-4 rounded flex items-start gap-4">
+                    <img
+                        src="/stock/nature_landscape0.jpg"
+                        alt="Trail image"
+                        className="w-20 h-20 rounded object-cover"
+                    />
+                    <div>
+                        <h3 className="font-semibold text-lg">
+                            Steep Ravine, Dipsea and Matt Davis
+                        </h3>
+                        <p className="text-gray-600">
+                            Stinson Beach, California
+                        </p>
+                        <p className="text-sm text-gray-700">
+                            
+                            • Amazing wildlife • Beautiful Views
+                        </p>
+                        <div className="mt-2 text-sm text-gray-500 flex items-center">
+                            <span className="mr-2 flex items-center">
+                                <LuStar className="w-4 h-4 text-yellow-500 mr-1" />
+                                4.8
+                            </span>
+                            <span className="mr-2">• Moderate</span>
+                            <span>6.60 mi • Est. 3h 41m</span>
+                        </div>
+                        <button
+                            disabled={true}
+                            className="mt-2 text-red-500 text-sm"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <div className="border border-gray-200 p-4 rounded flex items-start gap-4">
+                    <img
+                        src="/stock/nature_landscape1.jpg"
+                        alt="Trail image"
+                        className="w-20 h-20 rounded object-cover"
+                    />
+                    <div>
+                        <h3 className="font-semibold text-lg">
+                            Bear Mountain, Appalachian Trail
+                        </h3>
+                        <p className="text-gray-600">Bear Mountain, New York</p>
+                        <p className="text-sm text-gray-700">
+                            
+                            • Wonderful Landscapes • Scenic Hikes
+                        </p>
+                        <div className="mt-2 text-sm text-gray-500 flex items-center">
+                            <span className="mr-2 flex items-center">
+                                <LuStar className="w-4 h-4 text-yellow-500 mr-1" />
+                                4.7
+                            </span>
+                            <span className="mr-2">• Hard</span>
+                            <span>4.00 mi • Est. 2h 20m</span>
+                        </div>
+                        <button
+                            disabled={true}
+                            className="mt-2 text-red-500 text-sm"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <div className="border border-gray-200 p-4 rounded flex items-start gap-4">
+                    <img
+                        src="/stock/nature_landscape2.jpg"
+                        alt="Trail image"
+                        className="w-20 h-20 rounded object-cover"
+                    />
+                    <div>
+                        <h3 className="font-semibold text-lg">
+                            Sunset Ridge, Griffith Park
+                        </h3>
+                        <p className="text-gray-600">Los Angeles, California</p>
+                        <p className="text-sm text-gray-700">
+                            • Easy Walks • City Views
+                        </p>
+                        <div className="mt-2 text-sm text-gray-500 flex items-center">
+                            <span className="mr-2 flex items-center">
+                                <LuStar className="w-4 h-4 text-yellow-500 mr-1" />
+                                4.9
+                            </span>
+                            <span className="mr-2">• Easy</span>
+                            <span>3.20 mi • Est. 1h 30m</span>
+                        </div>
+                        <button
+                            disabled={true}
+                            className="mt-2 text-red-500 text-sm"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <div className="border border-gray-200 p-4 rounded flex items-start gap-4">
+                    <img
+                        src="/stock/nature_landscape3.jpg"
+                        alt="Trail image"
+                        className="w-20 h-20 rounded object-cover"
+                    />
+                    <div>
+                        <h3 className="font-semibold text-lg">
+                            Yosemite Falls Trail
+                        </h3>
+                        <p className="text-gray-600">
+                            Yosemite National Park, California
+                        </p>
+                        <p className="text-sm text-gray-700">
+                            • Iconic Falls • Challenging Hikes
+                        </p>
+                        <div className="mt-2 text-sm text-gray-500 flex items-center">
+                            <span className="mr-2 flex items-center">
+                                <LuStar className="w-4 h-4 text-yellow-500 mr-1" />
+                                4.8
+                            </span>
+                            <span className="mr-2">• Hard</span>
+                            <span>7.20 mi • Est. 6h 00m</span>
+                        </div>
+                        <button
+                            disabled={true}
+                            className="mt-2 text-red-500 text-sm"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <div className="border border-gray-200 p-4 rounded flex items-start gap-4">
+                    <img
+                        src="/stock/nature_landscape4.jpg"
+                        alt="Trail image"
+                        className="w-20 h-20 rounded object-cover"
+                    />
+                    <div>
+                        <h3 className="font-semibold text-lg">
+                            Angel's Landing
+                        </h3>
+                        <p className="text-gray-600">
+                            Zion National Park, Utah
+                        </p>
+                        <p className="text-sm text-gray-700">
+                            • Thrilling Hikes • Panoramic Views
+                        </p>
+                        <div className="mt-2 text-sm text-gray-500 flex items-center">
+                            <span className="mr-2 flex items-center">
+                                <LuStar className="w-4 h-4 text-yellow-500 mr-1" />
+                                4.9
+                            </span>
+                            <span className="mr-2">• Hard</span>
+                            <span>5.40 mi • Est. 4h 00m</span>
+                        </div>
+                        <button
+                            disabled={true}
+                            className="mt-2 text-red-500 text-sm"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+ 
+. In total, these changes were being made: Content Modification: Added new features and attractions to the trail descriptions, Layout: Added new category buttons to the filter section. Can you help me discard Layout: Added new category buttons to the filter section;, while keeping the rest? Return the updated code only, using a simple component format () => {return ()}.
+
+Model output:
+```jsx
+import React from "react";
+import { LuCompass, LuAperture, LuFlower, LuStar } from "react-icons/lu";
+
+const TrailList = () => {
+  return (
+    <div className="max-w-2xl mx-auto bg-white p-4">
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Find parks"
+          className="w-full p-2 border border-gray-300 rounded"
+        />
+      </div>
+      <div className="flex gap-2 mb-4 overflow-x-auto">
+        <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+          <LuCompass className="w-5 h-5 mr-1" /> Nearby
+        </button>
+        <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+          <LuAperture className="w-5 h-5 mr-1" /> Epic views
+        </button>
+        <button className="py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center">
+          <LuFlower className="w-5 h-5 mr-1" /> Wildflowers
+        </button>
+      </div>
+      <div className="space-y-4 text-gray-800">
+        {[
+          {
+            name: "Steep Ravine, Dipsea and Matt Davis",
+            location: "Stinson Beach, California",
+            rating: 4.8,
+            difficulty: "Moderate",
+            distance: "6.60 mi",
+            time: "Est. 3h 41m",
+          },
+          {
+            name: "Bear Mountain, Appalachian Trail",
+            location: "Bear Mountain, New York",
+            rating: 4.7,
+            difficulty: "Hard",
+            distance: "4.00 mi",
+            time: "Est. 2h 20m",
+          },
+          {
+            name: "Sunset Ridge, Griffith Park",
+            location: "Los Angeles, California",
+            rating: 4.9,
+            difficulty: "Easy",
+            distance: "3.20 mi",
+            time: "Est. 1h 30m",
+          },
+          {
+            name: "Yosemite Falls Trail",
+            location: "Yosemite National Park, California",
+            rating: 4.8,
+            difficulty: "Hard",
+            distance: "7.20 mi",
+            time: "Est. 6h 00m",
+          },
+          {
+            name: "Angel's Landing",
+            location: "Zion National Park, Utah",
+            rating: 4.9,
+            difficulty: "Hard",
+            distance: "5.40 mi",
+            time: "Est. 4h 00m",
+          },
+        ].map((trail, index) => (
+          <div
+            key={index}
+            className="border border-gray-200 p-4 rounded flex items-start gap-4"
+          >
+            <img
+              src={`/stock/nature_landscape${index % 5}.jpg`}
+              alt="Trail image"
+              className="w-20 h-20 rounded object-cover"
+            />
+            <div>
+              <h3 className="font-semibold text-lg">{trail.name}</h3>
+              <p className="text-gray-600">{trail.location}</p>
+              <div className="mt-2 text-sm text-gray-500 flex items-center">
+                <span className="mr-2 flex items-center">
+                  <LuStar className="w-4 h-4 text-yellow-500 mr-1" />{" "}
+                  {trail.rating}
+                </span>
+                <span className="mr-2">• {trail.difficulty}</span>
+                <span>
+                  {trail.distance} • {trail.time}
+                </span>
+              </div>
+              <button
+                disabled={true}
+                className="mt-2 text-red-500 text-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default TrailList;
+```

@@ -1,0 +1,164 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+This piece of code is not rendering properly, please help me fix it. Return only the updated code and nothing else. Use typescript. Follow the format of a simple React component () => {}. 
+() => { return (  <div className='max-w-3xl mx-auto bg-white p-6'>  <h1 className='text-2xl text-black font-bold mb-2'>Best trails</h1>  <p className='mb-4 text-gray-600'>    Discover the best hiking trails in your area! Whether you're ready to hike, bike, or      explore nature, find the most scenic trails curated just for you.  </p>  <div className='mb-6'>    <img      src='/stock/nature_landscape0.jpg'      alt='Map placeholder'      className='w-full h-56 object-cover rounded'    />  </div>  <div className='flex justify-between mb-4'>    <button className='flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded'>      <LuCompass className='mr-2' /> Directions    </button>    <button className='flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded'>      <LuShare2 className='mr-2' /> Share    </button>  </div>  <div className='flex flex-wrap mb-4 gap-2'>    <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Activity</button>    <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Difficulty</button>    <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Length</button>    <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Sustainability</button>    <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>More filters</button>  </div>  <div className='space-y-4 text-gray-800'>    <div      className='flex border border-gray-200 p-4 rounded'    >      <img        src='/stock/nature_landscape1.jpg'        alt='Steep Ravine, Dipsea and Matt Davis'        className='w-40 h-40 object-cover rounded'      />      <div className='ml-4'>        <div className='flex justify-between'>          <h3 className='font-semibold text-lg mb-1'>Steep Ravine, Dipsea and Matt Davis</h3>          <div className='flex items-center'>              <span className='text-green-600 mx-2'>⭐ 4.8</span>              <span className='text-gray-600'>Moderate</span>          </div>        </div>        <p className='text-gray-600'>Stinson Beach, California</p>        <p className='mt-2 text-sm text-gray-500'>          6.60 mi • Est. 3h 41m        </p>        <p className='text-gray-600 mt-2'>          A beautiful trail with varied terrain offering stunning coastal views.        </p>      </div>    </div>    <div      className='flex border border-gray-200 p-4 rounded'    >      <img        src='/stock/nature_landscape2.jpg'        alt='Bear Mountain, Appalachian Trail'        className='w-40 h-40 object-cover rounded'      />      <div className='ml-4'>        <div className='flex justify-between'>          <h3 className='font-semibold text-lg mb-1'>Bear Mountain, Appalachian Trail</h3>          <div className='flex items-center'>              <span className='text-green-600 mx-2'>⭐ 4.7</span>              <span className='text-gray-600'>Hard</span>          </div>        </div>        <p className='text-gray-600'>Bear Mountain, New York</p>        <p className='mt-2 text-sm text-gray-500'>          4.00 mi • Est. 2h 20m        </p>        <p className='text-gray-600 mt-2'>          A challenging hike with rewarding summit views and rich flora.        </p>      </div>    </div>    <div      className='flex border border-gray-200 p-4 rounded'    >      <img        src='/stock/nature_landscape3.jpg'        alt='Sunset Ridge, Griffith Park'        className='w-40 h-40 object-cover rounded'      />      <div className='ml-4'>        <div className='flex justify-between'>          <h3 className='font-semibold text-lg mb-1'>Sunset Ridge, Griffith Park</h3>          <div className='flex items-center'>              <span className='text-green-600 mx-2'>⭐ 4.9</span>              <span className='text-gray-600'>Easy</span>          </div>        </div>        <p className='text-gray-600'>Los Angeles, California</p>        <p className='mt-2 text-sm text-gray-500'>          3.20 mi • Est. 1h 30m        </p>        <p className='text-gray-600 mt-2'>          A leisurely hike with scenic city views, perfect for all skill levels.        </p>      </div>    </div>    <div      className='flex border border-gray-200 p-4 rounded'    >      <img        src='/stock/nature_landscape4.jpg'        alt='Yosemite Falls Trail'        className='w-40 h-40 object-cover rounded'      />      <div className='ml-4'>        <div className='flex justify-between'>          <h3 className='font-semibold text-lg mb-1'>Yosemite Falls Trail</h3>          <div className='flex items-center'>              <span className='text-green-600 mx-2'>⭐ 4.8</span>              <span className='text-gray-600'>Hard</span>          </div>        </div>        <p className='text-gray-600'>Yosemite National Park, California</p>        <p className='mt-2 text-sm text-gray-500'>          7.20 mi • Est. 6h 00m        </p>        <p className='text-gray-600 mt-2'>          A strenuous trail offering breathtaking views of Yosemite Falls.        </p>      </div>    </div>    <div      className='flex border border-gray-200 p-4 rounded'    >      <img        src='/stock/nature_landscape0.jpg'        alt='Angel's Landing'        className='w-40 h-40 object-cover rounded'      />      <div className='ml-4'>        <div className='flex justify-between'>          <h3 className='font-semibold text-lg mb-1'>Angel's Landing</h3>          <div className='flex items-center'>              <span className='text-green-600 mx-2'>⭐ 4.9</span>              <span className='text-gray-600'>Hard</span>          </div>        </div>        <p className='text-gray-600'>Zion National Park, Utah</p>        <p className='mt-2 text-sm text-gray-500'>          5.40 mi • Est. 4h 00m        </p>        <p className='text-gray-600 mt-2'>          A thrilling hike with steep climbs and stunning panoramic views.        </p>      </div>    </div>  </div></div>);}
+
+Model output:
+```typescript
+import React from 'react';
+import { LuCompass, LuShare2 } from 'react-icons/lu';
+
+const TrailsComponent: React.FC = () => {
+  return (
+    <div className='max-w-3xl mx-auto bg-white p-6'>
+      <h1 className='text-2xl text-black font-bold mb-2'>Best trails</h1>
+      <p className='mb-4 text-gray-600'>
+        Discover the best hiking trails in your area! Whether you're ready to hike, bike, or
+        explore nature, find the most scenic trails curated just for you.
+      </p>
+      <div className='mb-6'>
+        <img
+          src='/stock/nature_landscape0.jpg'
+          alt='Map placeholder'
+          className='w-full h-56 object-cover rounded'
+        />
+      </div>
+      <div className='flex justify-between mb-4'>
+        <button className='flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded'>
+          <LuCompass className='mr-2' /> Directions
+        </button>
+        <button className='flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded'>
+          <LuShare2 className='mr-2' /> Share
+        </button>
+      </div>
+      <div className='flex flex-wrap mb-4 gap-2'>
+        <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Activity</button>
+        <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Difficulty</button>
+        <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Length</button>
+        <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>Sustainability</button>
+        <button className='px-3 py-1 bg-gray-100 text-gray-700 rounded'>More filters</button>
+      </div>
+      <div className='space-y-4 text-gray-800'>
+        <div className='flex border border-gray-200 p-4 rounded'>
+          <img
+            src='/stock/nature_landscape1.jpg'
+            alt='Steep Ravine, Dipsea and Matt Davis'
+            className='w-40 h-40 object-cover rounded'
+          />
+          <div className='ml-4'>
+            <div className='flex justify-between'>
+              <h3 className='font-semibold text-lg mb-1'>Steep Ravine, Dipsea and Matt Davis</h3>
+              <div className='flex items-center'>
+                <span className='text-green-600 mx-2'>⭐ 4.8</span>
+                <span className='text-gray-600'>Moderate</span>
+              </div>
+            </div>
+            <p className='text-gray-600'>Stinson Beach, California</p>
+            <p className='mt-2 text-sm text-gray-500'>
+              6.60 mi • Est. 3h 41m
+            </p>
+            <p className='text-gray-600 mt-2'>
+              A beautiful trail with varied terrain offering stunning coastal views.
+            </p>
+          </div>
+        </div>
+        <div className='flex border border-gray-200 p-4 rounded'>
+          <img
+            src='/stock/nature_landscape2.jpg'
+            alt='Bear Mountain, Appalachian Trail'
+            className='w-40 h-40 object-cover rounded'
+          />
+          <div className='ml-4'>
+            <div className='flex justify-between'>
+              <h3 className='font-semibold text-lg mb-1'>Bear Mountain, Appalachian Trail</h3>
+              <div className='flex items-center'>
+                <span className='text-green-600 mx-2'>⭐ 4.7</span>
+                <span className='text-gray-600'>Hard</span>
+              </div>
+            </div>
+            <p className='text-gray-600'>Bear Mountain, New York</p>
+            <p className='mt-2 text-sm text-gray-500'>
+              4.00 mi • Est. 2h 20m
+            </p>
+            <p className='text-gray-600 mt-2'>
+              A challenging hike with rewarding summit views and rich flora.
+            </p>
+          </div>
+        </div>
+        <div className='flex border border-gray-200 p-4 rounded'>
+          <img
+            src='/stock/nature_landscape3.jpg'
+            alt='Sunset Ridge, Griffith Park'
+            className='w-40 h-40 object-cover rounded'
+          />
+          <div className='ml-4'>
+            <div className='flex justify-between'>
+              <h3 className='font-semibold text-lg mb-1'>Sunset Ridge, Griffith Park</h3>
+              <div className='flex items-center'>
+                <span className='text-green-600 mx-2'>⭐ 4.9</span>
+                <span className='text-gray-600'>Easy</span>
+              </div>
+            </div>
+            <p className='text-gray-600'>Los Angeles, California</p>
+            <p className='mt-2 text-sm text-gray-500'>
+              3.20 mi • Est. 1h 30m
+            </p>
+            <p className='text-gray-600 mt-2'>
+              A leisurely hike with scenic city views, perfect for all skill levels.
+            </p>
+          </div>
+        </div>
+        <div className='flex border border-gray-200 p-4 rounded'>
+          <img
+            src='/stock/nature_landscape4.jpg'
+            alt='Yosemite Falls Trail'
+            className='w-40 h-40 object-cover rounded'
+          />
+          <div className='ml-4'>
+            <div className='flex justify-between'>
+              <h3 className='font-semibold text-lg mb-1'>Yosemite Falls Trail</h3>
+              <div className='flex items-center'>
+                <span className='text-green-600 mx-2'>⭐ 4.8</span>
+                <span className='text-gray-600'>Hard</span>
+              </div>
+            </div>
+            <p className='text-gray-600'>Yosemite National Park, California</p>
+            <p className='mt-2 text-sm text-gray-500'>
+              7.20 mi • Est. 6h 00m
+            </p>
+            <p className='text-gray-600 mt-2'>
+              A strenuous trail offering breathtaking views of Yosemite Falls.
+            </p>
+          </div>
+        </div>
+        <div className='flex border border-gray-200 p-4 rounded'>
+          <img
+            src='/stock/nature_landscape0.jpg'
+            alt='Angel's Landing'
+            className='w-40 h-40 object-cover rounded'
+          />
+          <div className='ml-4'>
+            <div className='flex justify-between'>
+              <h3 className='font-semibold text-lg mb-1'>Angel's Landing</h3>
+              <div className='flex items-center'>
+                <span className='text-green-600 mx-2'>⭐ 4.9</span>
+                <span className='text-gray-600'>Hard</span>
+              </div>
+            </div>
+            <p className='text-gray-600'>Zion National Park, Utah</p>
+            <p className='mt-2 text-sm text-gray-500'>
+              5.40 mi • Est. 4h 00m
+            </p>
+            <p className='text-gray-600 mt-2'>
+              A thrilling hike with steep climbs and stunning panoramic views.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TrailsComponent;
+```

@@ -1,0 +1,169 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+Message: 
+
+        Here is my original react and tailwind source code: 
+                
+        () => {
+  return (
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="w-full max-w-md bg-white shadow-md rounded-lg p-6">
+        <h2 className="text-black text-2xl font-semibold mb-6 text-center">Contact Us</h2>
+        <form className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700" htmlFor="name">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="Your Name"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700" htmlFor="email">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700" htmlFor="message">
+              Message
+            </label>
+            <textarea
+              id="message"
+              className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              rows="4"
+              placeholder="Your message..."
+            ></textarea>
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Send Message
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};. 
+
+        Help me add the content of the reference image to  this specific piece taken from the above code: <div class=""><label class="block text-sm font-medium text-gray-700" for="email">Email</label><input type="email" id="email" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="you@example.com"></div>. Change sections of the source code corresponding to this, as well as sections that are of similar layout or screen position to this. For example, don't just apply to one element in a list, but apply to all list elements with similar layouts. Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
+
+        The user specifically asked you to blend in this way, make sure you follow it in your outputs:  Add 'Subject' as an additional, required field. Adapt the content and style of the added element to the ones of the code.
+
+        A few rules:
+
+
+        - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Make sure all text is legible on the background.
+        - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Pay attention to Content. Base your later generation of categorizedChanges based on these categories.
+        - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
+        - Do not use list and .map functions to represent lists. Just generate HTML elements for each of the list items.
+        - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
+        - when adding icons, pick from this list of lucide react icons, do not use others: LuActivity, LuAirplay, LuAlertCircle, LuAlignCenter, LuAlignJustify, LuAlignLeft, LuAlignRight, LuAnchor, LuAperture, LuArchive, LuArrowDown, LuArrowLeft, LuArrowRight, LuArrowUp, LuAtSign, LuAward, LuBarChart, LuBattery, LuBell, LuBluetooth, LuBook, LuBookmark, LuBox, LuBriefcase, LuCalendar, LuCamera, LuCheck, LuCheckCircle, LuChevronDown, LuChevronLeft, LuChevronRight, LuChevronUp, LuClipboard, LuClock, LuCloud, LuCode, LuCompass, LuCopy, LuCreditCard, LuCrop
+
+        - There are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 9, and portrait 0 to 7. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. There are also nature-themed pictures, named from nature_landscape0.jpg to nature_landscape4.jpg, and nature_portrait0.jpg to nature_portrait3.jpg.  Do not use any other images. Do not use placeholder image paths.
+        - Summarize the code changes in your response, use the format "categorizedChanges:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
+        - When creating a bottom navigation bar, use "absolute bottom-0" instead of "fixed bottom-0".
+        - Try to make colors and styles consistent and harmonious with the rest of the component.
+        
+        Return result as a JSON in the following format:
+        
+        {
+            "designExplanation": // explain the design of the screenshot image, focus on layout and color, be really concise, less than 30 words
+            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, color theme, font, etc.
+            updatedCode: `() => {}`   // return the whole component for the entire screen, with the updates;
+            // a list of objects listing the changes made, use the tailwind classes to indicate the changes
+            categorizedChanges: [
+                {
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. "Color: Changed light to dark theme", "Layout: Increased spacing between elements", "Visual details: Increased corner roundedness", "Image: Decreased image size", "Font: Changed font appearance", etc.
+                    changes: [{
+                        type: "color",
+                        before": // the tailwind class before the change,
+                        "after": // the tailwind class after the change
+                    }]
+                }
+            ]
+        }
+
+        here is a good example of the changes field:
+        categorizedChanges: [
+            {
+                category: "Color: Changed light to dark theme",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "color",
+                    before: "text-white",
+                    after: "text-gray-900"
+                }, {
+                    type: "border",
+                    before: "", // you can use empty before field to indicate addition of new classes
+                    after: "border-2 border-gray-300/90"
+                }, ...] // add as many as appropriate,
+            },
+            {
+                category: "Font: Changed font appearance",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "font",
+                    before: "text-sm",
+                    after: "text-lg"
+                }, ...] // add as many as appropriate,
+            },
+            
+            ]
+
+        
+Image: data:image/png;base64,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
+
+Model output:
+{
+    "designExplanation": "Simple form layout with a minimalist style. Clear, legible text on a light background.",
+    "differences": "Added 'Subject' field; required fields; form spacing adjustments.",
+    "updatedCode": 
+    "() => { \n return ( \n <div className=\"flex justify-center items-center h-screen bg-gray-100\"> \n <div className=\"w-full max-w-md bg-white shadow-md rounded-lg p-6\"> \n <h2 className=\"text-black text-2xl font-semibold mb-6 text-center\">Contact Us</h2> \n <form className=\"space-y-4\"> \n <div> \n <label className=\"block text-sm font-medium text-gray-700\" htmlFor=\"name\"> \n Name \n </label> \n <input \n type=\"text\" \n id=\"name\" \n className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\" \n placeholder=\"Your Name\" \n required \n /> \n </div> \n <div> \n <label className=\"block text-sm font-medium text-gray-700\" htmlFor=\"email\"> \n Email \n </label> \n <input \n type=\"email\" \n id=\"email\" \n className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\" \n placeholder=\"you@example.com\" \n required \n /> \n </div> \n <div> \n <label className=\"block text-sm font-medium text-gray-700\" htmlFor=\"subject\"> \n Subject \n </label> \n <input \n type=\"text\" \n id=\"subject\" \n className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\" \n placeholder=\"Subject\" \n required \n /> \n </div> \n <div> \n <label className=\"block text-sm font-medium text-gray-700\" htmlFor=\"message\"> \n Message \n </label> \n <textarea \n id=\"message\" \n className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\" \n rows=\"4\" \n placeholder=\"Your message...\" \n required \n></textarea> \n </div> \n <div> \n <button \n type=\"submit\" \n className=\"w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2\" \n > \n Send Message \n </button> \n </div> \n </form> \n </div> \n </div> \n );\n};",
+    "categorizedChanges": [
+        {
+            "category": "Addition: Added Subject Field",
+            "changes": [
+                {
+                    "type": "form element",
+                    "before": "",
+                    "after": "<div> <label className=\"block text-sm font-medium text-gray-700\" htmlFor=\"subject\">Subject</label><input type=\"text\" id=\"subject\" className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\" placeholder=\"Subject\" required /></div>"
+                }
+            ]
+        },
+        {
+            "category": "Layout: Required Fields",
+            "changes": [
+                {
+                    "type": "attribute",
+                    "before": "<input className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\"",
+                    "after": "<input className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\" required"
+                },
+                {
+                    "type": "attribute",
+                    "before": "<textarea className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\"",
+                    "after": "<textarea className=\"w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500\" required"
+                }
+            ]
+        }
+    ]
+}

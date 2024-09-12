@@ -1,0 +1,234 @@
+System prompt:
+You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about.
+
+Message: 
+
+        Here is my original react and tailwind source code: 
+                
+        () => {
+  return (
+    <div className='max-w-2xl mx-auto bg-white p-4'>
+      <div className='mb-4'>
+        <input
+          type='text'
+          placeholder='Find parks'
+          className='w-full p-2 border border-gray-300 rounded'
+        />
+      </div>
+      <div className='flex gap-2 mb-4 overflow-x-auto'>
+        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>
+          <LuCompass className='w-5 h-5 mr-1' /> Nearby
+        </button>
+        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>
+          <LuAperture className='w-5 h-5 mr-1' /> Epic views
+        </button>
+        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>
+          <LuFlower className='w-5 h-5 mr-1' /> Wildflowers
+        </button>
+      </div>
+      <div className='space-y-4 text-gray-800'>
+        {[
+          {
+            name: 'Steep Ravine, Dipsea and Matt Davis',
+            location: 'Stinson Beach, California',
+            rating: 4.8,
+            difficulty: 'Moderate',
+            distance: '6.60 mi',
+            time: 'Est. 3h 41m',
+          },
+          {
+            name: 'Bear Mountain, Appalachian Trail',
+            location: 'Bear Mountain, New York',
+            rating: 4.7,
+            difficulty: 'Hard',
+            distance: '4.00 mi',
+            time: 'Est. 2h 20m',
+          },
+          {
+            name: 'Sunset Ridge, Griffith Park',
+            location: 'Los Angeles, California',
+            rating: 4.9,
+            difficulty: 'Easy',
+            distance: '3.20 mi',
+            time: 'Est. 1h 30m',
+          },
+          {
+            name: 'Yosemite Falls Trail',
+            location: 'Yosemite National Park, California',
+            rating: 4.8,
+            difficulty: 'Hard',
+            distance: '7.20 mi',
+            time: 'Est. 6h 00m',
+          },
+          {
+            name: "Angel's Landing",
+            location: 'Zion National Park, Utah',
+            rating: 4.9,
+            difficulty: 'Hard',
+            distance: '5.40 mi',
+            time: 'Est. 4h 00m',
+          },
+        ].map((trail, index) => (
+          <div key={index} className='border border-gray-200 p-4 rounded flex items-start gap-4'>
+            <img
+              src={`/stock/nature_landscape${index % 5}.jpg`}
+              alt='Trail image'
+              className='w-20 h-20 rounded object-cover'
+            />
+            <div>
+              <h3 className='font-semibold text-lg'>{trail.name}</h3>
+              <p className='text-gray-600'>{trail.location}</p>
+              <div className='mt-2 text-sm text-gray-500 flex items-center'>
+                <span className='mr-2 flex items-center'>
+                  <LuStar className='w-4 h-4 text-yellow-500 mr-1' /> {trail.rating}
+                </span>
+                <span className='mr-2'>• {trail.difficulty}</span>
+                <span>{trail.distance} • {trail.time}</span>
+              </div>
+              <button disabled={true} className='mt-2 text-red-500 text-sm'>
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+. 
+
+        Help me add the content of the reference image to  this specific piece taken from the above code: <div class="border border-gray-200 p-4 rounded flex items-start gap-4"><img src="/stock/nature_landscape0.jpg" alt="Trail image" class="w-20 h-20 rounded object-cover"><div><h3 class="font-semibold text-lg">Steep Ravine, Dipsea and Matt Davis</h3><p class="text-gray-600">Stinson Beach, California</p><div class="mt-2 text-sm text-gray-500 flex items-center"><span class="mr-2 flex items-center"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-yellow-500 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> 4.8</span><span class="mr-2">• Moderate</span><span>6.60 mi • Est. 3h 41m</span></div><button disabled="" class="mt-2 text-red-500 text-sm">Delete</button></div></div>. Change sections of the source code corresponding to this, as well as sections that are of similar layout or screen position to this. For example, don't just apply to one element in a list, but apply to all list elements with similar layouts. Sometimes the specific code piece does not correspond to parts of the source code, because it's rendered HTML based on the source React code. In that case, you need to identify the original code pieces from the source and modify them.
+
+        The user specifically asked you to blend in this way, make sure you follow it in your outputs:  Add tags to the description about the attractions of the trail . Adapt the content and style of the added element to the ones of the code.
+
+        A few rules:
+
+
+        - First, explain in concise language the layout of the reference screenshot. Use it as a basis of your generation.
+        - Make sure all text is legible on the background.
+        - Briefly summarize the differences between the reference image and the code, summarize them into a few categories of changes you want to make. Pay attention to Content. Base your later generation of categorizedChanges based on these categories.
+        - Never directly pulls content from the reference to update the source code. For blending color and layout, preserve all original content in the UI for source code, only change/add the original content when it's really necessary for following a layout. When you blend in the addition mode, generate content based on the context of the source code.
+        - Do not use list and .map functions to represent lists. Just generate HTML elements for each of the list items.
+        - only use tailwind, react, and react icons. Follow the current code structure, do not include any import or export statements, just use a simple component definition () => {};
+        - when adding icons, pick from this list of lucide react icons, do not use others: LuActivity, LuAirplay, LuAlertCircle, LuAlignCenter, LuAlignJustify, LuAlignLeft, LuAlignRight, LuAnchor, LuAperture, LuArchive, LuArrowDown, LuArrowLeft, LuArrowRight, LuArrowUp, LuAtSign, LuAward, LuBarChart, LuBattery, LuBell, LuBluetooth, LuBook, LuBookmark, LuBox, LuBriefcase, LuCalendar, LuCamera, LuCheck, LuCheckCircle, LuChevronDown, LuChevronLeft, LuChevronRight, LuChevronUp, LuClipboard, LuClock, LuCloud, LuCode, LuCompass, LuCopy, LuCreditCard, LuCrop
+
+        - There are a few stock photos for use under the folder /stock/, they are named after their orientation, like landscape0.jpg, landscape1.jpg, portrait0.jpg, etc. There are landscape images with index 0 to 9, and portrait 0 to 7. For example, you can use         <img src="/stock/portait0.jpg" alt="Example Image" />. There are also nature-themed pictures, named from nature_landscape0.jpg to nature_landscape4.jpg, and nature_portrait0.jpg to nature_portrait3.jpg.  Do not use any other images. Do not use placeholder image paths.
+        - Summarize the code changes in your response, use the format "categorizedChanges:" followed by a list of changes. Be very concise in your explanations. For example, "Color change: section titles, from green to purple"; "Layout change: adapted the layout for [add the feature description of the changed code piece]".
+        - When creating a bottom navigation bar, use "absolute bottom-0" instead of "fixed bottom-0".
+        - Try to make colors and styles consistent and harmonious with the rest of the component.
+        
+        Return result as a JSON in the following format:
+        
+        {
+            "designExplanation": // explain the design of the screenshot image, focus on layout and color, be really concise, less than 30 words
+            "differences": // briefly summarize the differences between the reference image and the code, focus on layout orientation, spacing, color theme, font, etc.
+            updatedCode: `() => {}`   // return the whole component for the entire screen, with the updates;
+            // a list of objects listing the changes made, use the tailwind classes to indicate the changes
+            categorizedChanges: [
+                {
+                    category: "",   // summarize the category of the below changes, group changes together semantically, e.g. "Color: Changed light to dark theme", "Layout: Increased spacing between elements", "Visual details: Increased corner roundedness", "Image: Decreased image size", "Font: Changed font appearance", etc.
+                    changes: [{
+                        type: "color",
+                        before": // the tailwind class before the change,
+                        "after": // the tailwind class after the change
+                    }]
+                }
+            ]
+        }
+
+        here is a good example of the changes field:
+        categorizedChanges: [
+            {
+                category: "Color: Changed light to dark theme",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "color",
+                    before: "text-white",
+                    after: "text-gray-900"
+                }, {
+                    type: "border",
+                    before: "", // you can use empty before field to indicate addition of new classes
+                    after: "border-2 border-gray-300/90"
+                }, ...] // add as many as appropriate,
+            },
+            {
+                category: "Font: Changed font appearance",
+                changes: [{
+                    type: "color",
+                    before: "bg-black",
+                    after: "bg-white"
+                }, {
+                    type: "font",
+                    before: "text-sm",
+                    after: "text-lg"
+                }, ...] // add as many as appropriate,
+            },
+            
+            ]
+
+        
+Image: data:image/png;base64,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
+
+Model output:
+{
+    "designExplanation": "The screenshot features buttons with white backgrounds and gray text, evenly spaced in a horizontal layout.",
+    "differences": "Added category buttons; colors are consistent with original; placed in a horizontal scrollable container.",
+    "updatedCode": 
+    "() => {  \n  return (  \n   <div className='max-w-2xl mx-auto bg-white p-4'>   \n   <div className='mb-4'>  \n      <input  \n        type='text'  \n        placeholder='Find parks'  \n        className='w-full p-2 border border-gray-300 rounded' />  \n      </div>  \n   <div className='flex gap-2 mb-4 overflow-x-auto'>  \n        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>  \n           <LuCompass className='w-5 h-5 mr-1' /> Nearby  \n        </button>  \n        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>  \n          <LuAperture className='w-5 h-5 mr-1' /> Epic views  \n        </button>  \n        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>   \n          <LuFlower className='w-5 h-5 mr-1' /> Wildflowers  \n        </button>  \n        <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>   \n         Fast Food  \n       </button>    \n       <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>   \n         Mexican      </button>   \n       <button className='py-1 px-3 bg-gray-100 text-gray-700 rounded flex items-center'>   \n         Tacos  \n       </button> \n  </div>  \n   <div className='space-y-4 text-gray-800'>  \n      <div className='border border-gray-200 p-4 rounded flex items-start gap-4'>  \n        <img src='/stock/nature_landscape0.jpg' alt='Trail image' className='w-20 h-20 rounded object-cover' />  \n        <div>  \n            <h3 className='font-semibold text-lg'>Steep Ravine, Dipsea and Matt Davis</h3>  \n            <p className='text-gray-600'>Stinson Beach, California</p>   \n            <p className='text-sm text-gray-700'>  • Amazing wildlife   • Beautiful Views  </p> \n            <div className='mt-2 text-sm text-gray-500 flex items-center'>  \n                <span className='mr-2 flex items-center'>  \n                     <LuStar className='w-4 h-4 text-yellow-500 mr-1' /> 4.8  \n                </span>  \n                <span className='mr-2'>• Moderate</span>   \n                <span>6.60 mi • Est. 3h 41m</span> \n     </div>  \n              <button disabled={true} className='mt-2 text-red-500 text-sm'>Delete</button>  \n         </div>  \n      </div>  \n      <div className='border border-gray-200 p-4 rounded flex items-start gap-4'>  \n        <img src='/stock/nature_landscape1.jpg' alt='Trail image' className='w-20 h-20 rounded object-cover' />  \n        <div>  \n            <h3 className='font-semibold text-lg'>Bear Mountain, Appalachian Trail</h3>  \n            <p className='text-gray-600'>Bear Mountain, New York</p>  \n            <p className='text-sm text-gray-700'> • Wonderful Landscapes • Scenic Hikes  </p>  \n            <div className='mt-2 text-sm text-gray-500 flex items-center'>  \n                <span className='mr-2 flex items-center'>  \n                     <LuStar className='w-4 h-4 text-yellow-500 mr-1' /> 4.7  \n                </span>  \n                <span className='mr-2'>• Hard</span>  \n                <span>4.00 mi • Est. 2h 20m</span> \n     </div>  \n              <button disabled={true} className='mt-2 text-red-500 text-sm'>Delete</button>  \n         </div>  \n      </div>  \n     <div className='border border-gray-200 p-4 rounded flex items-start gap-4'>  \n        <img src='/stock/nature_landscape2.jpg' alt='Trail image' className='w-20 h-20 rounded object-cover' />  \n        <div>  \n            <h3 className='font-semibold text-lg'>Sunset Ridge, Griffith Park</h3>  \n            <p className='text-gray-600'>Los Angeles, California</p>  \n            <p className='text-sm text-gray-700'>• Easy Walks • City Views</p>  \n            <div className='mt-2 text-sm text-gray-500 flex items-center'>  \n                <span className='mr-2 flex items-center'>  \n                     <LuStar className='w-4 h-4 text-yellow-500 mr-1' /> 4.9  \n                </span>  \n                <span className='mr-2'>• Easy</span>  \n                <span>3.20 mi • Est. 1h 30m</span> \n     </div>  \n              <button disabled={true} className='mt-2 text-red-500 text-sm'>Delete</button>  \n         </div>  \n      </div>  \n     <div className='border border-gray-200 p-4 rounded flex items-start gap-4'>  \n        <img src='/stock/nature_landscape3.jpg' alt='Trail image' className='w-20 h-20 rounded object-cover' />  \n        <div>  \n            <h3 className='font-semibold text-lg'>Yosemite Falls Trail</h3>   \n           <p className='text-gray-600'>Yosemite National Park, California</p>   \n          <p className='text-sm text-gray-700'>• Iconic Falls • Challenging Hikes</p>  \n            <div className='mt-2 text-sm text-gray-500 flex items-center'>  \n                <span className='mr-2 flex items-center'>  \n                     <LuStar className='w-4 h-4 text-yellow-500 mr-1' /> 4.8  \n                    </span>   \n                <span className='mr-2'>• Hard</span>  \n                <span>7.20 mi • Est. 6h 00m</span> \n     </div>  \n              <button disabled={true} className='mt-2 text-red-500 text-sm'>Delete</button>  \n         </div>  \n      </div>  \n     <div className='border border-gray-200 p-4 rounded flex items-start gap-4'>   \n       <img src='/stock/nature_landscape4.jpg' alt='Trail image' className='w-20 h-20 rounded object-cover' />  \n        <div>  \n            <h3 className='font-semibold text-lg'>Angel's Landing</h3>  \n            <p className='text-gray-600'>Zion National Park, Utah</p>  \n            <p className='text-sm text-gray-700'>• Thrilling Hikes • Panoramic Views</p>  \n            <div className='mt-2 text-sm text-gray-500 flex items-center'>  \n                <span className='mr-2 flex items-center'>  \n                     <LuStar className='w-4 h-4 text-yellow-500 mr-1' /> 4.9  \n                </span>  \n                <span className='mr-2'>• Hard</span>  \n                <span>5.40 mi • Est. 4h 00m</span> \n     </div>  \n              <button disabled={true} className='mt-2 text-red-500 text-sm'>Delete</button>  \n         </div>  \n      </div>  \n   </div>  \n</div>  );};",
+    "categorizedChanges": [
+      {
+        "category": "Content Modification: Added new features and attractions to the trail descriptions",
+        "changes": [
+                {
+                    "type": "content",
+                    "before": "",
+                    "after": "<p className='text-sm text-gray-700'>• Amazing wildlife • Beautiful Views</p>"
+                },
+                {
+                    "type": "content",
+                    "before": "",
+                    "after": "<p className='text-sm text-gray-700'>• Wonderful Landscapes • Scenic Hikes</p>"
+                },
+	            {
+                    "type": "content",
+                    "before": "",
+                    "after": "<p className='text-sm text-gray-700'>• Easy Walks • City Views</p>"
+                },
+                  {
+                    "type": "content",
+                    "before": "",
+                    "after": "<p className='text-sm text-gray-700'>• Iconic Falls • Challenging Hikes</p>"
+                },
+		    {
+                    "type": "content",
+                    "before": "",
+                    "after": "<p className='text-sm text-gray-700'>• Thrilling Hikes • Panoramic Views</p>"
+	          }
+            ]
+     },
+     {
+        "category": "Layout: Added new category buttons to the filter section",
+        "changes": [
+            {
+                "type": "addition",
+                "before": "",
+                "after": "<button>Fast Food</button>"
+            },
+            {
+                "type": "addition",
+                "before": "",
+                "after": "<button>Mexican</button>"
+            },
+            {
+                "type": "addition",
+                "before": "",
+                "after": "<button>Tacos</button>"
+            }
+        ]
+      }
+    ]
+}
