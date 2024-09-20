@@ -4,16 +4,25 @@
 
 Before you begin, ensure you have met the following requirements:
 
+- **Docker**: Ensure that Docker is installed on your machine. You can check this by running:
+  ```bash
+  docker --version
+  ```
+- **Docker Compose** (optional but recommended for multi-container setup): Check the installation by running:
+  ```bash
+  docker-compose --version
+  ```
+
+If you prefer to run the application without Docker, you will need the following:
+
 - **Python 3.x**: Ensure that Python 3 is installed on your machine. You can check this by running:
   ```bash
   python3 --version
   ```
-
 - **Pip3**: Ensure that pip3 (the package installer for Python) is installed. You can check this by running:
   ```bash
   pip3 --version
   ```
-
 - **Node.js and npm**: Ensure that Node.js and npm (Node Package Manager) are installed. You can check this by running:
   ```bash
   node --version
@@ -22,40 +31,103 @@ Before you begin, ensure you have met the following requirements:
 
 ## Installation
 
-### Backend
+### Option 1: Using Docker
 
-Install the required Python dependencies:
+#### **1. Build and Run the React Frontend**
 
-```bash
-pip3 install -r requirements.txt
-```
+1. **Navigate to the frontend directory**:
+   ```bash
+   cd my-project/frontend
+   ```
 
-### Frontend
+2. **Build the Docker image**:
+   ```bash
+   docker build -t react-frontend .
+   ```
+   - `-t react-frontend`: Tags the image with the name `react-frontend`.
+   - `.`: Refers to the current directory where the Dockerfile is located.
 
-Navigate to the frontend directory and install the required Node.js dependencies:
+3. **Run the Docker container**:
+   ```bash
+   docker run -p 80:80 react-frontend
+   ```
+   - `-p 80:80`: Maps port 80 of the host to port 80 of the container, allowing you to access the React app via `http://localhost`.
 
-```bash
-cd frontend
-npm install
-```
+#### **2. Build and Run the Python Backend**
+
+1. **Navigate to the backend directory**:
+   ```bash
+   cd my-project/backend
+   ```
+
+2. **Build the Docker image**:
+   ```bash
+   docker build -t python-backend .
+   ```
+   - `-t python-backend`: Tags the image with the name `python-backend`.
+
+3. **Run the Docker container**:
+   ```bash
+   docker run -p 5000:5000 python-backend
+   ```
+   - `-p 5000:5000`: Maps port 5000 of the host to port 5000 of the container, allowing you to access the backend service via `http://localhost:5000`.
+
+### Option 2: Manual Setup
+
+If you prefer to run the application manually without Docker, follow these steps:
+
+#### Backend
+
+1. Install the required Python dependencies:
+
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+
+2. To run the backend:
+
+   ```bash
+   python3 run.py
+   ```
+
+#### Frontend
+
+1. Navigate to the frontend directory and install the required Node.js dependencies:
+
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. To run the React frontend, start the development server:
+
+   ```bash
+   npm start
+   ```
+
+   This will start the React development server, typically on `http://localhost:3000`. Open this URL in your web browser to view the application.
 
 ## Running the Application
 
-### Backend
+### Using Docker
 
-To run the backend:
+- To start both services with Docker Compose:
 
-```bash
-python3 run.py
-```
+  ```bash
+  docker-compose up
+  ```
 
-### Frontend
+- To stop the services:
 
-To run the React frontend, navigate to the frontend directory and start the development server:
+  ```bash
+  docker-compose down
+  ```
 
-```bash
-cd frontend
-npm start
-```
+### Without Docker
 
-This will start the React development server, typically on `http://localhost:3000`. Open this URL in your web browser to view the application.
+Follow the manual setup steps outlined above for the backend and frontend.
+
+## Troubleshooting
+
+- If you encounter any issues with Docker, ensure that Docker and Docker Compose are installed and running correctly.
+- For manual setup, ensure all prerequisites are installed, and environment paths are set correctly.
