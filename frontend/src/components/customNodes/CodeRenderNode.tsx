@@ -145,7 +145,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
                         Code Render
                     </div>
 
-                    {data.categorizedChanges.length > 0 ? <div className='ml-auto flex'>
+                    {data.categorizedChanges && data.categorizedChanges.length > 0 ? <div className='ml-auto flex'>
                         <button
                             className='flex items-center space-x-2 font-normal text-md text-purple-900 px-4 mt-12 rounded'
                             onClick={fixCodeNotRendering}>

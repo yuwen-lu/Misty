@@ -38,6 +38,7 @@ import { TrailList } from './renderCode/TrailList';
 import { RestaurantSearch } from './renderCode/RestaurantSearch';
 import { AppSettings } from './renderCode/AppSettings';
 import { PhoneApp } from './renderCode/PhoneApp';
+import { profilePage } from './renderCode/ProfilePage';
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -148,15 +149,16 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 };
 
 const initialCodeToRender: codeRenderNodeContent[] = [
+    // { code: profilePage, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
     { code: BookList, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    // { code: RestaurantSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    // { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    { code: PhoneApp, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    // { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    // // { code: RestaurantSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    // // { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
+    // { code: PhoneApp, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
 
-// const fetchResponseUrl = 'http://localhost:5000/api/chat';
-const fetchResponseUrl = 'http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat';
+const fetchResponseUrl = 'http://localhost:5000/api/chat';
+// const fetchResponseUrl = 'http://ylu48-default.siri-interactive-vm.svc.kube.us-west-3b.k8s.cloud.apple.com:5000/api/chat';
 
 const FlowComponent: React.FC = () => {
 
