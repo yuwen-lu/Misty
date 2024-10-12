@@ -37,7 +37,7 @@ If you prefer to run the application without Docker, you will need the following
 
 1. **Navigate to the frontend directory**:
    ```bash
-   cd my-project/frontend
+   cd ./frontend
    ```
 
 2. **Build the Docker image**:
@@ -57,7 +57,7 @@ If you prefer to run the application without Docker, you will need the following
 
 1. **Navigate to the backend directory**:
    ```bash
-   cd my-project/backend
+   cd ./backend
    ```
 
 2. **Build the Docker image**:
