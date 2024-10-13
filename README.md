@@ -29,6 +29,17 @@ If you prefer to run the application without Docker, you will need the following
   npm --version
   ```
 
+## Setup Environment Variables
+
+Before running the application, create a `.env` file in the root directory with the following environment variables:
+
+```plaintext
+ORGANIZATION_ID=your_organization_id_here
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Replace `your_organization_id_here` and `your_openai_api_key_here` with your actual values.
+
 ## Installation
 
 ### Option 1: Using Docker

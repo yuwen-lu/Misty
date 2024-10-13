@@ -157,7 +157,7 @@ const initialCodeToRender: codeRenderNodeContent[] = [
     // { code: PhoneApp, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
 ];
 
-const fetchResponseUrl = 'http://localhost:5000/api/chat';
+const fetchResponseUrl = 'http://127.0.0.1:5000/api/chat';
 
 const FlowComponent: React.FC = () => {
 
