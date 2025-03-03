@@ -31,7 +31,7 @@ If you prefer to run the application without Docker, you will need the following
 
 ## Setup Environment Variables
 
-Before running the application, create a `.env` file in the root directory with the following environment variables:
+Before running the application, create a `.env` file under the `backend/` directory with the following environment variables:
 
 ```plaintext
 ORGANIZATION_ID=your_organization_id_here
