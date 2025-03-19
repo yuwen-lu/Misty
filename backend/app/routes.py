@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response
+from flask import Blueprint, request, Response, jsonify
 from openai import OpenAI
 import base64
 from dotenv import load_dotenv
@@ -10,7 +10,38 @@ main = Blueprint('main', __name__)
 
 @main.route('/healthz', methods=['GET'])
 def health_check():
-    return Response('OK', status=200)
+    try:
+        # Check if OpenAI API key is configured
+        load_dotenv()
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            return jsonify({
+                'status': 'error',
+                'message': 'OpenAI API key not configured'
+            }), 500
+
+        # Check if outputs directory exists and is writable
+        output_dir = "outputs"
+        if not os.path.exists(output_dir):
+            try:
+                os.makedirs(output_dir)
+            except Exception as e:
+                return jsonify({
+                    'status': 'error',
+                    'message': f'Cannot create outputs directory: {str(e)}'
+                }), 500
+
+        # If all checks pass
+        return jsonify({
+            'status': 'healthy',
+            'timestamp': datetime.now(pytz.UTC).isoformat()
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
 @main.route('/api/chat', methods=['POST'])
 def chat():
