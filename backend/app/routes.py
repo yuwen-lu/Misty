@@ -16,10 +16,12 @@ def chat():
     json_mode = data.get('json_mode')
 
     load_dotenv()  # Load environment variables from .env file
-    ORGANIZATION_ID = os.getenv('ORGANIZATION_ID')
+    # ORGANIZATION_ID = os.getenv('ORGANIZATION_ID')
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-    OPENAI_PROJECT_ID = os.getenv('OPENAI_PROJECT_ID')
+    # OPENAI_PROJECT_ID = os.getenv('OPENAI_PROJECT_ID')
     MODEL = "gpt-4o"
+    
+    print("api call received, message: ", message)
 
     # Strip the prefix of the base64 image
     if image:
