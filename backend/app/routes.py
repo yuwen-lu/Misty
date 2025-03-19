@@ -6,12 +6,14 @@ import os
 from datetime import datetime
 import pytz  # Import pytz for time zone handling
 import logging
+from flask_cors import CORS  # Import Flask-CORS
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 main = Blueprint('main', __name__)
+CORS(main)  # Enable CORS for all routes in this blueprint
 
 @main.route('/test', methods=['GET'])
 def test():
