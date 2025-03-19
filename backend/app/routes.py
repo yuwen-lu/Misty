@@ -8,6 +8,10 @@ import pytz  # Import pytz for time zone handling
 
 main = Blueprint('main', __name__)
 
+@main.route('/healthz', methods=['GET'])
+def health_check():
+    return Response('OK', status=200)
+
 @main.route('/api/chat', methods=['POST'])
 def chat():
     data = request.json  # Get the JSON data from the request

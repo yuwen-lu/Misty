@@ -10,11 +10,11 @@ COPY . .
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 8000 available to the world outside this container
-EXPOSE 8000
+# Make port available to the world outside this container
+EXPOSE $PORT
 
 # Define environment variable
-ENV PORT=8000
+ENV PORT=10000
 
 # Run the application with Gunicorn
-CMD ["gunicorn", "run:app", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120"]
+CMD gunicorn run:app --bind 0.0.0.0:$PORT --workers 4 --timeout 120
