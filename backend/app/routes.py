@@ -31,17 +31,6 @@ def health_check():
                 'message': 'OpenAI API key not configured'
             }), 500
 
-        # Check if outputs directory exists and is writable
-        output_dir = "outputs"
-        if not os.path.exists(output_dir):
-            try:
-                os.makedirs(output_dir)
-            except Exception as e:
-                return jsonify({
-                    'status': 'error',
-                    'message': f'Cannot create outputs directory: {str(e)}'
-                }), 500
-
         # If all checks pass
         return jsonify({
             'status': 'healthy',
@@ -87,17 +76,17 @@ def chat():
             image = image.split("base64,")[-1]
             logger.info("Image data received")
 
-        output_dir = "outputs"
+        # output_dir = "outputs"
 
         # Get the current timestamp in Pacific Time
         pacific_tz = pytz.timezone('America/Los_Angeles')
         timestamp = datetime.now(pacific_tz).strftime("%Y%m%d_%H%M%S")
 
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-            logger.info(f"Created output directory: {output_dir}")
+        # if not os.path.exists(output_dir):
+        #     os.makedirs(output_dir)
+        #     logger.info(f"Created output directory: {output_dir}")
 
-        filename = os.path.join(output_dir, f"model_output_{timestamp}.txt")
+        # filename = os.path.join(output_dir, f"model_output_{timestamp}.txt")
 
         # SSE streaming response
         def generate():
@@ -152,22 +141,22 @@ def chat():
                         yield content_chunk
 
                 # Write the system and user prompts, followed by the accumulated output, to a timestamped text file
-                with open(filename, "w") as file:
-                    logger.info(f"Saving output to file: {filename}")
-                    # Log system prompt
-                    file.write("System prompt:\n")
-                    file.write(f"{system_prompt['content']}\n\n")
+                # with open(filename, "w") as file:
+                #     logger.info(f"Saving output to file: {filename}")
+                #     # Log system prompt
+                #     file.write("System prompt:\n")
+                #     file.write(f"{system_prompt['content']}\n\n")
 
-                    # Log user prompt
-                    if image:
-                        file.write(f"Message: {message}\n")
-                        file.write(f"Image: data:image/png;base64,{image}\n\n")
-                    else:
-                        file.write(f"{message}\n\n")
+                #     # Log user prompt
+                #     if image:
+                #         file.write(f"Message: {message}\n")
+                #         file.write(f"Image: data:image/png;base64,{image}\n\n")
+                #     else:
+                #         file.write(f"{message}\n\n")
 
-                    # Log model output
-                    file.write("Model output:\n")
-                    file.write("".join(output_chunks))
+                #     # Log model output
+                #     file.write("Model output:\n")
+                #     file.write("".join(output_chunks))
 
             except Exception as e:
                 logger.error(f"Error in generate function: {str(e)}")

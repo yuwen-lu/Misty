@@ -641,7 +641,7 @@ const FlowComponent: React.FC = () => {
         console.log(
             "calling api, node " + targetCodeRenderNodeId + " started! "
         );
-        console.log("prompt: " + textPrompt);
+        // console.log("prompt: " + textPrompt);
         setResponse("");
         const controller = new AbortController();
         setAbortController(controller);
@@ -649,7 +649,7 @@ const FlowComponent: React.FC = () => {
         try {
             const blurredBase64 = await blurImage(base64Image);
 
-            console.log("processed blurred image: " + blurredBase64);
+            // console.log("processed blurred image: " + blurredBase64);
 
             const messageData = {
                 message: textPrompt,
@@ -657,7 +657,7 @@ const FlowComponent: React.FC = () => {
                 json_mode: jsonMode,
             };
 
-            console.log("message data: " + JSON.stringify(messageData));
+            // console.log("message data: " + JSON.stringify(messageData));
 
             // call the api and stream
             const response = await fetch(fetchResponseUrl, {
