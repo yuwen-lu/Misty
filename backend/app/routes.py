@@ -97,7 +97,7 @@ def chat():
                 # System prompt
                 system_prompt = {
                     "role": "system",
-                    "content": "You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. Do not provide information you are not asked about."
+                    "content": "You are a senior professional UI/UX designer and developer. Your main job is to follow the user's instructions, help them create UI frontend code that matches their requirements. Use React and TailwindCSS in your implementation. Generate all of the that should be there, generate full code, DO NOT omit anything. DO NOT use template information, use actual content. Do not provide information you are not asked about."
                 }
 
                 # construct the message body based on whether there are images sent
