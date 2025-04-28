@@ -52,7 +52,7 @@ import ErrorPopup from "./ErrorPopup";
 import {
     bottomModalBase64,
     bottomModalGreenBase64,
-    appleTvCard,
+    // appleTvCard,
     appleTvHero,
     appleTvHeroFull,
     appleNewsMySportsBase64,
@@ -107,13 +107,13 @@ const initialNodes: Node[] = [
     //     position: { x: 1300, y: 100 },
     //     data: { image: appleTvHero },
     // },
-    {
-        id: "2",
-        type: "imageDisplayNode",
-        draggable: true,
-        position: { x: 1800, y: 100 },
-        data: { image: appleTvCard },
-    },
+    // {
+    //     id: "2",
+    //     type: "imageDisplayNode",
+    //     draggable: true,
+    //     position: { x: 1800, y: 100 },
+    //     data: { image: appleTvCard },
+    // },
     // {
     //     id: "5",
     //     type: 'imageDisplayNode',
