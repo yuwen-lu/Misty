@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Paintbrush, LayoutList, Plus, EllipsisVertical } from 'lucide-react';
 import { NodeProps } from 'reactflow';
-import "../../index.css";
+
 import { constructCodeReplacementPrompt, constructDragAndDropPrompt } from '../../prompts';
 import { blurImage, convertToOutline, defaultBoundingBox } from '../../util';
 

@@ -26,8 +26,7 @@ import SubImageNode from "./customNodes/SubImageNode";
 import ConfirmationPopupNode from "./customNodes/ConfirmationPopupNode";
 import DynamicUI from "./customNodes/DynamicUI";
 import CodeEditorPanel from "./CodeEditorPanel";
-import "reactflow/dist/style.css";
-import "../index.css";
+
 import {
     removeEscapedChars,
     coordinatePositionType,

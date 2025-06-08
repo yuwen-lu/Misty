@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { LiveProvider, LiveError, LivePreview } from 'react-live';
 import * as LuIcons from 'react-icons/lu';
 import { BoundingBox, defaultBoundingBox, loadingIdState } from '../../util';
-import "../../index.css";
+
 
 const addEventHandlersToCode = (code: string) => {
     const handleMouseOver = `onMouseOver={(e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); (e.target as HTMLElement).classList.add('highlight'); }}`;

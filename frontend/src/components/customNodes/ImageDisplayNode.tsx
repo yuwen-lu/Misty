@@ -2,8 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { LuTrash2, LuUndo2, LuCheck } from 'react-icons/lu';
 import { BoundingBox, cropImage } from "../../util";
-import 'reactflow/dist/style.css';
-import '../../index.css';
+
 
 const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) => {
   const [isDrawing, setIsDrawing] = useState(false);

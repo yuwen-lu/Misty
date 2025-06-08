@@ -1,5 +1,5 @@
 import * as prettier from 'prettier/standalone';
-import * as parserBabel from 'prettier/parser-babel';
+import * as parserBabel from 'prettier/plugins/babel';
 import * as prettierPluginEstree from "prettier/plugins/estree";
 import { CategorizedChange, Change } from './prompts';
 
@@ -156,14 +156,19 @@ export const escapeRegex = (str: string): string => {
 };
 
 export const formatCode = async (code: string): Promise<string> => {
-  // Format the code using Prettier
-  const formattedCode = await prettier.format(code, {
-    parser: "babel",
-    tabWidth: 4,
-    plugins: [parserBabel, prettierPluginEstree],
-  });
-  console.log("formattedCode: " + formattedCode);
-  return formattedCode.replace(/{" "}/g, "");;
+  try {
+    // Format the code using Prettier
+    const formattedCode = await prettier.format(code, {
+      parser: "babel",
+      tabWidth: 4,
+      plugins: [parserBabel as any, prettierPluginEstree as any],
+    });
+    console.log("formattedCode: " + formattedCode);
+    return formattedCode.replace(/{" "}/g, "");
+  } catch (error) {
+    console.warn("Failed to format code with Prettier:", error);
+    return code; // Return original code if formatting fails
+  }
 };
 
 /**

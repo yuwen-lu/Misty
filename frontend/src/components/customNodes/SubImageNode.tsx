@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { LuEqual } from 'react-icons/lu';
-import 'reactflow/dist/style.css';
-import '../../index.css';
+
 
 const SubImageNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     const [localIsDragging, setLocalIsDragging] = useState<boolean | null>(null);

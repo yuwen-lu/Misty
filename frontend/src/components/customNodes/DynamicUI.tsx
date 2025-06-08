@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Eye, Brackets, Type, MoonStar, RotateCcw, ChevronRight } from 'lucide-react';
 import { formatCode, getIndexesToChange, splitChanges } from '../../util';
 import { colorList } from "../../utilColors";
-import "../../index.css";
+
 import { CategorizedChange } from '../../prompts';
 
 interface DynamicUIProps {

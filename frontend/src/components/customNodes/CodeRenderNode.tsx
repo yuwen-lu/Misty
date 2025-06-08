@@ -4,7 +4,7 @@ import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
 import { defaultBoundingBox, loadingIdState, tempChanges } from '../../util';
 import DynamicUI from './DynamicUI';
-import "../../index.css";
+
 import { RotateCcw, Sparkles, Hammer } from 'lucide-react';
 
 
