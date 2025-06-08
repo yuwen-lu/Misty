@@ -31,7 +31,7 @@ If you prefer to run the application without Docker, you will need the following
 
 ## Setup Environment Variables
 
-Since the backend functionality has been migrated to Next.js API routes, create a `.env.local` file under the `frontend/` directory with the following environment variables:
+Create a `.env.local` file in the root directory with the following environment variable:
 
 ```plaintext
 OPENAI_API_KEY=your_openai_api_key_here
@@ -43,19 +43,14 @@ Replace `your_openai_api_key_here` with your actual OpenAI API key.
 
 ### Option 1: Using Docker
 
-1. **Navigate to the frontend directory**:
-   ```bash
-   cd ./frontend
-   ```
-
-2. **Build the Docker image**:
+1. **Build the Docker image**:
    ```bash
    docker build -t misty-app .
    ```
    - `-t misty-app`: Tags the image with the name `misty-app`.
    - `.`: Refers to the current directory where the Dockerfile is located.
 
-3. **Run the Docker container**:
+2. **Run the Docker container**:
    ```bash
    docker run -p 3000:3000 misty-app
    ```
@@ -65,10 +60,9 @@ Replace `your_openai_api_key_here` with your actual OpenAI API key.
 
 If you prefer to run the application manually without Docker, follow these steps:
 
-1. Navigate to the frontend directory and install the required Node.js dependencies:
+1. Install the required Node.js dependencies:
 
    ```bash
-   cd frontend
    npm install
    ```
 
