@@ -31,20 +31,17 @@ If you prefer to run the application without Docker, you will need the following
 
 ## Setup Environment Variables
 
-Before running the application, create a `.env` file under the `backend/` directory with the following environment variables:
+Since the backend functionality has been migrated to Next.js API routes, create a `.env.local` file under the `frontend/` directory with the following environment variables:
 
 ```plaintext
-ORGANIZATION_ID=your_organization_id_here
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-Replace `your_organization_id_here` and `your_openai_api_key_here` with your actual values.
+Replace `your_openai_api_key_here` with your actual OpenAI API key.
 
 ## Installation
 
 ### Option 1: Using Docker
-
-#### **1. Build and Run the React Frontend**
 
 1. **Navigate to the frontend directory**:
    ```bash
@@ -53,55 +50,20 @@ Replace `your_organization_id_here` and `your_openai_api_key_here` with your act
 
 2. **Build the Docker image**:
    ```bash
-   docker build -t react-frontend .
+   docker build -t misty-app .
    ```
-   - `-t react-frontend`: Tags the image with the name `react-frontend`.
+   - `-t misty-app`: Tags the image with the name `misty-app`.
    - `.`: Refers to the current directory where the Dockerfile is located.
 
 3. **Run the Docker container**:
    ```bash
-   docker run -p 80:80 react-frontend
+   docker run -p 3000:3000 misty-app
    ```
-   - `-p 80:80`: Maps port 80 of the host to port 80 of the container, allowing you to access the React app via `http://localhost`.
-
-#### **2. Build and Run the Python Backend**
-
-1. **Navigate to the backend directory**:
-   ```bash
-   cd ./backend
-   ```
-
-2. **Build the Docker image**:
-   ```bash
-   docker build -t python-backend .
-   ```
-   - `-t python-backend`: Tags the image with the name `python-backend`.
-
-3. **Run the Docker container**:
-   ```bash
-   docker run -p 5000:5000 python-backend
-   ```
-   - `-p 5000:5000`: Maps port 5000 of the host to port 5000 of the container, allowing you to access the backend service via `http://localhost:5000`.
+   - `-p 3000:3000`: Maps port 3000 of the host to port 3000 of the container, allowing you to access the app via `http://localhost:3000`.
 
 ### Option 2: Manual Setup
 
 If you prefer to run the application manually without Docker, follow these steps:
-
-#### Backend
-
-1. Install the required Python dependencies:
-
-   ```bash
-   pip3 install -r requirements.txt
-   ```
-
-2. To run the backend:
-
-   ```bash
-   python3 run.py
-   ```
-
-#### Frontend
 
 1. Navigate to the frontend directory and install the required Node.js dependencies:
 
@@ -110,35 +72,41 @@ If you prefer to run the application manually without Docker, follow these steps
    npm install
    ```
 
-2. To run the React frontend, start the development server:
+2. To run the Next.js application in development mode:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
-   This will start the React development server, typically on `http://localhost:3000`. Open this URL in your web browser to view the application.
+   This will start the Next.js development server on `http://localhost:3000`. Open this URL in your web browser to view the application.
+
+3. For production:
+
+   ```bash
+   npm run build
+   npm start
+   ```
 
 ## Running the Application
 
 ### Using Docker
 
-- To start both services with Docker Compose:
-
-  ```bash
-  docker-compose up
-  ```
-
-- To stop the services:
-
-  ```bash
-  docker-compose down
-  ```
+Follow the Docker installation steps above to build and run the application.
 
 ### Without Docker
 
-Follow the manual setup steps outlined above for the backend and frontend.
+Follow the manual setup steps outlined above.
+
+## API Endpoints
+
+The application now includes the following API endpoints:
+
+- `GET /api/test` - Test endpoint to verify the API is working
+- `GET /api/healthz` - Health check endpoint
+- `POST /api/chat` - Main chat endpoint for OpenAI interactions with streaming support
 
 ## Troubleshooting
 
-- If you encounter any issues with Docker, ensure that Docker and Docker Compose are installed and running correctly.
+- If you encounter any issues with Docker, ensure that Docker is installed and running correctly.
 - For manual setup, ensure all prerequisites are installed, and environment paths are set correctly.
+- Make sure to set the `OPENAI_API_KEY` environment variable in your `.env.local` file.

@@ -199,7 +199,7 @@ const initialCodeToRender: codeRenderNodeContent[] = [
 
 const fetchResponseUrl = process.env.REACT_APP_DEPLOYMENT_BACKEND_URL
     ? `${process.env.REACT_APP_DEPLOYMENT_BACKEND_URL}/api/chat`
-    : "http://127.0.0.1:5000/api/chat";
+    : "/api/chat";
 
 const FlowComponent: React.FC = () => {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);

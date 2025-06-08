@@ -47,7 +47,6 @@
     "lint": "next lint",
     "test": "jest"
   },
-
   "browserslist": {
     "production": [
       ">0.2%",
