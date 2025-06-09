@@ -38,6 +38,7 @@ import {
 } from "../util";
 import {
     parseResponse,
+    safeParseResponse,
     constructTextPrompt,
     parseReplacementPromptResponse,
     CodeChange,
@@ -528,8 +529,13 @@ const FlowComponent: React.FC = () => {
         sourceNodeId: string
     ) => {
         // fetch the parsed Result
-        const parsedData: ParsedGlobalBlendingData =
-            parseResponse(finishedResponse);
+        const parsedData: ParsedGlobalBlendingData | null =
+            safeParseResponse(finishedResponse);
+        
+        if (!parsedData) {
+            console.error("Failed to parse API response, aborting");
+            return;
+        }
         let updatedCode = processParsedCode(parsedData.updatedCode);
 
         try {
@@ -696,8 +702,13 @@ const FlowComponent: React.FC = () => {
 
                 if (isRegenerate) {
                     // Fetch the parsed Result
-                    const parsedData: ParsedGlobalBlendingData =
-                        parseResponse(finalResponse);
+                    const parsedData: ParsedGlobalBlendingData | null =
+                        safeParseResponse(finalResponse);
+                    
+                    if (!parsedData) {
+                        console.error("Failed to parse API response in regenerate mode, aborting");
+                        return;
+                    }
                     let updatedCode = processParsedCode(parsedData.updatedCode);
 
                     // Update the existing renderCodeContentList entry instead of adding a new one

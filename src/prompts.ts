@@ -10,13 +10,87 @@ export type CategorizedChange = {
 };
 
 export interface ParsedGlobalBlendingData {
+    designExplanation?: string;
+    differences?: string;
     updatedCode: string;
     categorizedChanges: CategorizedChange[];
 }
 
 export function parseResponse(response: string): ParsedGlobalBlendingData {
     return JSON.parse(response) as ParsedGlobalBlendingData;
-};
+}
+
+// Safe wrapper for parseResponse that handles incomplete JSON
+export function safeParseResponse(response: string): ParsedGlobalBlendingData | null {
+    try {
+        // First, try to parse the response as-is
+        return JSON.parse(response) as ParsedGlobalBlendingData;
+    } catch (error) {
+        console.warn("Initial JSON parse failed, attempting to fix incomplete JSON:", error);
+        
+        try {
+            // Try to fix common incomplete JSON issues
+            let fixedResponse = response.trim();
+            
+            // Count opening and closing braces to see if we're missing closing braces
+            const openBraces = (fixedResponse.match(/\{/g) || []).length;
+            const closeBraces = (fixedResponse.match(/\}/g) || []).length;
+            
+            // If we're missing closing braces, add them
+            if (openBraces > closeBraces) {
+                const missingBraces = openBraces - closeBraces;
+                fixedResponse += '}'.repeat(missingBraces);
+            }
+            
+            // Check for unterminated strings and try to close them
+            const lastQuoteIndex = fixedResponse.lastIndexOf('"');
+            if (lastQuoteIndex !== -1) {
+                const afterLastQuote = fixedResponse.substring(lastQuoteIndex + 1);
+                // If there's content after the last quote that doesn't end properly, try to close it
+                if (afterLastQuote && !afterLastQuote.match(/^\s*[,}\]]/)) {
+                    // Find if we're in the middle of a string value
+                    const beforeLastQuote = fixedResponse.substring(0, lastQuoteIndex);
+                    const colonIndex = beforeLastQuote.lastIndexOf(':');
+                    if (colonIndex !== -1 && beforeLastQuote.substring(colonIndex).includes('"')) {
+                        // We're likely in a string value, close it
+                        fixedResponse = fixedResponse.substring(0, lastQuoteIndex + 1) + '"';
+                        // Add closing braces if needed
+                        const newOpenBraces = (fixedResponse.match(/\{/g) || []).length;
+                        const newCloseBraces = (fixedResponse.match(/\}/g) || []).length;
+                        if (newOpenBraces > newCloseBraces) {
+                            fixedResponse += '}';
+                        }
+                    }
+                }
+            }
+            
+            console.log("Attempting to parse fixed JSON:", fixedResponse);
+            return JSON.parse(fixedResponse) as ParsedGlobalBlendingData;
+            
+        } catch (secondError) {
+            console.error("Failed to parse even after attempting to fix JSON:", secondError);
+            console.error("Original response:", response);
+            
+            // Return a default structure so the app doesn't crash
+            return {
+                updatedCode: `() => {
+                    return (
+                        <div className="p-4 text-center">
+                            <div className="text-red-600 mb-2">⚠️ Error: Incomplete Response</div>
+                            <div className="text-sm text-gray-600">
+                                The API response was cut off. Please try again.
+                            </div>
+                        </div>
+                    );
+                }`,
+                categorizedChanges: [{
+                    category: "Error: Response incomplete",
+                    changes: []
+                }]
+            };
+        }
+    }
+}
 
 const getPromptForBlendMode = (blendModes: string[]): string => {
     if (blendModes.length === 0) {
