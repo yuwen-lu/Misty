@@ -99,9 +99,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const startTime = Date.now();
-    console.log('Received chat request');
+    console.log('🚀 Received chat request on Vercel');
+    console.log('🌍 Environment:', process.env.VERCEL_ENV || 'local');
+    console.log('⏱️  Function timeout limit: 60s (Pro plan)');
     const data = req.body;
-    console.log(`Request data: ${JSON.stringify(data)}`);
+    console.log(`📝 Request data length: ${JSON.stringify(data).length} chars`);
     
     if (!data) {
       console.error('No JSON data received');
@@ -182,12 +184,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('Initializing OpenAI client');
       const client = new OpenAI({
         apiKey: OPENAI_API_KEY,
-        timeout: 50000, // 50 seconds timeout (less than Vercel's 60s limit)
+        timeout: 55000, // 55 seconds (under Vercel Pro's 60s limit with buffer)
       });
       console.log(`OpenAI client initialized in ${Date.now() - clientInitStart}ms`);
 
       const streamStart = Date.now();
-      console.log('Starting OpenAI stream');
+      console.log('🔄 Starting OpenAI stream');
+      console.log('💬 Message count:', userMessageBody.length);
+      console.log('🖼️  Has image:', !!processedImage);
+      console.log('📋 JSON mode:', json_mode);
+      
       const stream = await client.chat.completions.create({
         model: MODEL,
         messages: userMessageBody,
@@ -217,27 +223,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         
         // Check for timeout between chunks
-        if (Date.now() - lastChunkTime > CHUNK_TIMEOUT) {
-          console.warn('Stream timeout - no chunks received in 30 seconds');
+        const timeSinceLastChunk = Date.now() - lastChunkTime;
+        const totalTime = Date.now() - startTime;
+        
+        if (timeSinceLastChunk > CHUNK_TIMEOUT) {
+          console.warn(`⚠️ Stream timeout - no chunks received in ${CHUNK_TIMEOUT/1000}s`);
+          console.warn(`⏱️  Total runtime: ${totalTime/1000}s`);
           break;
+        }
+        
+        // Warn if we're approaching the function timeout
+        if (totalTime > 50000) { // 50 seconds
+          console.warn(`⚠️ Approaching function timeout! Runtime: ${totalTime/1000}s`);
         }
       }
 
       const totalStreamTime = Date.now() - streamStart;
+      const totalRequestTime = Date.now() - startTime;
       const totalChunks = outputChunks.length;
-      console.log(`Stream completed in ${totalStreamTime}ms with ${totalChunks} chunks`);
-      
-      // Log if stream seems incomplete (no final closing brace/bracket)
       const fullResponse = outputChunks.join('');
+      
+      console.log(`✅ Stream completed!`);
+      console.log(`⏱️  Stream time: ${totalStreamTime}ms`);
+      console.log(`⏱️  Total request time: ${totalRequestTime}ms`);
+      console.log(`📦 Chunks received: ${totalChunks}`);
+      console.log(`📏 Response length: ${fullResponse.length} chars`);
+      
+      // Check if stream seems incomplete
       if (fullResponse.trim() && !fullResponse.trim().endsWith('}')) {
-        console.warn('⚠️ Stream may be incomplete - response does not end with closing brace');
-        console.log('Last 100 chars:', fullResponse.slice(-100));
+        console.error('❌ INCOMPLETE RESPONSE DETECTED!');
+        console.error('🔍 Last 200 chars:', fullResponse.slice(-200));
+        console.error('💡 This suggests the stream was cut off before completion');
+      } else {
+        console.log('✅ Response appears complete (ends with closing brace)');
       }
       
       res.end();
 
     } catch (error) {
-      console.error(`Error in streaming: ${error}`);
+      const totalTime = Date.now() - startTime;
+      console.error(`❌ Error in streaming after ${totalTime}ms:`, error);
+      
+      if (error instanceof Error) {
+        console.error('📋 Error name:', error.name);
+        console.error('📝 Error message:', error.message);
+        if (error.message.includes('timeout')) {
+          console.error('⏱️  TIMEOUT ERROR DETECTED');
+        }
+      }
+      
       res.write(`Error: ${error}`);
       res.end();
     }
