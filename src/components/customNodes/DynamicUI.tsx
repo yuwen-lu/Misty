@@ -17,10 +17,11 @@ interface DynamicUIProps {
 }
 
 const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevCode, blendedCode, newCode, handleCodeReplacement, fetchSemanticDiffingResponse, sethoverIdxList }) => {
-    const [state, setState] = useState<CategorizedChange[]>(() => categorizedChanges ? JSON.parse(JSON.stringify(categorizedChanges)) : []);
+    const safeChanges = categorizedChanges || [];
+    const [state, setState] = useState<CategorizedChange[]>(() => safeChanges ? JSON.parse(JSON.stringify(safeChanges)) : []);
     const [isAnimating, setIsAnimating] = useState(false);
     const [isExpanded, setIsExpanded] = useState(true);
-    const [categoryToggles, setCategoryToggles] = useState<boolean[]>(new Array(categorizedChanges.length).fill(true));
+    const [categoryToggles, setCategoryToggles] = useState<boolean[]>(new Array(safeChanges.length).fill(true));
 
 
     useEffect(() => {
@@ -36,8 +37,8 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     }, [isAnimating]);
 
     useEffect(() => {
-        if (categorizedChanges) setState(JSON.parse(JSON.stringify(categorizedChanges)));
-    }, [categorizedChanges]);
+        if (safeChanges.length > 0) setState(JSON.parse(JSON.stringify(safeChanges)));
+    }, [categorizedChanges, safeChanges]);
 
     const handleToggleCategory = async (categoryIndex: number) => {
         const category = state[categoryIndex];
@@ -211,11 +212,11 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
         }
 
         // Reset all category toggles to `true`
-        const resetToggles = categorizedChanges.map(() => true);
+        const resetToggles = safeChanges.map(() => true);
         setCategoryToggles(resetToggles);
 
         // Reset all changes to their initial state
-        const resetChanges = categorizedChanges.map(category => ({
+        const resetChanges = safeChanges.map(category => ({
             ...category,
             changes: category.changes.map(change => ({
                 ...change,

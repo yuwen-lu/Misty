@@ -167,9 +167,62 @@ export const formatCode = async (code: string): Promise<string> => {
     return formattedCode.replace(/{" "}/g, "");
   } catch (error) {
     console.warn("Failed to format code with Prettier:", error);
-    return code; // Return original code if formatting fails
+    
+    // Try to fix common syntax errors before giving up
+    let fixedCode = code;
+    
+    try {
+      // Fix unterminated strings in className attributes
+      fixedCode = fixUnterminatedStrings(fixedCode);
+      
+      // Try formatting again with the fixed code
+      const formattedCode = await prettier.format(fixedCode, {
+        parser: "babel",
+        tabWidth: 4,
+        plugins: [parserBabel as any, prettierPluginEstree as any],
+      });
+      console.log("Successfully formatted after fixing syntax errors");
+      return formattedCode.replace(/{" "}/g, "");
+      
+    } catch (secondError) {
+      console.warn("Failed to format even after attempting to fix syntax errors:", secondError);
+      return fixedCode; // Return the fixed code even if formatting still fails
+    }
   }
 };
+
+// Helper function to fix common unterminated string issues
+function fixUnterminatedStrings(code: string): string {
+  let fixedCode = code;
+  
+  // Fix unterminated className attributes specifically
+  // Pattern: className=" followed by content but missing closing quote
+  const classNamePattern = /className=["']([^"']*?)(?=\s|>|$)/g;
+  fixedCode = fixedCode.replace(classNamePattern, (match, content) => {
+    // If the match doesn't end with a quote, add one
+    if (!match.endsWith('"') && !match.endsWith("'")) {
+      const quote = match.includes('"') ? '"' : "'";
+      return `className=${quote}${content}${quote}`;
+    }
+    return match;
+  });
+  
+  // Fix other common attribute string issues
+  const attributePattern = /(\w+)=["']([^"']*?)(?=\s|>|$)/g;
+  fixedCode = fixedCode.replace(attributePattern, (match, attrName, content) => {
+    if (!match.endsWith('"') && !match.endsWith("'")) {
+      const quote = match.includes('"') ? '"' : "'";
+      return `${attrName}=${quote}${content}${quote}`;
+    }
+    return match;
+  });
+  
+  // Fix unterminated JSX self-closing tags
+  fixedCode = fixedCode.replace(/(<\w+[^>]*[^\/])(\s*>)/g, '$1 />');
+  
+  console.log("Applied syntax fixes to code");
+  return fixedCode;
+}
 
 /**
  * Converts a base64-encoded image into an outline image and returns the processed base64 string.
