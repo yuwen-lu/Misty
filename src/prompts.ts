@@ -22,6 +22,9 @@ export function parseResponse(response: string): ParsedGlobalBlendingData {
 
 // Safe wrapper for parseResponse that handles incomplete JSON
 export function safeParseResponse(response: string): ParsedGlobalBlendingData | null {
+    console.log("🔍 safeParseResponse called - new version deployed successfully!");
+    console.log("Response length:", response.length);
+    
     try {
         // First, try to parse the response as-is
         return JSON.parse(response) as ParsedGlobalBlendingData;

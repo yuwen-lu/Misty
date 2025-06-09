@@ -156,6 +156,8 @@ export const escapeRegex = (str: string): string => {
 };
 
 export const formatCode = async (code: string): Promise<string> => {
+  console.log("🔧 formatCode called - enhanced version with syntax fixing!");
+  
   try {
     // Format the code using Prettier
     const formattedCode = await prettier.format(code, {

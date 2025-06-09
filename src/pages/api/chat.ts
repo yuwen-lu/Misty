@@ -182,6 +182,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('Initializing OpenAI client');
       const client = new OpenAI({
         apiKey: OPENAI_API_KEY,
+        timeout: 50000, // 50 seconds timeout (less than Vercel's 60s limit)
       });
       console.log(`OpenAI client initialized in ${Date.now() - clientInitStart}ms`);
 
@@ -195,6 +196,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       let firstChunkReceived = false;
+      let lastChunkTime = Date.now();
+      const CHUNK_TIMEOUT = 30000; // 30 seconds between chunks
+      
       for await (const chunk of stream) {
         if (chunk.choices[0]?.delta?.content) {
           if (!firstChunkReceived) {
@@ -206,13 +210,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const contentChunk = chunk.choices[0].delta.content;
           // console.log(`Received chunk: ${contentChunk}`);
           outputChunks.push(contentChunk);
+          lastChunkTime = Date.now();
           
           // Write the chunk and force flush
           res.write(contentChunk);
         }
+        
+        // Check for timeout between chunks
+        if (Date.now() - lastChunkTime > CHUNK_TIMEOUT) {
+          console.warn('Stream timeout - no chunks received in 30 seconds');
+          break;
+        }
       }
 
-      console.log(`Stream completed in ${Date.now() - streamStart}ms`);
+      const totalStreamTime = Date.now() - streamStart;
+      const totalChunks = outputChunks.length;
+      console.log(`Stream completed in ${totalStreamTime}ms with ${totalChunks} chunks`);
+      
+      // Log if stream seems incomplete (no final closing brace/bracket)
+      const fullResponse = outputChunks.join('');
+      if (fullResponse.trim() && !fullResponse.trim().endsWith('}')) {
+        console.warn('⚠️ Stream may be incomplete - response does not end with closing brace');
+        console.log('Last 100 chars:', fullResponse.slice(-100));
+      }
+      
       res.end();
 
     } catch (error) {
