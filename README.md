@@ -1,5 +1,15 @@
 # misty
 
+Misty is an interactive canvas, where UI/UX designers and developers can blend inspirational design screenshots into their own work-in-progress code.
+
+Imagine Cursor and Claude Code for UI, but on a canvas where you can freely explore.
+
+We imagine it to be an alternative to writing prompts. No need to come up with a description of what you want, just drag and drop it.
+
+AI that catches up to the speed of your intuition, not your articulation.
+
+[Watch the demo](https://x.com/yuwen_lu_/status/1850574331539276198)
+
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
