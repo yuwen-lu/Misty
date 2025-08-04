@@ -27,6 +27,9 @@ import ConfirmationPopupNode from "./customNodes/ConfirmationPopupNode";
 import DynamicUI from "./customNodes/DynamicUI";
 import WebsitePreviewNode from "./customNodes/WebsitePreviewNode";
 import CodeEditorPanel from "./CodeEditorPanel";
+import { ChatPanel } from "./chat/ChatPanel";
+import { Models } from "./chat/ChatInput";
+import InitialChatDialog from "./chat/InitialChatDialog";
 
 import {
     removeEscapedChars,
@@ -241,6 +244,13 @@ const FlowComponent: React.FC = () => {
     const [abortController, setAbortController] =
         useState<AbortController | null>(null);
 
+    // Chat interface states
+    const [showInitialDialog, setShowInitialDialog] = useState(true);
+    const [showChatInterface, setShowChatInterface] = useState(false);
+    const [isChatMinimized, setIsChatMinimized] = useState(false);
+    const [initialMessage, setInitialMessage] = useState<string>('');
+    const [selectedModel, setSelectedModel] = useState<Models>(Models.claudeSonnet4);
+
     useEffect(() => {
         // Cleanup on unmount
         return () => {
@@ -253,6 +263,25 @@ const FlowComponent: React.FC = () => {
     const toggleCodePanelVisible = () => {
         setCodePanelVisible(!codePanelVisible);
     };
+
+    // Chat interface handlers
+    const handleStartChat = (message: string, model: 'claude-sonnet' | 'claude-opus') => {
+        setInitialMessage(message);
+        setSelectedModel(model === 'claude-opus' ? Models.claudeOpus4 : Models.claudeSonnet4);
+        setShowInitialDialog(false);
+        setShowChatInterface(true);
+        setIsChatMinimized(false);
+    };
+
+    const handleCloseInitialDialog = () => {
+        setShowInitialDialog(false);
+    };
+
+    const handleToggleChatMinimize = () => {
+        setIsChatMinimized(!isChatMinimized);
+    };
+
+
 
     const setRenderCodeContentList = useCallback(
         (newCodeContentList: codeRenderNodeContent[]) => {
@@ -1282,6 +1311,24 @@ const FlowComponent: React.FC = () => {
                     )}
                 </div> */}
             </ReactFlow>
+            
+            {/* Chat Interface Components */}
+            {showInitialDialog && (
+                <InitialChatDialog
+                    onStartChat={handleStartChat}
+                    onClose={handleCloseInitialDialog}
+                />
+            )}
+            
+            {showChatInterface && (
+                <ChatPanel
+                    isMinimized={isChatMinimized}
+                    onToggleMinimize={handleToggleChatMinimize}
+                    initialMessage={initialMessage}
+                    selectedModel={selectedModel}
+                />
+            )}
+            
             {/* <TSXDiff /> */}
         </div>
     );

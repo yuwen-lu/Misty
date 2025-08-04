@@ -44,24 +44,24 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
     const clampedX = Math.max(0, Math.min(scaledX, canvas.width));
     const clampedY = Math.max(0, Math.min(scaledY, canvas.height));
     
-    console.log('Coordinate conversion debug:', {
-      screenX,
-      screenY,
-      rectLeft: rect.left,
-      rectTop: rect.top,
-      rectWidth: rect.width,
-      rectHeight: rect.height,
-      canvasWidth: canvas.width,
-      canvasHeight: canvas.height,
-      scaleX,
-      scaleY,
-      rawX: x,
-      rawY: y,
-      scaledX,
-      scaledY,
-      clampedX,
-      clampedY
-    });
+    // console.log('Coordinate conversion debug:', {
+    //   screenX,
+    //   screenY,
+    //   rectLeft: rect.left,
+    //   rectTop: rect.top,
+    //   rectWidth: rect.width,
+    //   rectHeight: rect.height,
+    //   canvasWidth: canvas.width,
+    //   canvasHeight: canvas.height,
+    //   scaleX,
+    //   scaleY,
+    //   rawX: x,
+    //   rawY: y,
+    //   scaledX,
+    //   scaledY,
+    //   clampedX,
+    //   clampedY
+    // });
     
     return { x: clampedX, y: clampedY };
   }, []);
@@ -113,15 +113,15 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
         setResizeRatio(ratio);
         setCanvasInitialized(true);
         
-        console.log('Canvas initialized:', {
-          canvasWidth: canvas.width,
-          canvasHeight: canvas.height,
-          imgOffsetWidth: img.offsetWidth,
-          imgOffsetHeight: img.offsetHeight,
-          imgClientWidth: img.clientWidth,
-          imgClientHeight: img.clientHeight,
-          ratio: ratio
-        });
+        // console.log('Canvas initialized:', {
+        //   canvasWidth: canvas.width,
+        //   canvasHeight: canvas.height,
+        //   imgOffsetWidth: img.offsetWidth,
+        //   imgOffsetHeight: img.offsetHeight,
+        //   imgClientWidth: img.clientWidth,
+        //   imgClientHeight: img.clientHeight,
+        //   ratio: ratio
+        // });
         
         // Clear any existing drawings
         const ctx = canvas.getContext('2d');
@@ -174,13 +174,13 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
     // Convert screen coordinates to canvas coordinates with React Flow transforms
     const { x, y } = screenToCanvasCoordinates(e.clientX, e.clientY);
     
-    console.log('Mouse down debug:', {
-      zoom,
-      clientX: e.clientX,
-      clientY: e.clientY,
-      convertedX: x,
-      convertedY: y
-    });
+    // console.log('Mouse down debug:', {
+    //   zoom,
+    //   clientX: e.clientX,
+    //   clientY: e.clientY,
+    //   convertedX: x,
+    //   convertedY: y
+    // });
     
     setStartPoint({ x, y });
     setEndPoint({ x, y });
@@ -303,20 +303,20 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
         // Convert display coordinates to natural image coordinates for cropping
         const imageCoordinates = getImageCoordinatesFromDisplayBox(boundingBox);
         
-        console.log('Crop coordinates debug:', {
-          zoom,
-          displayBox: boundingBox,
-          imageCoordinates,
-          imgOffsetWidth: img.offsetWidth,
-          imgOffsetHeight: img.offsetHeight,
-          imgNaturalWidth: img.naturalWidth,
-          imgNaturalHeight: img.naturalHeight,
-          currentRatio: img.naturalWidth / img.offsetWidth,
-          storedResizeRatio: resizeRatio
-        });
+        // console.log('Crop coordinates debug:', {
+        //   zoom,
+        //   displayBox: boundingBox,
+        //   imageCoordinates,
+        //   imgOffsetWidth: img.offsetWidth,
+        //   imgOffsetHeight: img.offsetHeight,
+        //   imgNaturalWidth: img.naturalWidth,
+        //   imgNaturalHeight: img.naturalHeight,
+        //   currentRatio: img.naturalWidth / img.offsetWidth,
+        //   storedResizeRatio: resizeRatio
+        // });
         
         const croppedImage = await cropImage(data.image, imageCoordinates);
-        console.log(croppedImage);
+        // console.log(croppedImage);
         setSubImageList((prevSubImageList) => [...prevSubImageList, croppedImage]);
       }
     } catch (error) {
