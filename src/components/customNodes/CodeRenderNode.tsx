@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { NodeProps, Handle, Position, NodeResizeControl } from 'reactflow';
 import { LuTerminal, LuEqual, LuSmartphone, LuMonitor } from 'react-icons/lu';
 import CodeRenderFrame from './CodeRenderFrame';
@@ -33,54 +33,48 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
     }, [isAnimating, isAnimatingHammer]);
 
     const classNameStartString = "className=";
-    useEffect(() => {
-        let resultCode = code;
-        let newOriginalClassNames = [...originalClassNames];
-        let newReplacementClassNames = [...replacementClassNames];
-
-        if (hoverIdxList.length === 0) {
-            setCode(data.renderCode.replaceAll("highlight-gray", ""));   // reset
-            return;
+    const processHoverHighlight = useCallback((hoverList: number[], renderCode: string) => {
+        if (hoverList.length === 0) {
+            return renderCode.replaceAll("highlight-gray", "");
         }
 
-        if (hoverIdxList.length > 0) {
-            for (let i = hoverIdxList.length - 1; i >= 0; i--) {
-                let targetIdx = hoverIdxList[i];
+        let resultCode = renderCode;
+        const newOriginalClassNames: string[] = [];
+        const newReplacementClassNames: string[] = [];
 
-                // Extract the className string surrounding the targetIdx
-                const beforeTarget = resultCode.slice(0, targetIdx);
-                const afterTarget = resultCode.slice(targetIdx);
-                const classNameMatchIdx = beforeTarget.lastIndexOf(classNameStartString) + classNameStartString.length;
-                let quoteChar = resultCode.charAt(classNameMatchIdx); // need to figure out if it's ' or "
-                const classNameMatchEndIdx = afterTarget.indexOf(quoteChar) + beforeTarget.length;
+        for (let i = hoverList.length - 1; i >= 0; i--) {
+            const targetIdx = hoverList[i];
+            const beforeTarget = resultCode.slice(0, targetIdx);
+            const afterTarget = resultCode.slice(targetIdx);
+            const classNameMatchIdx = beforeTarget.lastIndexOf(classNameStartString) + classNameStartString.length;
+            const quoteChar = resultCode.charAt(classNameMatchIdx);
+            const classNameMatchEndIdx = afterTarget.indexOf(quoteChar) + beforeTarget.length;
 
-                if (classNameMatchIdx !== -1 && classNameMatchEndIdx !== -1) {
-                    const matchedClassName = resultCode.slice(classNameMatchIdx, classNameMatchEndIdx + 1); // + 1 to include the ending quote
-                    let updatedClassName = matchedClassName;
-                    newOriginalClassNames.push(matchedClassName);
-                    if (matchedClassName.includes("bg-")) {
-                        updatedClassName = updatedClassName.slice(1, -1);   // first, remove the quotes
-                        updatedClassName = updatedClassName.split(' ').filter(cls => !cls.startsWith('bg-')).join(' ');
-                        updatedClassName = quoteChar + updatedClassName + quoteChar;    // add the quotes back
-                    }
-                    updatedClassName = updatedClassName.slice(0, 1) + "highlight-gray " + updatedClassName.slice(1);
-                    newReplacementClassNames.push(updatedClassName);
-                    resultCode = resultCode.replaceAll(matchedClassName, updatedClassName);
+            if (classNameMatchIdx !== -1 && classNameMatchEndIdx !== -1) {
+                const matchedClassName = resultCode.slice(classNameMatchIdx, classNameMatchEndIdx + 1);
+                let updatedClassName = matchedClassName;
+                newOriginalClassNames.push(matchedClassName);
+                
+                if (matchedClassName.includes("bg-")) {
+                    updatedClassName = updatedClassName.slice(1, -1);
+                    updatedClassName = updatedClassName.split(' ').filter(cls => !cls.startsWith('bg-')).join(' ');
+                    updatedClassName = quoteChar + updatedClassName + quoteChar;
                 }
+                updatedClassName = updatedClassName.slice(0, 1) + "highlight-gray " + updatedClassName.slice(1);
+                newReplacementClassNames.push(updatedClassName);
+                resultCode = resultCode.replaceAll(matchedClassName, updatedClassName);
             }
-            setOriginalClassNames(newOriginalClassNames);
-            setReplacementClassNames(newReplacementClassNames);
-            setCode(resultCode);
-        } else if (code.match(/className=(["'])highlight-gray.*?\1/)) {
-            // Recover the original className strings
-            let recoveredCode = resultCode;
-            originalClassNames.forEach((originalClassName, idx) => {
-                recoveredCode = recoveredCode.replace(replacementClassNames[idx], originalClassName);
-            });
-            setCode(recoveredCode);
-            setOriginalClassNames([]);
         }
-    }, [hoverIdxList]);
+
+        setOriginalClassNames(newOriginalClassNames);
+        setReplacementClassNames(newReplacementClassNames);
+        return resultCode;
+    }, []);
+
+    useEffect(() => {
+        const processedCode = processHoverHighlight(hoverIdxList, data.renderCode);
+        setCode(processedCode);
+    }, [hoverIdxList, data.renderCode, processHoverHighlight]);
 
     useEffect(() => {
         setCode(data.renderCode);
@@ -98,35 +92,34 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
         }
     }, [data.renderCode, data.sourceNodeId, id]);
 
-    const handleToggle = () => {
+    const handleToggle = useCallback(() => {
         setIsMobile(!isMobile);
-    };
+    }, [isMobile]);
 
-    const regenerateCode = () => {
+    const regenerateCode = useCallback(() => {
         if (!isAnimating) {
             setIsAnimating(true);
         }
         console.log("huh? \n" + data.base64Image);
-        // Call the handleFetchResponse with the regenerate flag set to true
         data.handleFetchResponse(
             data.textPrompt,
             data.base64Image,
             true,
-            undefined,  // renderCodeBoundingBox, not used in this case, use default value
-            code,  // this is the current code that might be regenerated
-            id,    // the id of the current node
-            true,   // global blending
+            undefined,
+            code,
+            id,
+            true,
             data.sourceNodeId,
-            true   // isRegenerate flag set to true
+            true
         );
-    }
+    }, [isAnimating, data, code, id]);
 
-    const fixCodeNotRendering = () => {
+    const fixCodeNotRendering = useCallback(() => {
         if (!isAnimatingHammer) {
             setIsAnimatingHammer(true);
         }
         data.fixCodeNotRendering(code, id);
-    }
+    }, [isAnimatingHammer, data, code, id]);
 
 
     return (
@@ -134,7 +127,7 @@ const CodeRenderNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) 
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
                 border-t-8 border-t-purple-900
             w-full h-full 
-            transition-all duration-300 ease-in-out ${selected ? 'shadow-2xl transform scale-105' : ''}`}>
+            transition-shadow duration-300 ease-in-out ${selected ? 'shadow-2xl ring-4 ring-purple-500 ring-opacity-50' : ''}`}>
             <div
                 className="render-view-container flex flex-col items-center"
                 ref={nodeRef}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { LiveProvider, LiveError, LivePreview } from 'react-live';
 import * as LuIcons from 'react-icons/lu';
 import { BoundingBox, defaultBoundingBox, loadingIdState } from '../../util';
@@ -14,20 +14,29 @@ const addEventHandlersToCode = (code: string) => {
         setTargetCodeDropped(processHTMLElement(e.target).outerHTML); 
         console.log('mouse up from element:', e.target); }}`;
 
-    return code.replace(/<(\w+)([^>]*?)(\/?)>/g, (match, p1, p2, p3) => {
-        // If the tag is self-closing, add a space before the closing slash
-        const isSelfClosing = p3 === '/';
-
-        // Skip elements that already have event handlers
+    // Use a more efficient regex with caching
+    const regex = /<(\w+)([^>]*?)(\/?)>/g;
+    const cache = new Map();
+    
+    return code.replace(regex, (match, p1, p2, p3) => {
+        // Check cache first
+        if (cache.has(match)) {
+            return cache.get(match);
+        }
+        
+        // Skip if already has handlers
         if (p2.includes('onMouseOver') || p2.includes('onMouseOut') || p2.includes('onMouseUp')) {
+            cache.set(match, match);
             return match;
         }
 
-        if (isSelfClosing) {
-            return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleMouseUp} />`;
-        } else {
-            return `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleMouseUp}>`;
-        }
+        const isSelfClosing = p3 === '/';
+        const result = isSelfClosing
+            ? `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleMouseUp} />`
+            : `<${p1}${p2} ${handleMouseOver} ${handleMouseOut} ${handleMouseUp}>`;
+        
+        cache.set(match, result);
+        return result;
     });
 }
 
@@ -70,19 +79,23 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
     const [codeRenderNodeRect, setCodeRenderNodeRect] = useState<BoundingBox>(defaultBoundingBox);
 
     useEffect(() => {
-        if (codeRenderNodeRef.current) setCodeRenderNodeRect(codeRenderNodeRef.current.getBoundingClientRect());
-    }, []);
+        if (codeRenderNodeRef.current) {
+            const rect = codeRenderNodeRef.current.getBoundingClientRect();
+            setCodeRenderNodeRect(rect);
+        }
+    }, [codeRenderNodeRef]);
 
-    useEffect(() => {
-        if (isDragging) console.log("updated code: " + addEventHandlersToCode(renderCode));
-    }, [isDragging])
+    // Memoize the processed code to avoid recalculation
+    const processedCode = useMemo(() => {
+        return isDragging ? addEventHandlersToCode(renderCode) : renderCode;
+    }, [isDragging, renderCode])
 
-    const cancelBlending = () => {
+    const cancelBlending = useCallback(() => {
         updateLoadingState(nodeId, false);
         abortController && abortController.abort();
-    };
+    }, [nodeId, updateLoadingState, abortController]);
 
-    const setCurrentBbox = () => {
+    const setCurrentBbox = useCallback(() => {
         if (codeRenderNodeRect) {
             const nodeClientBbox: BoundingBox = {
                 x: codeRenderNodeRect.x,
@@ -96,23 +109,22 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
             console.log("using default bbox");
             setTargetRenderCodeNodeBbox(defaultBoundingBox);
         }
+    }, [codeRenderNodeRect, setTargetRenderCodeNodeBbox]);
 
-    }
-
-    const checkIsLoading = () => {
+    const isLoading = useMemo(() => {
         const currentNodeState = loadingStates.find(items => items.id === nodeId);
-        return currentNodeState?.loading;
-    }
+        return currentNodeState?.loading || false;
+    }, [loadingStates, nodeId]);
 
     return (
         <div
             className={`code-render-container grow w-full overflow-auto relative
-                    ${checkIsLoading() ? "invisible" : ""}
+                    ${isLoading ? "invisible" : ""}
                     ${isDragging ? "flash" : ""}`}
         >
-            <div className={`spinner-wrapper z-50 ${checkIsLoading() ? "visible" : "invisible"}`}>
-                <div className={`spinner ${checkIsLoading() ? 'animate-spin' : ''}`}></div>
-                <div className={`spinner inner ${checkIsLoading() ? 'animate-spin-reverse' : ''}`}></div>
+            <div className={`spinner-wrapper z-50 ${isLoading ? "visible" : "invisible"}`}>
+                <div className={`spinner ${isLoading ? 'animate-spin' : ''}`}></div>
+                <div className={`spinner inner ${isLoading ? 'animate-spin-reverse' : ''}`}></div>
                 <div className='flex items-center w-full'>
                     <button
                         className="mt-12 mx-auto px-4 py-2 bg-zinc-700 text-white font-semibold rounded-lg hover:bg-zinc-900 focus:outline-none"
@@ -123,14 +135,14 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
             </div>
             {/* removed for now: ${isMobile ? "max-w-md" : "max-w-screen-md"}  */}
 
-            <div className={`absolute w-full h-full text-purple-400/80 ${checkIsLoading() ? "visible text-glow" : "invisible"}`}>
-                {checkIsLoading() ? (response.length > 2000 ? response.slice(2000 * Math.floor(response.length / 2000)) : response) : ""}
+            <div className={`absolute w-full h-full text-purple-400/80 ${isLoading ? "visible text-glow" : "invisible"}`}>
+                {isLoading ? (response.length > 2000 ? response.slice(2000 * Math.floor(response.length / 2000)) : response) : ""}
             </div>
 
-            <div className={`${checkIsLoading() ? "invisible" : ""}`}>
+            <div className={`${isLoading ? "invisible" : ""}`}>
                 <LiveProvider
-                    code={isDragging ? addEventHandlersToCode(renderCode) : renderCode}
-                    scope={{
+                    code={processedCode}
+                    scope={useMemo(() => ({
                         React, useState, ...LuIcons,
                         renderCode,
                         setTargetCodeRenderNodeId,
@@ -142,7 +154,7 @@ const CodeRenderFrame: React.FC<CodeRenderFrameProps> = ({ nodeId, response, isM
                         setCurrentBbox,
                         defaultBoundingBox,
                         codeRenderNodeRect
-                    }}
+                    }), [renderCode, setTargetCodeRenderNodeId, nodeId, setTargetBlendCode, setTargetCodeDropped, setTargetRenderCodeNodeBbox, setCurrentBbox, codeRenderNodeRect])}
                 >
                     <LivePreview />
                     <LiveError />

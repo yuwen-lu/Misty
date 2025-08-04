@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Handle, Position, NodeProps } from 'reactflow';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { Handle, Position, NodeProps, useViewport } from 'reactflow';
 import { LuTrash2, LuUndo2, LuCheck } from 'react-icons/lu';
 import { BoundingBox, cropImage } from "../../util";
 
@@ -8,14 +8,17 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [endPoint, setEndPoint] = useState({ x: 0, y: 0 });
-  // const [boundingBoxes, setBoundingBoxes] = useState<{ x: number, y: number, width: number, height: number }[]>([]);
   const [boundingBox, setBoundingBox] = useState<BoundingBox | null>();
   const [subImageList, setSubImageList] = useState<string[]>([]);
-  const [resizeRatio, setResizeRatio] = useState<number>(0);
+  const [resizeRatio, setResizeRatio] = useState<number>(1);
+  const [canvasInitialized, setCanvasInitialized] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasButtonRef = useRef<HTMLButtonElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const requestRef = useRef<number>();
+  
+  const { zoom } = useViewport();
 
   const getBoundingBoxFromPoints = (start: { x: number, y: number }, end: { x: number, y: number }) => {
     const x = Math.min(start.x, end.x);
@@ -31,85 +34,139 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
     };
   };
 
-  useEffect(() => {
-    const handleLoad = () => {
-      if (imgRef.current && canvasRef.current) {
-        const img = imgRef.current;
-        const canvas = canvasRef.current;
-        canvas.width = img.width;
-        canvas.height = img.height;
-
-        setResizeRatio(img.naturalWidth / img.width);
-        console.log("resize ratio: " + img.naturalWidth / img.width);
-      }
-    };
-
-    const imgElement = imgRef.current;
-    if (imgElement) {
-      if (imgElement.complete) {
-        handleLoad();
-      } else {
-        imgElement.addEventListener('load', handleLoad);
-        return () => imgElement.removeEventListener('load', handleLoad);
+  const initializeCanvas = useCallback(() => {
+    if (imgRef.current && canvasRef.current) {
+      const img = imgRef.current;
+      const canvas = canvasRef.current;
+      
+      // Set canvas size to match displayed image size
+      canvas.width = img.clientWidth;
+      canvas.height = img.clientHeight;
+      
+      // Calculate resize ratio for coordinate mapping
+      const ratio = img.naturalWidth / img.clientWidth;
+      setResizeRatio(ratio);
+      setCanvasInitialized(true);
+      
+      // Clear any existing drawings
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     }
-
   }, []);
 
   useEffect(() => {
+    const imgElement = imgRef.current;
+    if (imgElement) {
+      if (imgElement.complete && imgElement.naturalWidth > 0) {
+        initializeCanvas();
+      } else {
+        imgElement.addEventListener('load', initializeCanvas);
+        return () => imgElement.removeEventListener('load', initializeCanvas);
+      }
+    }
+  }, [initializeCanvas]);
 
+  // Re-initialize canvas when zoom changes significantly
+  useEffect(() => {
+    if (canvasInitialized && imgRef.current) {
+      const timeoutId = setTimeout(() => {
+        initializeCanvas();
+      }, 100); // Debounce canvas reinitialization
+      return () => clearTimeout(timeoutId);
+    }
+  }, [zoom, canvasInitialized, initializeCanvas]);
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    drawBoundingBoxes(canvas, context, boundingBox, startPoint, endPoint, isDrawing);
-  }, [boundingBox, startPoint, endPoint, isDrawing]);
+  const drawBoundingBoxes = useCallback(
+    (
+      canvas: HTMLCanvasElement,
+      context: CanvasRenderingContext2D,
+      box: BoundingBox | null | undefined,
+      startPt: { x: number, y: number },
+      endPt: { x: number, y: number },
+      drawing: boolean
+    ) => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = 'rgb(92, 131, 242)';
+      context.setLineDash([5, 3]);
+      context.lineWidth = 2;
+
+      // Draw existing bounding box
+      if (box) {
+        context.strokeRect(
+          box.x / resizeRatio, 
+          box.y / resizeRatio, 
+          box.width / resizeRatio, 
+          box.height / resizeRatio
+        );
+        context.fillStyle = 'rgba(29, 78, 216, 0.2)';
+        context.fillRect(
+          box.x / resizeRatio, 
+          box.y / resizeRatio, 
+          box.width / resizeRatio, 
+          box.height / resizeRatio
+        );
+      }
+      
+      // Draw current selection while drawing
+      if (drawing) {
+        const currentBox = getBoundingBoxFromPoints(startPt, endPt);
+        context.strokeStyle = 'rgb(92, 131, 242)';
+        context.strokeRect(
+          currentBox.x / resizeRatio, 
+          currentBox.y / resizeRatio, 
+          currentBox.width / resizeRatio, 
+          currentBox.height / resizeRatio
+        );
+      }
+    },
+    [resizeRatio]
+  );
 
   useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
-      setIsDrawing(true);
-      setBoundingBox(null); // remove the previous box
-      const { offsetX, offsetY } = e;
-      setStartPoint({ x: offsetX, y: offsetY });
-      setEndPoint({ x: offsetX, y: offsetY });
-      e.stopPropagation();
-    };
-  
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDrawing) return;
-  
-      const { offsetX, offsetY } = e;
-      setEndPoint({ x: offsetX, y: offsetY });
-      e.stopPropagation();
-    };
-  
-    const handleMouseUp = (e: MouseEvent) => {
-      if (isDrawing) {
-        setIsDrawing(false);
-        const newBox = getBoundingBoxFromPoints(startPoint, endPoint);
-        if (newBox) {
-          setBoundingBox(newBox);
-        }
-      }
-      e.stopPropagation();
-    };
-  
     const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.addEventListener('mousedown', handleMouseDown);
-      canvas.addEventListener('mouseup', handleMouseUp);
+    if (!canvas || !canvasInitialized) return;
+    
+    const context = canvas.getContext('2d');
+    if (!context) {
+      console.error('Failed to get canvas context');
+      return;
     }
-    document.addEventListener('mousemove', handleMouseMove);
-  
-    return () => {
-      if (canvas) {
-        canvas.removeEventListener('mousedown', handleMouseDown);
-        canvas.removeEventListener('mouseup', handleMouseUp);
-      }
-      document.removeEventListener('mousemove', handleMouseMove);
+    
+    // Use requestAnimationFrame for smooth rendering
+    const animate = () => {
+      drawBoundingBoxes(canvas, context, boundingBox, startPoint, endPoint, isDrawing);
     };
-  }, [isDrawing, startPoint, endPoint]);  
+    
+    requestRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, [boundingBox, startPoint, endPoint, isDrawing, drawBoundingBoxes, canvasInitialized]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !canvasInitialized) return;
+    
+    const handleMove = (e: MouseEvent) => handleMouseMove(e);
+    const handleUp = (e: MouseEvent) => handleMouseUp(e);
+    
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMove);
+    canvas.addEventListener('mouseup', handleUp);
+    canvas.addEventListener('mouseleave', handleUp); // Handle mouse leaving canvas
+    
+    return () => {
+      canvas.removeEventListener('mousedown', handleMouseDown);
+      canvas.removeEventListener('mousemove', handleMove);
+      canvas.removeEventListener('mouseup', handleUp);
+      canvas.removeEventListener('mouseleave', handleUp);
+    };
+  }, [handleMouseDown, handleMouseMove, handleMouseUp, canvasInitialized]);  
 
   const getMergedSubImages = async () => {
     try {
@@ -140,35 +197,45 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
     setBoundingBox(null);
   };
 
-  const drawBoundingBoxes = (
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
-    // boxes: { x: number, y: number, width: number, height: number }[],
-    box: BoundingBox | null | undefined,
-    startPoint: { x: number, y: number },
-    endPoint: { x: number, y: number },
-    isDrawing: boolean
-  ) => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.strokeStyle = 'rgb(92, 131, 242)';
-    context.setLineDash([5, 3]);
-    context.lineWidth = 2;
-
-    // Draw bounding boxes
-    if (box) {
-      context.strokeRect(box.x / resizeRatio, box.y / resizeRatio, box.width / resizeRatio, box.height / resizeRatio);
-      // Apply the breathing effect
-      context.fillStyle = 'rgba(29, 78, 216, 0.2)';
-      context.fillRect(box.x / resizeRatio, box.y / resizeRatio, box.width / resizeRatio, box.height / resizeRatio);
+  // Event handlers with proper cleanup
+  const handleMouseDown = useCallback((e: MouseEvent) => {
+    if (!canvasInitialized) return;
+    
+    setIsDrawing(true);
+    setBoundingBox(null);
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (rect) {
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      setStartPoint({ x, y });
+      setEndPoint({ x, y });
     }
-    // Draw the current bounding box with breathing effect if drawing
+    e.stopPropagation();
+    e.preventDefault();
+  }, [canvasInitialized]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDrawing || !canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setEndPoint({ x, y });
+    e.stopPropagation();
+    e.preventDefault();
+  }, [isDrawing]);
+
+  const handleMouseUp = useCallback((e: MouseEvent) => {
     if (isDrawing) {
-      const currentBox = getBoundingBoxFromPoints(startPoint, endPoint);
-      context.strokeStyle = 'rgb(92, 131, 242)';
-      context.strokeRect(currentBox.x / resizeRatio, currentBox.y / resizeRatio, currentBox.width / resizeRatio, currentBox.height / resizeRatio);
-
+      setIsDrawing(false);
+      const newBox = getBoundingBoxFromPoints(startPoint, endPoint);
+      if (newBox && newBox.width > 5 && newBox.height > 5) { // Minimum size threshold
+        setBoundingBox(newBox);
+      }
     }
-  };
+    e.stopPropagation();
+    e.preventDefault();
+  }, [isDrawing, startPoint, endPoint]);
 
 
   return (
@@ -191,7 +258,14 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
           alt="Uploaded"
           style={{ maxWidth: '30rem', maxHeight: '40rem' }}
         />
-        <canvas ref={canvasRef} className='absolute top-0 left-0 z-10'></canvas>
+        <canvas 
+          ref={canvasRef} 
+          className='absolute top-0 left-0 z-10' 
+          style={{ 
+            pointerEvents: 'auto',
+            touchAction: 'none' // Prevent touch scrolling on canvas
+          }}
+        ></canvas>
       </div>
 
       <div className='flex flex-row'>

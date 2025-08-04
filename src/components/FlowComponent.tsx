@@ -1249,12 +1249,13 @@ const FlowComponent: React.FC = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 nodeDragThreshold={4}
-                minZoom={0.1}
+                minZoom={0.25}
+                maxZoom={4}
                 panOnScroll
                 selectionOnDrag
                 panOnDrag={panOnDrag}
                 selectionMode={SelectionMode.Partial}
-                onlyRenderVisibleElements={false}
+                onlyRenderVisibleElements={true}
                 defaultEdgeOptions={defaultEdgeOptions}
             >
                 <Background />

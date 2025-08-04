@@ -144,6 +144,30 @@ code {
 
 .flash {
   animation: flash 700ms ease forwards;
+  will-change: opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Performance optimizations for code render nodes */
+.code-render-container {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Disable hardware acceleration for LiveProvider during zoom */
+.react-flow__node-codeRenderNode {
+  transform-style: preserve-3d;
+}
+
+/* Optimize render performance */
+.react-flow__node-codeRenderNode .code-render-container > div {
+  contain: layout style paint;
 }
 
 @keyframes flash {

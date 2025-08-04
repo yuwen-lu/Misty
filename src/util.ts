@@ -74,36 +74,48 @@ export function mergeBoundingBoxes(box1: BoundingBox, box2: BoundingBox): Boundi
 export async function cropImage(base64Image: string, bbox: BoundingBox): Promise<string> {
   return new Promise((resolve, reject) => {
     const image = new Image();
+    image.crossOrigin = 'anonymous'; // Handle CORS issues
     image.src = base64Image;
 
     image.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = bbox.width;
-      canvas.height = bbox.height;
-      const ctx = canvas.getContext("2d");
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = bbox.width;
+        canvas.height = bbox.height;
+        const ctx = canvas.getContext("2d", { 
+          alpha: true,
+          willReadFrequently: true // Optimize for frequent reads
+        });
 
-      if (!ctx) {
-        reject(new Error("Could not get canvas context"));
-        return;
+        if (!ctx) {
+          reject(new Error("Could not get canvas context"));
+          return;
+        }
+
+        // Enable high quality rendering
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        ctx.drawImage(
+          image,
+          bbox.x,
+          bbox.y,
+          bbox.width,
+          bbox.height,
+          0,
+          0,
+          bbox.width,
+          bbox.height
+        );
+
+        resolve(canvas.toDataURL('image/png', 1.0)); // Max quality
+      } catch (error) {
+        reject(new Error(`Failed to crop image: ${error}`));
       }
-
-      ctx.drawImage(
-        image,
-        bbox.x,
-        bbox.y,
-        bbox.width,
-        bbox.height,
-        0,
-        0,
-        bbox.width,
-        bbox.height
-      );
-
-      resolve(canvas.toDataURL());
     };
 
-    image.onerror = () => {
-      reject(new Error("Failed to load image"));
+    image.onerror = (error) => {
+      reject(new Error(`Failed to load image: ${error}`));
     };
   });
 }
@@ -111,19 +123,31 @@ export async function cropImage(base64Image: string, bbox: BoundingBox): Promise
 export const scribbleStrokeWidth = 10;
 
 export const draw = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, paths: { x: number, y: number }[][]) => {
+  // Save context state
+  context.save();
+  
+  // Clear with proper handling
   context.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Set drawing properties
   context.strokeStyle = 'rgba(177, 230, 103, 0.5)';
   context.lineJoin = 'round';
   context.lineCap = 'round';
   context.lineWidth = scribbleStrokeWidth;
+  
+  // Enable anti-aliasing
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
 
   console.log("Re-drawing, current path count: " + paths.length);
 
   paths.forEach((path) => {
     if (path.length < 2) return;
+    
     context.beginPath();
     context.moveTo(path[0].x, path[0].y);
 
+    // Use smoother curve interpolation
     for (let i = 1; i < path.length - 1; i++) {
       const midPoint = {
         x: (path[i].x + path[i + 1].x) / 2,
@@ -132,9 +156,16 @@ export const draw = (canvas: HTMLCanvasElement, context: CanvasRenderingContext2
       context.quadraticCurveTo(path[i].x, path[i].y, midPoint.x, midPoint.y);
     }
 
-    context.lineTo(path[path.length - 1].x, path[path.length - 1].y);
+    // Draw the last segment
+    if (path.length > 1) {
+      context.lineTo(path[path.length - 1].x, path[path.length - 1].y);
+    }
+    
     context.stroke();
   });
+  
+  // Restore context state
+  context.restore();
 };
 
 // used in api responses
