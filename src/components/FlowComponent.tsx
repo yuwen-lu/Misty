@@ -25,6 +25,7 @@ import CodeRenderNode from "./customNodes/CodeRenderNode";
 import SubImageNode from "./customNodes/SubImageNode";
 import ConfirmationPopupNode from "./customNodes/ConfirmationPopupNode";
 import DynamicUI from "./customNodes/DynamicUI";
+import WebsitePreviewNode from "./customNodes/WebsitePreviewNode";
 import CodeEditorPanel from "./CodeEditorPanel";
 
 import {
@@ -79,6 +80,7 @@ const nodeTypes: NodeTypes = {
     explanationNode: ExplanationNode,
     codeRenderNode: CodeRenderNode,
     confirmationPopupNode: ConfirmationPopupNode,
+    websitePreviewNode: WebsitePreviewNode,
 };
 
 const edgeTypes = {
@@ -161,6 +163,14 @@ const initialNodes: Node[] = [
         draggable: true,
         position: { x: 400, y: 1000 },
         data: { image: sketchHeaderLayout },
+    },
+    {
+        id: "6",
+        type: "websitePreviewNode",
+        draggable: true,
+        position: { x: 150, y: 1500 },
+        data: { url: "" },
+        style: { width: 1280, height: 800 },
     },
 ];
 
