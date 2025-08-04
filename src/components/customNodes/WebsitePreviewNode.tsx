@@ -64,12 +64,11 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data, selected
   return (
     <div 
       className="website-preview-node flex flex-col items-center px-20 py-5 text-white bg-yellow-600 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-yellow-700 transition-all duration-300 ease-in-out"
-      style={{
-        minWidth: '400px',
-        minHeight: '300px',
-        height: '100%',
-        transform: 'scale(0.5)',
-        transformOrigin: 'center center'
+style={{
+        minWidth: url ? '400px' : '300px',
+        minHeight: url ? '300px' : 'auto',
+        height: url ? '100%' : 'auto',
+        width: url ? '100%' : '400px'
       }}
     >
       
@@ -77,12 +76,12 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data, selected
         Website Preview
       </div>
 
-      <div className="flex flex-col mb-5" style={{ width: '100%', maxWidth: '1600px' }}>
+      <div className="flex flex-col mb-5" style={{ width: '100%' }}>
         <div className="flex items-center gap-2 mb-2">
           <LuLink className="text-yellow-700" />
           <input
             type="text"
-            placeholder="Enter website URL (e.g., example.com)"
+            placeholder="Enter website URL"
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleUrlSubmit()}
@@ -104,7 +103,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data, selected
 
       {url && (
         <>
-          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1" style={{ minHeight: '400px', width: '100%', maxWidth: '1600px' }}>
+          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1" style={{ minHeight: '400px', width: '100%' }}>
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
                 <div className="text-gray-600">Loading website...</div>
@@ -166,11 +165,9 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data, selected
       {url && (
         <NodeResizeControl
           style={{
-            background: 'rgba(234, 179, 8, 0.8)',
-            border: '2px solid rgba(161, 98, 7, 0.9)',
-            borderRadius: '6px',
-            width: '20px',
-            height: '20px',
+            background: 'transparent',
+            border: 'none',
+            opacity: 0
           }}
           minWidth={400}
           minHeight={300}
