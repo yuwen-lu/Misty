@@ -39,20 +39,40 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
       const img = imgRef.current;
       const canvas = canvasRef.current;
       
-      // Set canvas size to match displayed image size
-      canvas.width = img.clientWidth;
-      canvas.height = img.clientHeight;
-      
-      // Calculate resize ratio for coordinate mapping
-      const ratio = img.naturalWidth / img.clientWidth;
-      setResizeRatio(ratio);
-      setCanvasInitialized(true);
-      
-      // Clear any existing drawings
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
+      // Wait for next frame to ensure image is fully rendered with CSS constraints
+      requestAnimationFrame(() => {
+        // Get the actual rendered dimensions after CSS constraints
+        const imgRect = img.getBoundingClientRect();
+        
+        // Set canvas size to match displayed image size
+        canvas.width = img.offsetWidth;
+        canvas.height = img.offsetHeight;
+        
+        // Also set CSS size to match exactly
+        canvas.style.width = img.offsetWidth + 'px';
+        canvas.style.height = img.offsetHeight + 'px';
+        
+        // Calculate resize ratio for coordinate mapping
+        const ratio = img.naturalWidth / img.offsetWidth;
+        setResizeRatio(ratio);
+        setCanvasInitialized(true);
+        
+        console.log('Canvas initialized:', {
+          canvasWidth: canvas.width,
+          canvasHeight: canvas.height,
+          imgOffsetWidth: img.offsetWidth,
+          imgOffsetHeight: img.offsetHeight,
+          imgClientWidth: img.clientWidth,
+          imgClientHeight: img.clientHeight,
+          ratio: ratio
+        });
+        
+        // Clear any existing drawings
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      });
     }
   }, []);
 
@@ -77,6 +97,46 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
       return () => clearTimeout(timeoutId);
     }
   }, [zoom, canvasInitialized, initializeCanvas]);
+
+  // Event handlers with proper cleanup
+  const handleMouseDown = useCallback((e: MouseEvent) => {
+    if (!canvasInitialized) return;
+    
+    setIsDrawing(true);
+    setBoundingBox(null);
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (rect) {
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      setStartPoint({ x, y });
+      setEndPoint({ x, y });
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  }, [canvasInitialized]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDrawing || !canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setEndPoint({ x, y });
+    e.stopPropagation();
+    e.preventDefault();
+  }, [isDrawing]);
+
+  const handleMouseUp = useCallback((e: MouseEvent) => {
+    if (isDrawing) {
+      setIsDrawing(false);
+      const newBox = getBoundingBoxFromPoints(startPoint, endPoint);
+      if (newBox && newBox.width > 5 && newBox.height > 5) { // Minimum size threshold
+        setBoundingBox(newBox);
+      }
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  }, [isDrawing, startPoint, endPoint]);
 
   const drawBoundingBoxes = useCallback(
     (
@@ -197,46 +257,6 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
     setBoundingBox(null);
   };
 
-  // Event handlers with proper cleanup
-  const handleMouseDown = useCallback((e: MouseEvent) => {
-    if (!canvasInitialized) return;
-    
-    setIsDrawing(true);
-    setBoundingBox(null);
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (rect) {
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      setStartPoint({ x, y });
-      setEndPoint({ x, y });
-    }
-    e.stopPropagation();
-    e.preventDefault();
-  }, [canvasInitialized]);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDrawing || !canvasRef.current) return;
-    
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setEndPoint({ x, y });
-    e.stopPropagation();
-    e.preventDefault();
-  }, [isDrawing]);
-
-  const handleMouseUp = useCallback((e: MouseEvent) => {
-    if (isDrawing) {
-      setIsDrawing(false);
-      const newBox = getBoundingBoxFromPoints(startPoint, endPoint);
-      if (newBox && newBox.width > 5 && newBox.height > 5) { // Minimum size threshold
-        setBoundingBox(newBox);
-      }
-    }
-    e.stopPropagation();
-    e.preventDefault();
-  }, [isDrawing, startPoint, endPoint]);
-
 
   return (
     <div className={`image-display-node flex flex-col items-center 
@@ -265,6 +285,9 @@ const ImageDisplayNode: React.FC<NodeProps> = React.memo(({ id, data, selected }
             pointerEvents: 'auto',
             touchAction: 'none' // Prevent touch scrolling on canvas
           }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseMove={(e) => e.stopPropagation()}
+          onMouseUp={(e) => e.stopPropagation()}
         ></canvas>
       </div>
 

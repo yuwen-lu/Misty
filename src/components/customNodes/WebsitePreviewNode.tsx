@@ -167,7 +167,9 @@ style={{
           style={{
             background: 'transparent',
             border: 'none',
-            opacity: 0
+            opacity: 0,
+            width: '60px',
+            height: '60px'
           }}
           minWidth={400}
           minHeight={300}
