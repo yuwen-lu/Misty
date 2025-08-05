@@ -92,17 +92,7 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
     animated: true,
 };
 
-const initialCodeToRender: codeRenderNodeContent[] = [
-    {
-        code: BookList,
-        prevCode: "",
-        nodeId: "code-0",
-        categorizedChanges: [],
-        sourceNodeId: "",
-        textPrompt: "",
-        base64Image: "",
-    },
-];
+const initialCodeToRender: codeRenderNodeContent[] = [];
 
 const fetchResponseUrl = process.env.REACT_APP_DEPLOYMENT_BACKEND_URL
     ? `${process.env.REACT_APP_DEPLOYMENT_BACKEND_URL}/api/chat`
