@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { User, Bot } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { PotentialUsersChips } from './PotentialUsersChips';
 
 export type ChatMessageRole = 'user' | 'assistant';
 
@@ -9,25 +10,43 @@ interface ChatMessageProps {
   role: ChatMessageRole;
   content: string;
   timestamp?: Date;
+  onAddToInput?: (text: string) => void;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ 
   role, 
   content, 
-  timestamp 
+  timestamp,
+  onAddToInput 
 }) => {
-  // Parse content to extract and format JSON blocks
-  const processedContent = useMemo(() => {
-    return content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
+  // Parse content to extract and format JSON blocks and detect potentialUsers
+  const { processedContent, potentialUsers } = useMemo(() => {
+    let users: string[] | null = null;
+    
+    const processed = content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
       try {
         const parsed = JSON.parse(jsonContent);
+        // Check if this JSON contains potentialUsers
+        if (parsed.potentialUsers && Array.isArray(parsed.potentialUsers)) {
+          users = parsed.potentialUsers;
+          // Hide the JSON block since we'll show chips instead
+          return '';
+        }
         return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
       } catch (e) {
         // If parsing fails, return original
         return match;
       }
     });
+    
+    return { processedContent: processed, potentialUsers: users };
   }, [content]);
+  
+  const handleChipClick = useCallback((user: string) => {
+    if (onAddToInput) {
+      onAddToInput(user);
+    }
+  }, [onAddToInput]);
 
   return (
     <div className="flex items-start gap-2 px-2 py-2 rounded-md bg-white">
@@ -88,6 +107,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             {processedContent}
           </ReactMarkdown>
         </div>
+        
+        {potentialUsers && onAddToInput && (
+          <PotentialUsersChips 
+            users={potentialUsers} 
+            onChipClick={handleChipClick}
+          />
+        )}
         
         {timestamp && (
           <span className="text-xs text-gray-500">

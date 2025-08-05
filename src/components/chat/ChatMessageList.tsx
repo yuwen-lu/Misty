@@ -11,11 +11,13 @@ export interface Message {
 interface ChatMessageListProps {
   messages: Message[];
   containerRef: RefObject<HTMLDivElement>;
+  onAddToInput?: (text: string) => void;
 }
 
 export const ChatMessageList: React.FC<ChatMessageListProps> = ({
   messages,
   containerRef,
+  onAddToInput,
 }) => {
   return (
     <div
@@ -28,6 +30,7 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
             role={message.role}
             content={message.content}
             timestamp={message.timestamp}
+            onAddToInput={onAddToInput}
           />
           
           {index !== messages.length - 1 && (

@@ -24,9 +24,9 @@ const DynamicUI: React.FC<DynamicUIProps> = ({ nodeId, categorizedChanges, prevC
     const [categoryToggles, setCategoryToggles] = useState<boolean[]>(new Array(safeChanges.length).fill(true));
 
 
-    useEffect(() => {
-        console.log("toggles: " + categoryToggles.join(", "))
-    }, [categoryToggles])
+    // useEffect(() => {
+    //     console.log("toggles: " + categoryToggles.join(", "))
+    // }, [categoryToggles])
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
