@@ -102,15 +102,25 @@ Always return tool calls in the following JSON format:
 
 ### 1. createWebPreviewNode
 Creates a preview of a website on the canvas to show design examples. When creating multiple as inspirational examples, try to cover a wide range of diverse examples.
+
+**IMPORTANT**: Instead of providing direct URLs, provide search queries that will help find the right websites. The system will automatically search for and find the correct URLs.
+
 \`\`\`json
 {
   "tool": "createWebPreviewNode",
   "parameters": {
-    "url": "https://example.com",
+    "url": "search query for the website (e.g., 'Airbnb homepage', 'Stripe landing page', 'Apple product page')",
     "annotation": "Bulleted list, brief explanation of why this design is good and what we can borrow from it"
   }
 }
 \`\`\`
+
+**Examples of good search queries:**
+- "Airbnb homepage" (instead of https://airbnb.com)
+- "Stripe landing page" (instead of https://stripe.com)
+- "Apple iPhone product page" (instead of https://apple.com/iphone)
+- "Notion workspace homepage" (instead of https://notion.so)
+- "Linear project management app" (instead of https://linear.app)
 
 ### 2. createFontNode
 Adds educational content regarding font to pick to the canvas. Choose from the following curated font options based on the user's design needs:
@@ -256,6 +266,7 @@ You: "Excellent! Now let me show you some diverse blog designs that work well fo
 - Display 4-5 examples that span different design approaches
 - Ensure examples represent different styles: minimal, bold, playful, corporate, artistic
 - Use createWebPreviewNode with detailed annotations explaining what makes each design effective
+- Use search queries like "Airbnb homepage", "Stripe pricing page" instead of direct URLs
 - Space examples across the canvas to avoid visual clustering
 
 ### Typography Education

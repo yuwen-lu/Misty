@@ -6,41 +6,116 @@ import { PotentialUsersChips } from './PotentialUsersChips';
 
 export type ChatMessageRole = 'user' | 'assistant';
 
+export interface WebPreviewNodeData {
+  tool: 'createWebPreviewNode';
+  parameters: {
+    url: string;
+    annotation: string;
+  };
+}
+
 interface ChatMessageProps {
   role: ChatMessageRole;
   content: string;
   timestamp?: Date;
   onAddToInput?: (text: string) => void;
+  onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ 
   role, 
   content, 
   timestamp,
-  onAddToInput 
+  onAddToInput,
+  onCreateWebPreviewNode
 }) => {
-  // Parse content to extract and format JSON blocks and detect potentialUsers
-  const { processedContent, potentialUsers } = useMemo(() => {
+  // Parse content to extract and format JSON blocks and detect potentialUsers/createWebPreviewNode
+  const { processedContent, potentialUsers, webPreviewNodes } = useMemo(() => {
     let users: string[] | null = null;
+    let webPreviews: WebPreviewNodeData[] = [];
+    
+    console.log('🔍 ChatMessage parsing content, length:', content.length);
     
     const processed = content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
       try {
         const parsed = JSON.parse(jsonContent);
+        
         // Check if this JSON contains potentialUsers
         if (parsed.potentialUsers && Array.isArray(parsed.potentialUsers)) {
           users = parsed.potentialUsers;
+          console.log('👥 Found potentialUsers:', users);
           // Hide the JSON block since we'll show chips instead
           return '';
         }
+        
+        // Check if this JSON contains createWebPreviewNode
+        if (parsed.tool === 'createWebPreviewNode' && parsed.parameters) {
+          webPreviews.push(parsed);
+          console.log('🌐 Found createWebPreviewNode:', {
+            url: parsed.parameters.url,
+            annotationPreview: parsed.parameters.annotation?.substring(0, 50) + '...'
+          });
+          // Keep the JSON in chat history for later use but format it nicely
+          return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
+        }
+        
         return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
       } catch (e) {
+        console.log('❌ JSON parse error:', e);
         // If parsing fails, return original
         return match;
       }
     });
     
-    return { processedContent: processed, potentialUsers: users };
+    console.log('📊 Parse results:', {
+      webPreviewNodesFound: webPreviews.length,
+      potentialUsersFound: !!users
+    });
+    
+    return { 
+      processedContent: processed, 
+      potentialUsers: users, 
+      webPreviewNodes: webPreviews 
+    };
   }, [content]);
+
+  // Trigger web preview node creation when detected, but only once per complete message
+  const processedNodeIds = React.useRef<Set<string>>(new Set());
+  
+  React.useEffect(() => {
+    console.log('🔄 ChatMessage useEffect triggered:', {
+      webPreviewNodesCount: webPreviewNodes.length,
+      hasCallback: !!onCreateWebPreviewNode,
+      processedNodeIdsSize: processedNodeIds.current.size
+    });
+    
+    if (webPreviewNodes.length > 0 && onCreateWebPreviewNode) {
+      // Only process nodes we haven't seen before
+      const newWebPreviewNodes = webPreviewNodes.filter(node => {
+        const nodeKey = `${node.parameters.url}-${node.parameters.annotation}`;
+        const alreadyProcessed = processedNodeIds.current.has(nodeKey);
+        
+        console.log('🔑 Checking node key:', nodeKey, 'already processed:', alreadyProcessed);
+        
+        if (alreadyProcessed) {
+          return false;
+        }
+        processedNodeIds.current.add(nodeKey);
+        return true;
+      });
+      
+      console.log('✨ Filtered new nodes:', {
+        originalCount: webPreviewNodes.length,
+        newCount: newWebPreviewNodes.length,
+        processedKeys: Array.from(processedNodeIds.current)
+      });
+      
+      if (newWebPreviewNodes.length > 0) {
+        console.log('🚀 Calling onCreateWebPreviewNode with', newWebPreviewNodes.length, 'nodes');
+        onCreateWebPreviewNode(newWebPreviewNodes);
+      }
+    }
+  }, [webPreviewNodes, onCreateWebPreviewNode]);
   
   const handleChipClick = useCallback((user: string) => {
     if (onAddToInput) {

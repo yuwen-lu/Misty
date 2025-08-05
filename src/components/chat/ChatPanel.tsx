@@ -2,19 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Minimize2, Maximize2 } from 'lucide-react';
 import { ChatInput, Models } from './ChatInput';
 import { ChatMessageList, Message } from './ChatMessageList';
+import { WebPreviewNodeData } from './ChatMessage';
 
 interface ChatPanelProps {
   isMinimized: boolean;
   onToggleMinimize: () => void;
   initialMessage?: string;
   selectedModel?: Models;
+  onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({
   isMinimized,
   onToggleMinimize,
   initialMessage,
-  selectedModel = Models.claudeSonnet4
+  selectedModel = Models.claudeSonnet4,
+  onCreateWebPreviewNode
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -245,6 +248,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         <ChatMessageList
           messages={messages}
           onAddToInput={handleAddToInput}
+          onCreateWebPreviewNode={onCreateWebPreviewNode}
         />
         
         {isLoading && (

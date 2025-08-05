@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
 import { LuExternalLink, LuRefreshCw, LuLink } from 'react-icons/lu';
 
-const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) => {
+const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [url, setUrl] = useState<string>(data.url || '');
   const [inputUrl, setInputUrl] = useState<string>(data.url || '');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -63,20 +63,32 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data, selected
 
   return (
     <div 
-      className="website-preview-node flex flex-col items-center px-20 py-5 text-white bg-yellow-600 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-yellow-700 transition-all duration-300 ease-in-out"
-style={{
-        minWidth: url ? '400px' : '300px',
-        minHeight: url ? '300px' : 'auto',
-        height: url ? '100%' : 'auto',
-        width: url ? '100%' : '400px'
+      className="website-preview-node flex flex-col px-4 py-4 text-white bg-yellow-600 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-yellow-700 transition-all duration-300 ease-in-out"
+      style={{
+        width: '100%',
+        height: '100%',
+        minWidth: '1200px',
+        minHeight: '750px'
       }}
     >
       
-      <div className="font-semibold text-yellow-900 text-xl mb-5">
+      <div className="font-semibold text-yellow-900 text-xl mb-3">
         Website Preview
+        {data.originalQuery && data.originalQuery !== data.url && (
+          <div className="text-yellow-700 text-sm font-normal mt-1">
+            Found via search: "{data.originalQuery}"
+          </div>
+        )}
       </div>
+      
+      {data.annotation && (
+        <div className="text-yellow-800 text-sm mb-4 px-3 py-2 bg-yellow-50 rounded-md border border-yellow-200">
+          <div className="font-medium mb-1">Why this design works:</div>
+          <div className="whitespace-pre-wrap">{data.annotation}</div>
+        </div>
+      )}
 
-      <div className="flex flex-col mb-5" style={{ width: '100%' }}>
+      <div className="flex flex-col mb-4 w-full">
         <div className="flex items-center gap-2 mb-2">
           <LuLink className="text-yellow-700" />
           <input
@@ -84,7 +96,7 @@ style={{
             placeholder="Enter website URL"
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleUrlSubmit()}
+            onKeyDown={(e) => e.key === 'Enter' && handleUrlSubmit()}
             className="flex-1 px-3 py-2 text-sm rounded-md bg-white bg-opacity-50 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
           <button
@@ -103,7 +115,7 @@ style={{
 
       {url && (
         <>
-          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1" style={{ minHeight: '400px', width: '100%' }}>
+          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1 w-full" style={{ minHeight: '600px' }}>
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
                 <div className="text-gray-600">Loading website...</div>
