@@ -220,7 +220,7 @@ const FlowComponent: React.FC = () => {
     const hasZoomedForCurrentRequest = React.useRef(false);
 
     // Function to create WebPreviewNodes from chat API responses
-    const createWebPreviewNodes = useCallback(async (webPreviewNodesData: WebPreviewNodeData[]) => {
+    const createWebPreviewNodes = async (webPreviewNodesData: WebPreviewNodeData[]) => {
         
         const newNodes: Node[] = [];
         const nodeWidth = 1280; // Match default WebsitePreviewNode width
@@ -236,6 +236,8 @@ const FlowComponent: React.FC = () => {
             const nodeId = `web-preview-${Date.now()}-${index}`;
             const positionX = nextWebPreviewPosition.current.x + currentColumn.current * (nodeWidth + horizontalSpacing);
             const positionY = nextWebPreviewPosition.current.y;
+            
+            console.log(`Creating WebPreview node ${index}: column=${currentColumn.current}, x=${positionX}, y=${positionY}`);
             
 
             // Extract search query from the original URL or use it directly
@@ -282,7 +284,10 @@ const FlowComponent: React.FC = () => {
             // If we completed a row (back to column 0), move to next row
             if (currentColumn.current === 0) {
                 nextWebPreviewPosition.current.y += nodeHeight + verticalSpacing;
+                console.log(`Moving to next row: new y=${nextWebPreviewPosition.current.y}`);
             }
+            
+            console.log(`Updated column to: ${currentColumn.current}`);
         }
 
 
@@ -301,7 +306,7 @@ const FlowComponent: React.FC = () => {
                 });
             }
         }, 100);
-    }, [fitView]);
+    };
 
 
 

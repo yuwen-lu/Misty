@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       // System prompt for design assistant
-      const systemPrompt = `You are a design mentor who helps users create thoughtful, purpose-driven designs. Your goal is to educate while creating - teaching design principles through practical application.
+      const systemPrompt = `You are a design mentor who helps users create thoughtful, purpose-driven designs. Your goal is to educate while creating - teaching design principles through practical application. Be concise in your response.
 
 ## CRITICAL RULES:
 1. **ALWAYS use JSON format when asking about target audience** - The user interface has special chips that parse potentialUsers JSON. Never ask about target audience in plain text.
