@@ -51,7 +51,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
   const handleIframeError = () => {
     setIsLoading(false);
-    setError('Unable to load website. Some sites block embedding.');
+    setError('Unable to load website in preview. This site blocks iframe embedding due to security policies. Click "Open in New Tab" to view it directly.');
   };
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         width: '100%',
         height: '100%',
         minWidth: '1200px',
-        minHeight: '750px'
+        minHeight: '900px'
       }}
     >
       

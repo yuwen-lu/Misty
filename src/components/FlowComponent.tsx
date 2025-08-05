@@ -98,84 +98,6 @@ const initialNodes: Node[] = [
         position: { x: 150, y: 100 },
         data: { onUpload: () => {} },
     },
-    // {
-    //     id: "2",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 800, y: 100 },
-    //     data: { image: appleTvHeroFull },
-    // },
-    // {
-    //     id: "3",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 1300, y: 100 },
-    //     data: { image: appleTvHero },
-    // },
-    // {
-    //     id: "2",
-    //     type: "imageDisplayNode",
-    //     draggable: true,
-    //     position: { x: 1800, y: 100 },
-    //     data: { image: appleTvCard },
-    // },
-    // {
-    //     id: "5",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 800, y: 1000 },
-    //     data: { image: appleNewsMySportsBase64 },
-    // },
-    // {
-    //     id: "6",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 1300, y: 1000 },
-    //     data: { image: appleMusicPlayNextBase64 },
-    // },
-    {
-        id: "3",
-        type: "imageDisplayNode",
-        draggable: true,
-        position: { x: 1800, y: 1000 },
-        data: { image: appleNewsCards },
-    },
-    {
-        id: "4",
-        type: "imageDisplayNode",
-        draggable: true,
-        position: { x: 1200, y: 800 },
-        data: { image: appleBookStore },
-    },
-    // {
-    //     id: "5",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 2400, y: 1400 },
-    //     data: { image: bottomModalBase64 },
-    // },
-    // {
-    //     id: "6",
-    //     type: 'imageDisplayNode',
-    //     draggable: true,
-    //     position: { x: 2400, y: 500 },
-    //     data: { image: bottomModalGreenBase64 },
-    // },
-    {
-        id: "5",
-        type: "imageDisplayNode",
-        draggable: true,
-        position: { x: 400, y: 1000 },
-        data: { image: sketchHeaderLayout },
-    },
-    {
-        id: "6",
-        type: "websitePreviewNode",
-        draggable: true,
-        position: { x: 150, y: 1500 },
-        data: { url: "" },
-        style: { width: 1280, height: 800 },
-    },
 ];
 
 const initialEdges: Edge[] = [];
@@ -193,22 +115,7 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
     animated: true,
 };
 
-const initialCodeToRender: codeRenderNodeContent[] = [
-    // { code: profilePage, prevCode: "", nodeId: "code-0", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    {
-        code: BookList,
-        prevCode: "",
-        nodeId: "code-0",
-        categorizedChanges: [],
-        sourceNodeId: "",
-        textPrompt: "",
-        base64Image: "",
-    },
-    // { code: TrailList, prevCode: "", nodeId: "code-1", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    // // { code: RestaurantSearch, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    // // { code: AppSettings, prevCode: "", nodeId: "code-3", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-    // { code: PhoneApp, prevCode: "", nodeId: "code-2", categorizedChanges: [], sourceNodeId: "", textPrompt: "", base64Image: "" },
-];
+const initialCodeToRender: codeRenderNodeContent[] = [];
 
 
 const fetchResponseUrl = process.env.REACT_APP_DEPLOYMENT_BACKEND_URL
@@ -283,6 +190,12 @@ const FlowComponent: React.FC = () => {
         setIsChatMinimized(!isChatMinimized);
     };
 
+    // Reset zoom tracker when user sends a new message
+    const handleNewChatRequest = useCallback(() => {
+        console.log('🔄 Resetting zoom tracker for new chat request');
+        hasZoomedForCurrentRequest.current = false;
+    }, []);
+
     // Function to search for URLs using Brave Search API
     const searchForWebsiteUrl = async (query: string): Promise<string | null> => {
         try {
@@ -316,33 +229,31 @@ const FlowComponent: React.FC = () => {
         }
     };
 
+    // Global tracker for next available position to prevent overlaps
+    const nextWebPreviewPosition = React.useRef({ x: 2500, y: 200 });
+    // Global tracker for column position (0 or 1 for two columns)
+    const currentColumn = React.useRef(0);
+    // Global tracker to ensure we only zoom on the first node of a new conversation
+    const hasZoomedForCurrentRequest = React.useRef(false);
+
     // Function to create WebPreviewNodes from chat API responses
     const createWebPreviewNodes = useCallback(async (webPreviewNodesData: WebPreviewNodeData[]) => {
-        console.log('🔥 createWebPreviewNodes called with', webPreviewNodesData.length, 'nodes');
         
         const newNodes: Node[] = [];
-        const startX = 2500; // Starting X position for web preview nodes  
-        const startY = 200;  // Starting Y position
         const nodeWidth = 1280; // Match default WebsitePreviewNode width
-        const nodeHeight = 800; // Match default WebsitePreviewNode height
-        const horizontalSpacing = 150; // Space between nodes horizontally
-        const verticalSpacing = 200; // Space between rows vertically
-        const nodesPerRow = 1; // One node per row due to larger size
+        const nodeHeight = 950; // Increased to accommodate header, annotation, and controls
+        const horizontalSpacing = 100; // Space between columns
+        const verticalSpacing = 250; // Space between rows
 
-        console.log('📐 Layout settings:', {
-            startX, startY, nodeWidth, nodeHeight, 
-            horizontalSpacing, verticalSpacing, nodesPerRow
-        });
 
         // Process each node and search for the correct URL
         for (let index = 0; index < webPreviewNodesData.length; index++) {
             const webPreviewData = webPreviewNodesData[index];
-            const row = Math.floor(index / nodesPerRow);
-            const col = index % nodesPerRow;
             
             const nodeId = `web-preview-${Date.now()}-${index}`;
-            const positionX = startX + col * (nodeWidth + horizontalSpacing);
-            const positionY = startY + row * (nodeHeight + verticalSpacing);
+            const positionX = nextWebPreviewPosition.current.x + currentColumn.current * (nodeWidth + horizontalSpacing);
+            const positionY = nextWebPreviewPosition.current.y;
+            
 
             // Extract search query from the original URL or use it directly
             let searchQuery = webPreviewData.parameters.url;
@@ -359,13 +270,6 @@ const FlowComponent: React.FC = () => {
                 }
             }
 
-            console.log(`📍 Node ${index} (${nodeId}):`, {
-                row, col, 
-                positionX, positionY,
-                originalUrl: webPreviewData.parameters.url,
-                finalUrl: finalUrl,
-                annotationLength: webPreviewData.parameters.annotation?.length || 0
-            });
 
             newNodes.push({
                 id: nodeId,
@@ -377,8 +281,6 @@ const FlowComponent: React.FC = () => {
                     originalQuery: webPreviewData.parameters.url,
                     annotation: webPreviewData.parameters.annotation,
                     onUrlChange: (nodeId: string, newUrl: string) => {
-                        console.log('🔄 URL changed for node:', nodeId, 'new URL:', newUrl);
-                        // Update node data when URL changes
                         setNodes((nds) =>
                             nds.map((node) =>
                                 node.id === nodeId
@@ -390,30 +292,31 @@ const FlowComponent: React.FC = () => {
                 },
                 style: { width: nodeWidth, height: nodeHeight },
             });
+
+            // Update global column and position trackers
+            currentColumn.current = (currentColumn.current + 1) % 2; // Alternate between 0 and 1
+            
+            // If we completed a row (back to column 0), move to next row
+            if (currentColumn.current === 0) {
+                nextWebPreviewPosition.current.y += nodeHeight + verticalSpacing;
+            }
         }
 
-        console.log('➕ Adding', newNodes.length, 'new nodes to canvas');
-        console.log('🎯 New nodes summary:', newNodes.map(n => ({ 
-            id: n.id, 
-            position: n.position, 
-            originalQuery: n.data.originalQuery,
-            finalUrl: n.data.url 
-        })));
+
 
         // Add all new nodes to the flow
-        setNodes((nds) => {
-            console.log('📊 Current nodes count:', nds.length, '→ New total:', nds.length + newNodes.length);
-            return [...nds, ...newNodes];
-        });
+        setNodes((nds) => [...nds, ...newNodes]);
 
-        // Focus on the newly created nodes after a short delay to allow rendering
+        // Focus on only the first newly created node of the current request
         setTimeout(() => {
-            console.log('🎥 Focusing camera on new nodes');
-            fitView({ 
-                nodes: newNodes,
-                duration: 800,
-                padding: 0.1
-            });
+            if (newNodes.length > 0 && !hasZoomedForCurrentRequest.current) {
+                hasZoomedForCurrentRequest.current = true;
+                fitView({ 
+                    nodes: [newNodes[0]],
+                    duration: 800,
+                    padding: 0.2
+                });
+            }
         }, 100);
     }, [fitView]);
 
@@ -1463,6 +1366,7 @@ const FlowComponent: React.FC = () => {
                     initialMessage={initialMessage}
                     selectedModel={selectedModel}
                     onCreateWebPreviewNode={createWebPreviewNodes}
+                    onNewChatRequest={handleNewChatRequest}
                 />
             )}
             

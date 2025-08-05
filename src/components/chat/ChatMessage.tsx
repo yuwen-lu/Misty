@@ -34,7 +34,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     let users: string[] | null = null;
     let webPreviews: WebPreviewNodeData[] = [];
     
-    console.log('🔍 ChatMessage parsing content, length:', content.length);
     
     const processed = content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
       try {
@@ -43,7 +42,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         // Check if this JSON contains potentialUsers
         if (parsed.potentialUsers && Array.isArray(parsed.potentialUsers)) {
           users = parsed.potentialUsers;
-          console.log('👥 Found potentialUsers:', users);
           // Hide the JSON block since we'll show chips instead
           return '';
         }
@@ -51,26 +49,17 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         // Check if this JSON contains createWebPreviewNode
         if (parsed.tool === 'createWebPreviewNode' && parsed.parameters) {
           webPreviews.push(parsed);
-          console.log('🌐 Found createWebPreviewNode:', {
-            url: parsed.parameters.url,
-            annotationPreview: parsed.parameters.annotation?.substring(0, 50) + '...'
-          });
           // Keep the JSON in chat history for later use but format it nicely
           return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
         }
         
         return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
       } catch (e) {
-        console.log('❌ JSON parse error:', e);
         // If parsing fails, return original
         return match;
       }
     });
     
-    console.log('📊 Parse results:', {
-      webPreviewNodesFound: webPreviews.length,
-      potentialUsersFound: !!users
-    });
     
     return { 
       processedContent: processed, 
@@ -81,21 +70,20 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
 
   // Trigger web preview node creation when detected, but only once per complete message
   const processedNodeIds = React.useRef<Set<string>>(new Set());
+  const lastProcessedCount = React.useRef<number>(0);
   
   React.useEffect(() => {
-    console.log('🔄 ChatMessage useEffect triggered:', {
-      webPreviewNodesCount: webPreviewNodes.length,
-      hasCallback: !!onCreateWebPreviewNode,
-      processedNodeIdsSize: processedNodeIds.current.size
-    });
     
-    if (webPreviewNodes.length > 0 && onCreateWebPreviewNode) {
+    // Only process if we have new nodes that we haven't processed before
+    if (webPreviewNodes.length > 0 && 
+        webPreviewNodes.length !== lastProcessedCount.current && 
+        onCreateWebPreviewNode) {
+      
       // Only process nodes we haven't seen before
       const newWebPreviewNodes = webPreviewNodes.filter(node => {
-        const nodeKey = `${node.parameters.url}-${node.parameters.annotation}`;
+        const nodeKey = `${node.parameters.url}-${JSON.stringify(node.parameters.annotation).substring(0, 50)}`;
         const alreadyProcessed = processedNodeIds.current.has(nodeKey);
         
-        console.log('🔑 Checking node key:', nodeKey, 'already processed:', alreadyProcessed);
         
         if (alreadyProcessed) {
           return false;
@@ -104,14 +92,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         return true;
       });
       
-      console.log('✨ Filtered new nodes:', {
-        originalCount: webPreviewNodes.length,
-        newCount: newWebPreviewNodes.length,
-        processedKeys: Array.from(processedNodeIds.current)
-      });
       
       if (newWebPreviewNodes.length > 0) {
-        console.log('🚀 Calling onCreateWebPreviewNode with', newWebPreviewNodes.length, 'nodes');
+        lastProcessedCount.current = webPreviewNodes.length;
         onCreateWebPreviewNode(newWebPreviewNodes);
       }
     }

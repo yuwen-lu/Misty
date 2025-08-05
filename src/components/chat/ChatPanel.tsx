@@ -10,6 +10,7 @@ interface ChatPanelProps {
   initialMessage?: string;
   selectedModel?: Models;
   onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
+  onNewChatRequest?: () => void;
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({
@@ -17,7 +18,8 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   onToggleMinimize,
   initialMessage,
   selectedModel = Models.claudeSonnet4,
-  onCreateWebPreviewNode
+  onCreateWebPreviewNode,
+  onNewChatRequest
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -56,7 +58,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
         messages: [],
       };
-      console.log('Sending initial message to API (full payload):', initialPayload);
       
       fetch('/api/design-chat', {
         method: 'POST',
@@ -66,11 +67,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         body: JSON.stringify(initialPayload),
       })
       .then(response => {
-        console.log('Initial message API response:', {
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries()),
-        });
         
         if (!response.ok) {
           throw new Error('Failed to get response');
@@ -97,7 +93,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
             if (done) break;
 
             const chunk = decoder.decode(value);
-            console.log('Initial message stream chunk:', chunk);
             accumulatedContent += chunk;
 
             setMessages(prev => prev.map(msg => 
@@ -106,7 +101,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                 : msg
             ));
           }
-          console.log('Initial message stream complete. Total content:', accumulatedContent);
         };
 
         return readStream();
@@ -130,6 +124,11 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
+    // Reset zoom tracker for new request
+    if (onNewChatRequest) {
+      onNewChatRequest();
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -147,8 +146,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
         messages: messages,
       };
-      console.log('Sending message to API (full payload with history):', payload);
-      console.log('Messages history being sent:', messages);
       
       const response = await fetch('/api/design-chat', {
         method: 'POST',
@@ -158,11 +155,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         body: JSON.stringify(payload),
       });
 
-      console.log('Message API response:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-      });
 
       if (!response.ok) {
         throw new Error('Failed to get response');
@@ -188,7 +180,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         if (done) break;
 
         const chunk = decoder.decode(value);
-        console.log('Message stream chunk:', chunk);
         accumulatedContent += chunk;
 
         setMessages(prev => prev.map(msg => 
@@ -198,7 +189,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         ));
       }
       
-      console.log('Message stream complete. Total content:', accumulatedContent);
 
     } catch (error) {
       console.error('Error sending message:', error);

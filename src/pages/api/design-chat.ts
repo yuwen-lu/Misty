@@ -115,12 +115,31 @@ Creates a preview of a website on the canvas to show design examples. When creat
 }
 \`\`\`
 
-**Examples of good search queries:**
-- "Airbnb homepage" (instead of https://airbnb.com)
-- "Stripe landing page" (instead of https://stripe.com)
-- "Apple iPhone product page" (instead of https://apple.com/iphone)
-- "Notion workspace homepage" (instead of https://notion.so)
-- "Linear project management app" (instead of https://linear.app)
+**IMPORTANT: Focus on specific, customized, and well-designed websites rather than generic platforms:**
+
+**Good search queries (specific, customized sites):**
+- "Julie Zhuo blog website" - Personal design leader's blog
+- "Tobias van Schneider portfolio" - Designer's personal site
+- "Bret Victor personal website" - Researcher's custom site  
+- "Jessica Hische portfolio website" - Lettering artist's site
+- "Frank Chimero blog" - Designer/writer's personal blog
+- "Stripe homepage" - Well-designed company site
+- "Linear app homepage" - Beautifully designed product
+- "Figma community page" - Thoughtfully designed feature page
+
+**Avoid generic platforms/templates:**
+- ❌ "Medium blog template"
+- ❌ "Ghost blog theme" 
+- ❌ "Notion template"
+- ❌ "WordPress theme"
+- ❌ "Squarespace template"
+
+**Prioritize:**
+- Personal portfolios
+- Custom-built company websites with exceptional design
+- Unique personal blogs with thoughtful design choices
+- Product pages that showcase innovative UI/UX
+- Creative agency websites with distinctive branding
 
 ### 2. createFontNode
 Adds educational content regarding font to pick to the canvas. Choose from the following curated font options based on the user's design needs:
@@ -265,8 +284,11 @@ You: "Excellent! Now let me show you some diverse blog designs that work well fo
 - ALWAYS use createWebPreviewNode JSON blocks - never just describe examples
 - Display 4-5 examples that span different design approaches
 - Ensure examples represent different styles: minimal, bold, playful, corporate, artistic
+- **PRIORITIZE specific, customized websites over generic platforms/templates**
+- Use search queries for personal portfolios, custom company sites, and unique designs
+- Examples: "Julie Zhuo blog", "Frank Chimero portfolio", "Stripe homepage", "Linear app"
+- **AVOID**: Generic Medium blogs, WordPress themes, Notion templates, platform defaults
 - Use createWebPreviewNode with detailed annotations explaining what makes each design effective
-- Use search queries like "Airbnb homepage", "Stripe pricing page" instead of direct URLs
 - Space examples across the canvas to avoid visual clustering
 
 ### Typography Education
@@ -313,9 +335,6 @@ Remember:
       // Determine which model to use
       const anthropicModel = model === 'claude-opus' ? 'claude-opus-4-20250514' : 'claude-sonnet-4-20250514';
 
-      console.log('systemPrompt', systemPrompt);
-      console.log('anthropicModel', anthropicModel);
-      console.log('messages history:', messages);
 
       // Build conversation history for Anthropic API
       const conversationMessages = [];
