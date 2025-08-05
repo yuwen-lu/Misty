@@ -93,21 +93,6 @@ const initialNodes: Node[] = [
             ]
         },
     },
-    {
-        id: "font-demo",
-        type: "fontNode",
-        position: { x: 700, y: 100 },
-        data: {
-            previewText: "Modern Business Design",
-            onFontSelect: (nodeId: string, selectedFonts: { [category: string]: string }) => {
-                console.log('Font selection from demo node:', selectedFonts);
-            }
-        },
-        style: {
-            width: 700,
-            height: 750,
-        },
-    },
 ];
 
 const initialEdges: Edge[] = [];

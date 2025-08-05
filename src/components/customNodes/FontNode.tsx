@@ -93,20 +93,27 @@ const fontCategories: FontCategory[] = [
 ];
 
 const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
-  const [currentCategory, setCurrentCategory] = useState(0);
   const [currentFontIndex, setCurrentFontIndex] = useState(0);
   const [selectedFonts, setSelectedFonts] = useState<{ [category: string]: string }>({});
   const [previewText, setPreviewText] = useState(data.previewText || 'Beautiful Modern Design');
 
-  const currentCategoryData = fontCategories[currentCategory];
+  // Find the category based on the data.category prop, defaulting to Sans Serif
+  const categoryTitle = data.category || 'Sans Serif';
+  const currentCategoryData = fontCategories.find(cat => cat.title === categoryTitle) || fontCategories[0];
   const currentFont = currentCategoryData.fonts[currentFontIndex];
 
 
-  const selectCurrentFont = () => {
-    const newSelectedFonts = {
-      ...selectedFonts,
-      [currentCategoryData.title]: currentFont.name
-    };
+  const toggleCurrentFont = () => {
+    const newSelectedFonts = { ...selectedFonts };
+    
+    if (selectedFonts[currentCategoryData.title] === currentFont.name) {
+      // Deselect if already selected
+      delete newSelectedFonts[currentCategoryData.title];
+    } else {
+      // Select if not selected
+      newSelectedFonts[currentCategoryData.title] = currentFont.name;
+    }
+    
     setSelectedFonts(newSelectedFonts);
     
     if (data.onFontSelect) {
@@ -135,30 +142,7 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     >
       
       <div className="font-bold text-gray-900 text-xl mb-4">
-        Font Selection
-      </div>
-
-      {/* Category Navigation */}
-      <div className="flex gap-2 mb-6">
-        {fontCategories.map((category, index) => (
-          <button
-            key={category.title}
-            onClick={() => {
-              setCurrentCategory(index);
-              setCurrentFontIndex(0);
-            }}
-            className={`px-4 py-2 text-sm rounded-md transition-all font-medium ${
-              currentCategory === index
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {category.title}
-            {selectedFonts[category.title] && (
-              <span className="ml-2 text-xs">✓</span>
-            )}
-          </button>
-        ))}
+        {currentCategoryData.title} Fonts
       </div>
 
       {/* Font Selection Layout */}
@@ -255,10 +239,10 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
           {/* Selection Button */}
           <button
-            onClick={selectCurrentFont}
+            onClick={toggleCurrentFont}
             className={`w-full py-3 rounded-md font-medium transition-all ${
               isCurrentFontSelected
-                ? 'bg-green-600 text-white'
+                ? 'bg-green-600 text-white hover:bg-green-700'
                 : 'bg-gray-900 text-white hover:bg-gray-800'
             }`}
           >
