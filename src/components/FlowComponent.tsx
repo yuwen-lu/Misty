@@ -14,9 +14,6 @@ import ReactFlow, {
     NodeTypes,
     DefaultEdgeOptions,
     useReactFlow,
-    useViewport,
-    SelectionMode,
-    Position,
 } from "reactflow";
 import ImageDisplayNode from "./customNodes/ImageDisplayNode";
 import ImageUploadNode from "./customNodes/ImageUploadNode";
@@ -32,50 +29,8 @@ import { Models } from "./chat/ChatInput";
 import InitialChatDialog from "./chat/InitialChatDialog";
 import { WebPreviewNodeData } from "./chat/ChatMessage";
 
-import {
-    removeEscapedChars,
-    coordinatePositionType,
-    BoundingBox,
-    defaultBoundingBox,
-    formatCode,
-    loadingIdState,
-    codeRenderNodeContent,
-} from "../util";
-import {
-    parseResponse,
-    safeParseResponse,
-    constructTextPrompt,
-    parseReplacementPromptResponse,
-    CodeChange,
-    ParsedData,
-    ParsedGlobalBlendingData,
-    Change,
-    CategorizedChange,
-} from "../prompts";
 import ErrorPopup from "./ErrorPopup";
-import {
-    bottomModalBase64,
-    bottomModalGreenBase64,
-    // appleTvCard,
-    appleTvHero,
-    appleTvHeroFull,
-    appleNewsMySportsBase64,
-    appleMusicPlayNextBase64,
-    appleNewsCards,
-    appleBookStore,
-    appleNewsTrending,
-    appleMusicPlay,
-    appleBookReadingNow,
-    sketchLayout,
-    sketchHeaderLayout,
-} from "../images";
-import { BookList } from "./renderCode/BookList";
 import ButtonEdge from "./ButtonEdge";
-import { TrailList } from "./renderCode/TrailList";
-import { RestaurantSearch } from "./renderCode/RestaurantSearch";
-import { AppSettings } from "./renderCode/AppSettings";
-import { PhoneApp } from "./renderCode/PhoneApp";
-import { profilePage } from "./renderCode/ProfilePage";
 
 const nodeTypes: NodeTypes = {
     imageUploadNode: ImageUploadNode,
@@ -102,34 +57,15 @@ const initialNodes: Node[] = [
 
 const initialEdges: Edge[] = [];
 
-const initialConfirmationPopupNodeDataPackage = {
-    mousePosition: {
-        x: 0,
-        y: 0,
-    },
-    subImageScreenshot: "",
-    sourceNodeId: "",
-};
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
     animated: true,
 };
 
-const initialCodeToRender: codeRenderNodeContent[] = [];
-
-
-const fetchResponseUrl = process.env.REACT_APP_DEPLOYMENT_BACKEND_URL
-    ? `${process.env.REACT_APP_DEPLOYMENT_BACKEND_URL}/api/chat`
-    : "/api/chat";
 
 const FlowComponent: React.FC = () => {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
-    const [isDragging, setIsDragging] = useState(false); // when we drag subimagenode (washi tape)
-    const [
-        newConfirmationPopupNodeDataPackage,
-        setNewConfirmationPopupNodeDataPackage,
-    ] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
     const [renderCodeContentList, setRenderCodeContentListState] =
         useState<codeRenderNodeContent[]>(initialCodeToRender);
@@ -192,14 +128,12 @@ const FlowComponent: React.FC = () => {
 
     // Reset zoom tracker when user sends a new message
     const handleNewChatRequest = useCallback(() => {
-        console.log('🔄 Resetting zoom tracker for new chat request');
         hasZoomedForCurrentRequest.current = false;
     }, []);
 
     // Function to search for URLs using Brave Search API
     const searchForWebsiteUrl = async (query: string): Promise<string | null> => {
         try {
-            console.log('🔍 Searching for:', query);
             const response = await fetch('/api/brave-search', {
                 method: 'POST',
                 headers: {
@@ -217,11 +151,9 @@ const FlowComponent: React.FC = () => {
             const firstResult = data.results?.[0];
             
             if (firstResult?.url) {
-                console.log('✅ Found URL:', firstResult.url, 'for query:', query);
                 return firstResult.url;
             }
             
-            console.log('⚠️ No results found for query:', query);
             return null;
         } catch (error) {
             console.error('❌ Error searching for URL:', error);
@@ -433,17 +365,17 @@ const FlowComponent: React.FC = () => {
                     if (
                         existingNode.data.renderCode !== newNode.data.renderCode
                     ) {
-                        console.log(
-                            "Updating node with id " +
-                                newNode.id +
-                                " due to code change..."
-                        );
+                        // console.log(
+                        //     "Updating node with id " +
+                        //         newNode.id +
+                        //         " due to code change..."
+                        // );
                         return newNode; // Replace with updated node
                     } else {
                         return existingNode; // Keep the existing node
                     }
                 } else {
-                    console.log(
+                    // console.log(
                         "Adding new node with id " + newNode.id + "..."
                     );
                     return newNode; // Add new node
@@ -521,18 +453,18 @@ const FlowComponent: React.FC = () => {
                     try {
                         currentRenderCode = await formatCode(updatedRenderCode);
                     } catch (err) {
-                        console.log("error in format code: " + err);
+                        // console.log("error in format code: " + err);
                         currentRenderCode = updatedRenderCode; // we just update without formatting it
                     }
                 } else {
-                    console.log(
+                    // console.log(
                         "Cannot find the reg ex in the source renderCode: " +
                             searchPattern
                     );
                     setShowError(true);
                 }
             } catch (error) {
-                console.log(
+                // console.log(
                     "An error occurred when parsing response. Try again?"
                 );
                 setShowError(true);
@@ -587,11 +519,11 @@ const FlowComponent: React.FC = () => {
         // TODO if this does not match the format, maybe we should just return null?
         if (!regexPattern.test(updatedCode)) {
             // Handle the case where the code does not match the desired format
-            console.log("code does not match the desired format in regex");
+            // console.log("code does not match the desired format in regex");
             setShowError(true);
         }
 
-        console.log(
+        // console.log(
             "still contains backticks after formatting? " +
                 updatedCode.includes("`")
         );
@@ -619,10 +551,10 @@ const FlowComponent: React.FC = () => {
         try {
             updatedCode = await formatCode(updatedCode);
         } catch (err) {
-            console.log("error in format code: " + err);
+            // console.log("error in format code: " + err);
         }
 
-        console.log("displaying updated code...\n" + parsedData);
+        // console.log("displaying updated code...\n" + parsedData);
 
         const categorizedChanges: CategorizedChange[] =
             parsedData.categorizedChanges;
@@ -660,7 +592,7 @@ const FlowComponent: React.FC = () => {
         targetCodeRenderNodeId: string,
         newState: boolean
     ) => {
-        console.log(
+        // console.log(
             "updating state with target code id: " + targetCodeRenderNodeId
         );
         setLoadingStates((items) => {
@@ -714,13 +646,13 @@ const FlowComponent: React.FC = () => {
         sourceNodeId: string,
         isRegenerate = false
     ) => {
-        console.log("Taget node id " + targetNodeId);
+        // console.log("Taget node id " + targetNodeId);
         // set the loading status here
         targetNodeId === ""
             ? updateLoadingState(targetCodeRenderNodeId, true)
             : updateLoadingState(targetNodeId, true);
 
-        console.log(
+        // console.log(
             "calling api, node " + targetCodeRenderNodeId + " started! "
         );
         // console.log("prompt: " + textPrompt);
@@ -790,7 +722,7 @@ const FlowComponent: React.FC = () => {
                     let updatedCode = processParsedCode(parsedData.updatedCode);
 
                     // Update the existing renderCodeContentList entry instead of adding a new one
-                    console.log(
+                    // console.log(
                         "yo, finished fetch response, here's the updated blendedCode: " +
                             updatedCode
                     );
@@ -822,10 +754,10 @@ const FlowComponent: React.FC = () => {
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === "AbortError") {
-                console.log("Fetch aborted");
+                // console.log("Fetch aborted");
             } else {
                 console.error("Error fetching response from OpenAI API");
-                console.log("error openai api call: " + err);
+                // console.log("error openai api call: " + err);
             }
         } finally {
             targetNodeId === ""
@@ -836,7 +768,7 @@ const FlowComponent: React.FC = () => {
     };
 
     const fixCodeNotRendering = async (code: string, targetNodeId: string) => {
-        console.log("Taget node id " + targetNodeId);
+        // console.log("Taget node id " + targetNodeId);
         // set the loading status here
         targetNodeId === ""
             ? updateLoadingState(targetCodeRenderNodeId, true)
@@ -904,10 +836,10 @@ const FlowComponent: React.FC = () => {
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === "AbortError") {
-                console.log("Fetch aborted");
+                // console.log("Fetch aborted");
             } else {
                 console.error("Error fetching response from OpenAI API");
-                console.log("error openai api call: " + err);
+                // console.log("error openai api call: " + err);
             }
         } finally {
             targetNodeId === ""
@@ -925,7 +857,7 @@ const FlowComponent: React.FC = () => {
         addCategory: string,
         allCategories: string[]
     ) => {
-        console.log("Target node id " + targetNodeId);
+        // console.log("Target node id " + targetNodeId);
 
         // Set the loading status here
         targetNodeId === ""
@@ -991,10 +923,10 @@ const FlowComponent: React.FC = () => {
             }
         } catch (err) {
             if (err instanceof DOMException && err.name === "AbortError") {
-                console.log("Fetch aborted");
+                // console.log("Fetch aborted");
             } else {
                 console.error("Error fetching response from OpenAI API");
-                console.log("error openai api call: " + err);
+                // console.log("error openai api call: " + err);
             }
         } finally {
             targetNodeId === ""
@@ -1008,14 +940,14 @@ const FlowComponent: React.FC = () => {
         explanations: Change[] | string[],
         renderCodeNodeBoundingBox: BoundingBox
     ) => {
-        console.log(
+        // console.log(
             "Received bbox in flowcomponent: " +
                 JSON.stringify(renderCodeNodeBoundingBox)
         );
         const newXPos =
             renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200;
         // const newYPos = renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200; // TODO calculate y position based on count of explanationNode
-        console.log("newXPos: " + newXPos);
+        // console.log("newXPos: " + newXPos);
         setNodes((nds) => {
             return nds.concat({
                 id: String(nds.length + 1),
@@ -1028,7 +960,7 @@ const FlowComponent: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log("openai api response updated: " + response);
+        // console.log("openai api response updated: " + response);
         // update the coderendernode to display generation progress
         setNodes((nds) =>
             nds.map((node) =>
@@ -1074,10 +1006,10 @@ const FlowComponent: React.FC = () => {
     );
     const onConnect: OnConnect = (connection) => {
         setEdges((eds) => addEdge(connection, eds));
-        console.log("connection added: \n" + JSON.stringify(connection));
+        // console.log("connection added: \n" + JSON.stringify(connection));
         if (connection.targetHandle === "render-t") {
             // if it's a whole image node, maybe do some implicit intent reasoning
-            console.log("seems like a source node. id: " + connection.source);
+            // console.log("seems like a source node. id: " + connection.source);
             const sourceNode = nodes.find(
                 (node) => node.id === connection.source
             );
@@ -1105,7 +1037,7 @@ const FlowComponent: React.FC = () => {
                     sourceNode.id
                 ); // TODO Add the bbox of rendercode node
             } else {
-                console.log(
+                // console.log(
                     "Error: cannot find source node. current nodes: \n" + nodes
                 );
             }
@@ -1137,14 +1069,14 @@ const FlowComponent: React.FC = () => {
             currentRightEdge = currentNode.position.x + currentNode.width;
             currentTopEdge = currentNode.position.y;
         } else {
-            console.log("Cannot find the node with target id " + sourceId);
+            // console.log("Cannot find the node with target id " + sourceId);
         }
 
         imageUrlList.forEach((imageUrl, index) => {
             if (newNodeId !== undefined) {
                 const validNewNodeId: string = newNodeId.toString();
                 setNodes((nds) => {
-                    console.log(
+                    // console.log(
                         "Creating new node for image at index " + index
                     );
                     return nds.concat({
@@ -1180,7 +1112,7 @@ const FlowComponent: React.FC = () => {
         const edgeExists = edges.find((edg) => edg.id === edge.id);
         if (!edgeExists) {
             setEdges((eds) => addEdge(edge, eds));
-            console.log("New edge added, id: " + edge.id);
+            // console.log("New edge added, id: " + edge.id);
         }
     };
 
@@ -1258,7 +1190,7 @@ const FlowComponent: React.FC = () => {
             })
         );
 
-        console.log("Image node added, current node length: " + nodes.length);
+        // console.log("Image node added, current node length: " + nodes.length);
     };
 
     // memorize the code editor panel to avoid unnecessary re-render
