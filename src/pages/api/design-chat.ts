@@ -135,7 +135,7 @@ Creates a preview of a website on the canvas to show design examples. When creat
 - ❌ "Squarespace template"
 
 **Prioritize:**
-- Personal portfolios
+- Personal portfolios and well-crafted websites
 - Custom-built company websites with exceptional design
 - Unique personal blogs with thoughtful design choices
 - Product pages that showcase innovative UI/UX

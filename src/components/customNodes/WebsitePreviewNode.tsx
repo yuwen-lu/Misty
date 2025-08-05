@@ -76,7 +76,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         Website Preview
         {data.originalQuery && data.originalQuery !== data.url && (
           <div className="text-yellow-700 text-sm font-normal mt-1">
-            Found via search: "{data.originalQuery}"
+            Found via search: &quot;{data.originalQuery}&quot;
           </div>
         )}
       </div>

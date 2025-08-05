@@ -14,6 +14,8 @@ import ReactFlow, {
     NodeTypes,
     DefaultEdgeOptions,
     useReactFlow,
+    useViewport,
+    SelectionMode,
 } from "reactflow";
 import ImageDisplayNode from "./customNodes/ImageDisplayNode";
 import ImageUploadNode from "./customNodes/ImageUploadNode";
@@ -29,7 +31,27 @@ import { Models } from "./chat/ChatInput";
 import InitialChatDialog from "./chat/InitialChatDialog";
 import { WebPreviewNodeData } from "./chat/ChatMessage";
 
+import {
+    removeEscapedChars,
+    coordinatePositionType,
+    BoundingBox,
+    defaultBoundingBox,
+    formatCode,
+    loadingIdState,
+    codeRenderNodeContent,
+} from "../util";
+import {
+    safeParseResponse,
+    constructTextPrompt,
+    parseReplacementPromptResponse,
+    CodeChange,
+    ParsedData,
+    ParsedGlobalBlendingData,
+    Change,
+    CategorizedChange,
+} from "../prompts";
 import ErrorPopup from "./ErrorPopup";
+import { BookList } from "./renderCode/BookList";
 import ButtonEdge from "./ButtonEdge";
 
 const nodeTypes: NodeTypes = {
@@ -57,15 +79,44 @@ const initialNodes: Node[] = [
 
 const initialEdges: Edge[] = [];
 
+const initialConfirmationPopupNodeDataPackage = {
+    mousePosition: {
+        x: 0,
+        y: 0,
+    },
+    subImageScreenshot: "",
+    sourceNodeId: "",
+};
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
     animated: true,
 };
 
+const initialCodeToRender: codeRenderNodeContent[] = [
+    {
+        code: BookList,
+        prevCode: "",
+        nodeId: "code-0",
+        categorizedChanges: [],
+        sourceNodeId: "",
+        textPrompt: "",
+        base64Image: "",
+    },
+];
+
+const fetchResponseUrl = process.env.REACT_APP_DEPLOYMENT_BACKEND_URL
+    ? `${process.env.REACT_APP_DEPLOYMENT_BACKEND_URL}/api/chat`
+    : "/api/chat";
+
 
 const FlowComponent: React.FC = () => {
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
+    const [isDragging, setIsDragging] = useState(false); // when we drag subimagenode (washi tape)
+    const [
+        newConfirmationPopupNodeDataPackage,
+        setNewConfirmationPopupNodeDataPackage,
+    ] = useState(initialConfirmationPopupNodeDataPackage);
     const [codePanelVisible, setCodePanelVisible] = useState<boolean>(false);
     const [renderCodeContentList, setRenderCodeContentListState] =
         useState<codeRenderNodeContent[]>(initialCodeToRender);
@@ -376,8 +427,8 @@ const FlowComponent: React.FC = () => {
                     }
                 } else {
                     // console.log(
-                        "Adding new node with id " + newNode.id + "..."
-                    );
+                    //     "Adding new node with id " + newNode.id + "..."
+                    // );
                     return newNode; // Add new node
                 }
             });
@@ -458,15 +509,15 @@ const FlowComponent: React.FC = () => {
                     }
                 } else {
                     // console.log(
-                        "Cannot find the reg ex in the source renderCode: " +
-                            searchPattern
-                    );
+                    //     "Cannot find the reg ex in the source renderCode: " +
+                    //         searchPattern
+                    // );
                     setShowError(true);
                 }
             } catch (error) {
                 // console.log(
-                    "An error occurred when parsing response. Try again?"
-                );
+                //     "An error occurred when parsing response. Try again?"
+                // );
                 setShowError(true);
             }
         }
@@ -524,9 +575,9 @@ const FlowComponent: React.FC = () => {
         }
 
         // console.log(
-            "still contains backticks after formatting? " +
-                updatedCode.includes("`")
-        );
+        //     "still contains backticks after formatting? " +
+        //         updatedCode.includes("`")
+        // );
         return updatedCode;
     };
 
@@ -593,8 +644,8 @@ const FlowComponent: React.FC = () => {
         newState: boolean
     ) => {
         // console.log(
-            "updating state with target code id: " + targetCodeRenderNodeId
-        );
+        //     "updating state with target code id: " + targetCodeRenderNodeId
+        // );
         setLoadingStates((items) => {
             // Check if the item already exists in the state
             const itemExists = items.some(
@@ -653,8 +704,8 @@ const FlowComponent: React.FC = () => {
             : updateLoadingState(targetNodeId, true);
 
         // console.log(
-            "calling api, node " + targetCodeRenderNodeId + " started! "
-        );
+        //     "calling api, node " + targetCodeRenderNodeId + " started! "
+        // );
         // console.log("prompt: " + textPrompt);
         setResponse("");
         const controller = new AbortController();
@@ -723,9 +774,9 @@ const FlowComponent: React.FC = () => {
 
                     // Update the existing renderCodeContentList entry instead of adding a new one
                     // console.log(
-                        "yo, finished fetch response, here's the updated blendedCode: " +
-                            updatedCode
-                    );
+                    //     "yo, finished fetch response, here's the updated blendedCode: " +
+                    //         updatedCode
+                    // );
                     setRenderCodeContentListState((prevList) =>
                         prevList.map((content) =>
                             content.nodeId === targetNodeId
@@ -941,9 +992,9 @@ const FlowComponent: React.FC = () => {
         renderCodeNodeBoundingBox: BoundingBox
     ) => {
         // console.log(
-            "Received bbox in flowcomponent: " +
-                JSON.stringify(renderCodeNodeBoundingBox)
-        );
+        //     "Received bbox in flowcomponent: " +
+        //         JSON.stringify(renderCodeNodeBoundingBox)
+        // );
         const newXPos =
             renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200;
         // const newYPos = renderCodeNodeBoundingBox.x + renderCodeNodeBoundingBox.width + 200; // TODO calculate y position based on count of explanationNode
@@ -1038,8 +1089,8 @@ const FlowComponent: React.FC = () => {
                 ); // TODO Add the bbox of rendercode node
             } else {
                 // console.log(
-                    "Error: cannot find source node. current nodes: \n" + nodes
-                );
+                //     "Error: cannot find source node. current nodes: \n" + nodes
+                // );
             }
             setEdges((eds) =>
                 eds.filter(
@@ -1077,8 +1128,8 @@ const FlowComponent: React.FC = () => {
                 const validNewNodeId: string = newNodeId.toString();
                 setNodes((nds) => {
                     // console.log(
-                        "Creating new node for image at index " + index
-                    );
+                    //     "Creating new node for image at index " + index
+                    // );
                     return nds.concat({
                         id: validNewNodeId,
                         type: "subimageNode",
