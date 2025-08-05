@@ -340,3 +340,23 @@ code {
   transition: 0.3s;
 }
 
+/* Chat panel performance optimizations */
+.chat-panel-container {
+  contain: layout style paint;
+  isolation: isolate;
+  will-change: contents;
+}
+
+/* Prevent chat panel from affecting canvas rendering */
+.chat-panel-fixed {
+  position: fixed;
+  contain: strict;
+  pointer-events: auto;
+}
+
+/* Optimize chat message rendering */
+.chat-message-container {
+  contain: content;
+  will-change: scroll-position;
+}
+

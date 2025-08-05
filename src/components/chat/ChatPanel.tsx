@@ -197,7 +197,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   }
 
   return (
-    <div className="fixed right-4 top-4 bottom-4 w-96 bg-white border border-gray-300 rounded-lg shadow-xl flex flex-col z-50">
+    <div className="chat-panel-fixed chat-panel-container right-4 top-4 bottom-4 w-96 bg-white border border-gray-300 rounded-lg shadow-xl flex flex-col z-50">
       {/* Header */}
       <div className="flex items-center justify-end p-4 border-b border-gray-200">
         <button
@@ -209,7 +209,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto chat-message-container">
         <ChatMessageList
           messages={messages}
           containerRef={messagesRef}

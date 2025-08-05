@@ -16,6 +16,19 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   content, 
   timestamp 
 }) => {
+  // Parse content to extract and format JSON blocks
+  const processedContent = useMemo(() => {
+    return content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
+      try {
+        const parsed = JSON.parse(jsonContent);
+        return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
+      } catch (e) {
+        // If parsing fails, return original
+        return match;
+      }
+    });
+  }, [content]);
+
   return (
     <div className="flex items-start gap-2 px-2 py-2 rounded-md bg-white">
       <div
@@ -37,14 +50,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             components={{
               p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
               pre: ({ children }) => (
-                <pre className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md overflow-x-auto my-2 text-sm whitespace-pre-wrap">
+                <pre className="bg-gray-50 p-3 rounded-md overflow-x-auto my-2 text-sm whitespace-pre-wrap">
                   {children}
                 </pre>
               ),
               code: ({ inline, className, children, ...props }: any) => {
                 const match = /language-(\w+)/.exec(className || '');
                 return inline ? (
-                  <code className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                  <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
                     {children}
                   </code>
                 ) : (
@@ -72,7 +85,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
               em: ({ children }) => <em className="italic">{children}</em>,
             }}
           >
-            {content}
+            {processedContent}
           </ReactMarkdown>
         </div>
         
