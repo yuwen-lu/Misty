@@ -31,7 +31,7 @@ import CodeEditorPanel from "./CodeEditorPanel";
 import { ChatPanel } from "./chat/ChatPanel";
 import { Models } from "./chat/ChatInput";
 import InitialChatDialog from "./chat/InitialChatDialog";
-import { WebPreviewNodeData, FontNodeData } from "./chat/ChatMessage";
+import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from "./chat/ChatMessage";
 
 import {
     removeEscapedChars,
@@ -319,34 +319,84 @@ const FlowComponent: React.FC = () => {
     // Function to create FontNodes from chat API responses
     const createFontNodes = async (fontNodesData: FontNodeData[]) => {
         const newNodes: Node[] = [];
-        const nodeWidth = 500;
+        const nodeWidth = 700;
         const nodeHeight = 650;
-        const horizontalSpacing = 100;
+        const horizontalSpacing = 50;
+        const verticalSpacing = 100;
+        
+        // Create separate nodes for each font category
+        const categories = ['Sans Serif', 'Serif', 'Decorative'];
         
         for (const fontNodeData of fontNodesData) {
+            const baseX = currentColumn.current * (nodeWidth + horizontalSpacing) + 50;
+            const baseY = 50;
+            
+            categories.forEach((category, categoryIndex) => {
+                const x = baseX + (categoryIndex * (nodeWidth + horizontalSpacing));
+                const y = baseY;
+                
+                const newNode: Node = {
+                    id: `font-${category.toLowerCase().replace(' ', '-')}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    type: 'fontNode',
+                    position: { x, y },
+                    data: {
+                        previewText: fontNodeData.parameters.previewText,
+                        category: category,
+                        onFontSelect: (nodeId: string, selectedFonts: { [category: string]: string }) => {
+                            console.log('Font selection:', selectedFonts);
+                            // Here you could trigger additional actions when fonts are selected
+                        }
+                    },
+                    style: {
+                        width: nodeWidth,
+                        height: nodeHeight,
+                    },
+                };
+                
+                newNodes.push(newNode);
+            });
+            
+            // Move to next row for next set of font nodes
+            currentColumn.current++;
+        }
+        
+        if (newNodes.length > 0) {
+            setNodes((prevNodes) => [...prevNodes, ...newNodes]);
+            
+            // Zoom to fit new nodes if this is the first of a new request
+            if (!hasZoomedForCurrentRequest.current) {
+                setTimeout(() => {
+                    fitView({ padding: 0.1, maxZoom: 1.2 });
+                    hasZoomedForCurrentRequest.current = true;
+                }, 100);
+            }
+        }
+    };
+
+    // Function to create TextInstructionNodes from chat API responses
+    const createTextInstructionNodes = async (textInstructionNodesData: TextInstructionNodeData[]) => {
+        const newNodes: Node[] = [];
+        const nodeWidth = 350;
+        const nodeHeight = 200;
+        const horizontalSpacing = 50;
+        
+        for (const textInstructionData of textInstructionNodesData) {
             const x = currentColumn.current * (nodeWidth + horizontalSpacing) + 50;
             const y = 50;
-            currentColumn.current++;
             
             const newNode: Node = {
-                id: `font-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                type: 'fontNode',
+                id: `text-instruction-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                type: 'textInstructionNode',
                 position: { x, y },
                 data: {
-                    previewText: fontNodeData.parameters.previewText,
-                    category: fontNodeData.parameters.category,
-                    onFontSelect: (nodeId: string, selectedFonts: { [category: string]: string }) => {
-                        console.log('Font selection:', selectedFonts);
-                        // Here you could trigger additional actions when fonts are selected
-                    }
-                },
-                style: {
-                    width: nodeWidth,
-                    height: nodeHeight,
-                },
+                    title: textInstructionData.parameters.title,
+                    instructions: textInstructionData.parameters.instructions,
+                    designContext: textInstructionData.parameters.designContext
+                }
             };
             
             newNodes.push(newNode);
+            currentColumn.current++;
         }
         
         if (newNodes.length > 0) {
@@ -1409,6 +1459,7 @@ const FlowComponent: React.FC = () => {
                     selectedModel={selectedModel}
                     onCreateWebPreviewNode={createWebPreviewNodes}
                     onCreateFontNode={createFontNodes}
+                    onCreateTextInstructionNode={createTextInstructionNodes}
                     onNewChatRequest={handleNewChatRequest}
                 />
             )}

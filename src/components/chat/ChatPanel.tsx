@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Minimize2, Maximize2 } from 'lucide-react';
 import { ChatInput, Models } from './ChatInput';
 import { ChatMessageList, Message } from './ChatMessageList';
-import { WebPreviewNodeData, FontNodeData } from './ChatMessage';
+import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from './ChatMessage';
 
 interface ChatPanelProps {
   isMinimized: boolean;
@@ -11,6 +11,7 @@ interface ChatPanelProps {
   selectedModel?: Models;
   onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
   onCreateFontNode?: (fontNodes: FontNodeData[]) => void;
+  onCreateTextInstructionNode?: (textInstructionNodes: TextInstructionNodeData[]) => void;
   onNewChatRequest?: () => void;
 }
 
@@ -21,6 +22,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   selectedModel = Models.claudeSonnet4,
   onCreateWebPreviewNode,
   onCreateFontNode,
+  onCreateTextInstructionNode,
   onNewChatRequest
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -29,6 +31,29 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   const [currentModel, setCurrentModel] = useState<Models>(selectedModel);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitialMessage = useRef(false);
+  
+  // Function to parse and execute tool calls from API response
+  const executeToolCalls = async (content: string) => {
+    const jsonBlocks = content.match(/```json\n([\s\S]*?)```/g);
+    if (!jsonBlocks) return;
+    
+    for (const block of jsonBlocks) {
+      try {
+        const jsonContent = block.replace(/```json\n/, '').replace(/```$/, '');
+        const parsed = JSON.parse(jsonContent);
+        
+        if (parsed.tool === 'createWebPreviewNode' && parsed.parameters && onCreateWebPreviewNode) {
+          onCreateWebPreviewNode([parsed]);
+        } else if (parsed.tool === 'createFontNode' && parsed.parameters && onCreateFontNode) {
+          onCreateFontNode([parsed]);
+        } else if (parsed.tool === 'createTextInstructionNode' && parsed.parameters && onCreateTextInstructionNode) {
+          onCreateTextInstructionNode([parsed]);
+        }
+      } catch (e) {
+        console.warn('Failed to parse tool call:', e);
+      }
+    }
+  };
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -92,7 +117,11 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         const readStream = async () => {
           while (true) {
             const { done, value } = await reader.read();
-            if (done) break;
+            if (done) {
+              // Execute any tool calls found in the complete response
+              await executeToolCalls(accumulatedContent);
+              break;
+            }
 
             const chunk = decoder.decode(value);
             accumulatedContent += chunk;
@@ -179,7 +208,11 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
+        if (done) {
+          // Execute any tool calls found in the complete response
+          await executeToolCalls(accumulatedContent);
+          break;
+        }
 
         const chunk = decoder.decode(value);
         accumulatedContent += chunk;
@@ -240,8 +273,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         <ChatMessageList
           messages={messages}
           onAddToInput={handleAddToInput}
-          onCreateWebPreviewNode={onCreateWebPreviewNode}
-          onCreateFontNode={onCreateFontNode}
         />
         
         {isLoading && (

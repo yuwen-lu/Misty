@@ -19,6 +19,16 @@ export interface FontNodeData {
   parameters: {
     previewText: string;
     category?: string;
+    designContext?: string;
+  };
+}
+
+export interface TextInstructionNodeData {
+  tool: 'createTextInstructionNode';
+  parameters: {
+    title: string;
+    instructions: string[] | string;
+    designContext?: string;
   };
 }
 
@@ -27,24 +37,17 @@ interface ChatMessageProps {
   content: string;
   timestamp?: Date;
   onAddToInput?: (text: string) => void;
-  onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
-  onCreateFontNode?: (fontNodes: FontNodeData[]) => void;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ 
   role, 
   content, 
   timestamp,
-  onAddToInput,
-  onCreateWebPreviewNode,
-  onCreateFontNode
+  onAddToInput
 }) => {
-  // Parse content to extract and format JSON blocks and detect potentialUsers/createWebPreviewNode/createFontNode
-  const { processedContent, potentialUsers, webPreviewNodes, fontNodes } = useMemo(() => {
+  // Parse content to extract and format JSON blocks and detect potentialUsers
+  const { processedContent, potentialUsers } = useMemo(() => {
     let users: string[] | null = null;
-    let webPreviews: WebPreviewNodeData[] = [];
-    let fontNodesList: FontNodeData[] = [];
-    
     
     const processed = content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
       try {
@@ -57,20 +60,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           return '';
         }
         
-        // Check if this JSON contains createWebPreviewNode
-        if (parsed.tool === 'createWebPreviewNode' && parsed.parameters) {
-          webPreviews.push(parsed);
-          // Keep the JSON in chat history for later use but format it nicely
-          return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
-        }
-        
-        // Check if this JSON contains createFontNode
-        if (parsed.tool === 'createFontNode' && parsed.parameters) {
-          fontNodesList.push(parsed);
-          // Keep the JSON in chat history for later use but format it nicely
-          return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
-        }
-        
+        // For all other JSON blocks, format them nicely
         return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
       } catch (e) {
         // If parsing fails, return original
@@ -78,73 +68,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       }
     });
     
-    
     return { 
       processedContent: processed, 
-      potentialUsers: users, 
-      webPreviewNodes: webPreviews,
-      fontNodes: fontNodesList 
+      potentialUsers: users
     };
   }, [content]);
-  
-  // Handle font node creation
-  const processedFontNodeIds = React.useRef<Set<string>>(new Set());
-  const lastProcessedFontCount = React.useRef<number>(0);
-  
-  React.useEffect(() => {
-    if (fontNodes.length > lastProcessedFontCount.current && 
-        onCreateFontNode) {
-      
-      // Only process nodes we haven't seen before
-      const newFontNodes = fontNodes.filter(node => {
-        const nodeKey = `${node.parameters.previewText}-${node.parameters.category || 'all'}`;
-        const alreadyProcessed = processedFontNodeIds.current.has(nodeKey);
-        
-        if (alreadyProcessed) {
-          return false;
-        }
-        processedFontNodeIds.current.add(nodeKey);
-        return true;
-      });
-      
-      if (newFontNodes.length > 0) {
-        lastProcessedFontCount.current = fontNodes.length;
-        onCreateFontNode(newFontNodes);
-      }
-    }
-  }, [fontNodes, onCreateFontNode]);
-
-  // Trigger web preview node creation when detected, but only once per complete message
-  const processedNodeIds = React.useRef<Set<string>>(new Set());
-  const lastProcessedCount = React.useRef<number>(0);
-  
-  React.useEffect(() => {
-    
-    // Only process if we have new nodes that we haven't processed before
-    if (webPreviewNodes.length > 0 && 
-        webPreviewNodes.length !== lastProcessedCount.current && 
-        onCreateWebPreviewNode) {
-      
-      // Only process nodes we haven't seen before
-      const newWebPreviewNodes = webPreviewNodes.filter(node => {
-        const nodeKey = `${node.parameters.url}-${JSON.stringify(node.parameters.annotation).substring(0, 50)}`;
-        const alreadyProcessed = processedNodeIds.current.has(nodeKey);
-        
-        
-        if (alreadyProcessed) {
-          return false;
-        }
-        processedNodeIds.current.add(nodeKey);
-        return true;
-      });
-      
-      
-      if (newWebPreviewNodes.length > 0) {
-        lastProcessedCount.current = webPreviewNodes.length;
-        onCreateWebPreviewNode(newWebPreviewNodes);
-      }
-    }
-  }, [webPreviewNodes, onCreateWebPreviewNode]);
   
   const handleChipClick = useCallback((user: string) => {
     if (onAddToInput) {
