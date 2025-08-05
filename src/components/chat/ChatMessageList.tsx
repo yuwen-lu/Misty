@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React from 'react';
 import { ChatMessage, ChatMessageRole } from './ChatMessage';
 
 export interface Message {
@@ -10,20 +10,15 @@ export interface Message {
 
 interface ChatMessageListProps {
   messages: Message[];
-  containerRef: RefObject<HTMLDivElement>;
   onAddToInput?: (text: string) => void;
 }
 
 export const ChatMessageList: React.FC<ChatMessageListProps> = ({
   messages,
-  containerRef,
   onAddToInput,
 }) => {
   return (
-    <div
-      ref={containerRef}
-      className="flex-1 flex flex-col gap-4 w-full pt-1 px-2"
-    >
+    <div className="flex-1 flex flex-col gap-4 w-full pt-1 px-2">
       {messages.map((message, index) => (
         <div key={message.id || index}>
           <ChatMessage

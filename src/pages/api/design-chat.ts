@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { message, images, model } = req.body;
+    const { message, images, model, messages = [] } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: 'No message provided' });
@@ -45,6 +45,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
      "potentialUsers": ["option1", "option2", "option3", "option4", "option5", "option6"]
    }
    \`\`\`
+
+   BUT in the beginning, do not ask more than 2 rounds of questions. Do not keep asking questions regarding the project context. Maximum 2 rounds of questions and then start showing inspirational examples for users.
+
 3. **ALWAYS use the provided tools instead of describing things** - Never just describe examples or fonts. Use the tools:
    - Use \`createWebPreviewNode\` to SHOW design examples (don't just describe them)
    - Use \`createFontNode\` to DISPLAY font options (don't just list font names)
@@ -301,6 +304,43 @@ Remember:
 
       console.log('systemPrompt', systemPrompt);
       console.log('anthropicModel', anthropicModel);
+      console.log('messages history:', messages);
+
+      // Build conversation history for Anthropic API
+      const conversationMessages = [];
+      
+      // If this is the first message, include system prompt
+      if (messages.length === 0) {
+        conversationMessages.push({
+          role: 'user',
+          content: buildMessageContent(message, images, systemPrompt)
+        });
+      } else {
+        // For subsequent messages, build full conversation history
+        // First message should include system prompt
+        const firstMessage = messages[0];
+        if (firstMessage && firstMessage.role === 'user') {
+          conversationMessages.push({
+            role: 'user',
+            content: `${systemPrompt}\n\nUser: ${firstMessage.content}`
+          });
+        }
+        
+        // Add all messages after the first one
+        for (let i = 1; i < messages.length; i++) {
+          const msg = messages[i];
+          conversationMessages.push({
+            role: msg.role === 'assistant' ? 'assistant' : 'user',
+            content: msg.content
+          });
+        }
+        
+        // Add the new message
+        conversationMessages.push({
+          role: 'user',
+          content: message
+        });
+      }
 
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -313,12 +353,7 @@ Remember:
           model: anthropicModel,
           max_tokens: 4000,
           stream: true,
-          messages: [
-            {
-              role: 'user',
-              content: buildMessageContent(message, images, systemPrompt)
-            }
-          ]
+          messages: conversationMessages
         })
       });
 
@@ -385,7 +420,7 @@ function buildMessageContent(message: string, images: string[] = [], systemPromp
           media_type: 'image/png',
           data: image.replace(/^data:image\/[^;]+;base64,/, '')
         }
-      });
+      } as any);
     });
   }
 

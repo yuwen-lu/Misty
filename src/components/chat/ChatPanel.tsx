@@ -20,11 +20,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentModel, setCurrentModel] = useState<Models>(selectedModel);
-  const messagesRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitialMessage = useRef(false);
 
   const scrollToBottom = () => {
-    messagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -45,21 +47,20 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       setMessages([userMessage]);
       setIsLoading(true);
 
-      // Send the initial message to the API
-      console.log('Sending initial message to API:', {
+      // Send the initial message to API
+      const initialPayload = {
         message: initialMessage,
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
-      });
+        messages: [],
+      };
+      console.log('Sending initial message to API (full payload):', initialPayload);
       
       fetch('/api/design-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: initialMessage,
-          model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
-        }),
+        body: JSON.stringify(initialPayload),
       })
       .then(response => {
         console.log('Initial message API response:', {
@@ -138,20 +139,20 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     setIsLoading(true);
 
     try {
-      console.log('Sending message to API:', {
+      const payload = {
         message: input,
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
-      });
+        messages: messages,
+      };
+      console.log('Sending message to API (full payload with history):', payload);
+      console.log('Messages history being sent:', messages);
       
       const response = await fetch('/api/design-chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: input,
-          model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
-        }),
+        body: JSON.stringify(payload),
       });
 
       console.log('Message API response:', {
@@ -240,10 +241,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto chat-message-container">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto chat-message-container">
         <ChatMessageList
           messages={messages}
-          containerRef={messagesRef}
           onAddToInput={handleAddToInput}
         />
         
