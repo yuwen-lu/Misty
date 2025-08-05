@@ -14,12 +14,21 @@ export interface WebPreviewNodeData {
   };
 }
 
+export interface FontNodeData {
+  tool: 'createFontNode';
+  parameters: {
+    previewText: string;
+    category?: string;
+  };
+}
+
 interface ChatMessageProps {
   role: ChatMessageRole;
   content: string;
   timestamp?: Date;
   onAddToInput?: (text: string) => void;
   onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
+  onCreateFontNode?: (fontNodes: FontNodeData[]) => void;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ 
@@ -27,12 +36,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   content, 
   timestamp,
   onAddToInput,
-  onCreateWebPreviewNode
+  onCreateWebPreviewNode,
+  onCreateFontNode
 }) => {
-  // Parse content to extract and format JSON blocks and detect potentialUsers/createWebPreviewNode
-  const { processedContent, potentialUsers, webPreviewNodes } = useMemo(() => {
+  // Parse content to extract and format JSON blocks and detect potentialUsers/createWebPreviewNode/createFontNode
+  const { processedContent, potentialUsers, webPreviewNodes, fontNodes } = useMemo(() => {
     let users: string[] | null = null;
     let webPreviews: WebPreviewNodeData[] = [];
+    let fontNodesList: FontNodeData[] = [];
     
     
     const processed = content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
@@ -53,6 +64,13 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
         }
         
+        // Check if this JSON contains createFontNode
+        if (parsed.tool === 'createFontNode' && parsed.parameters) {
+          fontNodesList.push(parsed);
+          // Keep the JSON in chat history for later use but format it nicely
+          return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
+        }
+        
         return '```json\n' + JSON.stringify(parsed, null, 2) + '\n```';
       } catch (e) {
         // If parsing fails, return original
@@ -64,9 +82,37 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     return { 
       processedContent: processed, 
       potentialUsers: users, 
-      webPreviewNodes: webPreviews 
+      webPreviewNodes: webPreviews,
+      fontNodes: fontNodesList 
     };
   }, [content]);
+  
+  // Handle font node creation
+  const processedFontNodeIds = React.useRef<Set<string>>(new Set());
+  const lastProcessedFontCount = React.useRef<number>(0);
+  
+  React.useEffect(() => {
+    if (fontNodes.length > lastProcessedFontCount.current && 
+        onCreateFontNode) {
+      
+      // Only process nodes we haven't seen before
+      const newFontNodes = fontNodes.filter(node => {
+        const nodeKey = `${node.parameters.previewText}-${node.parameters.category || 'all'}`;
+        const alreadyProcessed = processedFontNodeIds.current.has(nodeKey);
+        
+        if (alreadyProcessed) {
+          return false;
+        }
+        processedFontNodeIds.current.add(nodeKey);
+        return true;
+      });
+      
+      if (newFontNodes.length > 0) {
+        lastProcessedFontCount.current = fontNodes.length;
+        onCreateFontNode(newFontNodes);
+      }
+    }
+  }, [fontNodes, onCreateFontNode]);
 
   // Trigger web preview node creation when detected, but only once per complete message
   const processedNodeIds = React.useRef<Set<string>>(new Set());

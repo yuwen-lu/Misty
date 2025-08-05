@@ -25,11 +25,13 @@ import SubImageNode from "./customNodes/SubImageNode";
 import ConfirmationPopupNode from "./customNodes/ConfirmationPopupNode";
 import DynamicUI from "./customNodes/DynamicUI";
 import WebsitePreviewNode from "./customNodes/WebsitePreviewNode";
+import FontNode from "./customNodes/FontNode";
+import TextInstructionNode from "./customNodes/TextInstructionNode";
 import CodeEditorPanel from "./CodeEditorPanel";
 import { ChatPanel } from "./chat/ChatPanel";
 import { Models } from "./chat/ChatInput";
 import InitialChatDialog from "./chat/InitialChatDialog";
-import { WebPreviewNodeData } from "./chat/ChatMessage";
+import { WebPreviewNodeData, FontNodeData } from "./chat/ChatMessage";
 
 import {
     removeEscapedChars,
@@ -62,6 +64,8 @@ const nodeTypes: NodeTypes = {
     codeRenderNode: CodeRenderNode,
     confirmationPopupNode: ConfirmationPopupNode,
     websitePreviewNode: WebsitePreviewNode,
+    fontNode: FontNode,
+    textInstructionNode: TextInstructionNode,
 };
 
 const edgeTypes = {
@@ -74,6 +78,35 @@ const initialNodes: Node[] = [
         type: "imageUploadNode",
         position: { x: 150, y: 100 },
         data: { onUpload: () => {} },
+    },
+    {
+        id: "font-instructions",
+        type: "textInstructionNode",
+        position: { x: 350, y: 100 },
+        data: {
+            title: "💡 Font Selection Tips",
+            instructions: [
+                "Choose at least one Sans Serif OR Serif as your main font",
+                "Sans Serif fonts feel modern and clean",
+                "Serif fonts add elegance and readability", 
+                "Use decorative fonts sparingly for accents"
+            ]
+        },
+    },
+    {
+        id: "font-demo",
+        type: "fontNode",
+        position: { x: 700, y: 100 },
+        data: {
+            previewText: "Modern Business Design",
+            onFontSelect: (nodeId: string, selectedFonts: { [category: string]: string }) => {
+                console.log('Font selection from demo node:', selectedFonts);
+            }
+        },
+        style: {
+            width: 700,
+            height: 750,
+        },
     },
 ];
 
@@ -296,6 +329,52 @@ const FlowComponent: React.FC = () => {
                 });
             }
         }, 100);
+    };
+
+    // Function to create FontNodes from chat API responses
+    const createFontNodes = async (fontNodesData: FontNodeData[]) => {
+        const newNodes: Node[] = [];
+        const nodeWidth = 500;
+        const nodeHeight = 650;
+        const horizontalSpacing = 100;
+        
+        for (const fontNodeData of fontNodesData) {
+            const x = currentColumn.current * (nodeWidth + horizontalSpacing) + 50;
+            const y = 50;
+            currentColumn.current++;
+            
+            const newNode: Node = {
+                id: `font-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                type: 'fontNode',
+                position: { x, y },
+                data: {
+                    previewText: fontNodeData.parameters.previewText,
+                    category: fontNodeData.parameters.category,
+                    onFontSelect: (nodeId: string, selectedFonts: { [category: string]: string }) => {
+                        console.log('Font selection:', selectedFonts);
+                        // Here you could trigger additional actions when fonts are selected
+                    }
+                },
+                style: {
+                    width: nodeWidth,
+                    height: nodeHeight,
+                },
+            };
+            
+            newNodes.push(newNode);
+        }
+        
+        if (newNodes.length > 0) {
+            setNodes((prevNodes) => [...prevNodes, ...newNodes]);
+            
+            // Zoom to fit new nodes if this is the first of a new request
+            if (!hasZoomedForCurrentRequest.current) {
+                setTimeout(() => {
+                    fitView({ padding: 0.1, maxZoom: 1.2 });
+                    hasZoomedForCurrentRequest.current = true;
+                }, 100);
+            }
+        }
     };
 
 
@@ -1344,6 +1423,7 @@ const FlowComponent: React.FC = () => {
                     initialMessage={initialMessage}
                     selectedModel={selectedModel}
                     onCreateWebPreviewNode={createWebPreviewNodes}
+                    onCreateFontNode={createFontNodes}
                     onNewChatRequest={handleNewChatRequest}
                 />
             )}

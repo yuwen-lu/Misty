@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Minimize2, Maximize2 } from 'lucide-react';
 import { ChatInput, Models } from './ChatInput';
 import { ChatMessageList, Message } from './ChatMessageList';
-import { WebPreviewNodeData } from './ChatMessage';
+import { WebPreviewNodeData, FontNodeData } from './ChatMessage';
 
 interface ChatPanelProps {
   isMinimized: boolean;
@@ -10,6 +10,7 @@ interface ChatPanelProps {
   initialMessage?: string;
   selectedModel?: Models;
   onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
+  onCreateFontNode?: (fontNodes: FontNodeData[]) => void;
   onNewChatRequest?: () => void;
 }
 
@@ -19,6 +20,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   initialMessage,
   selectedModel = Models.claudeSonnet4,
   onCreateWebPreviewNode,
+  onCreateFontNode,
   onNewChatRequest
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -239,6 +241,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
           messages={messages}
           onAddToInput={handleAddToInput}
           onCreateWebPreviewNode={onCreateWebPreviewNode}
+          onCreateFontNode={onCreateFontNode}
         />
         
         {isLoading && (
