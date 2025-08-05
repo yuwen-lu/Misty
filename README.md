@@ -41,13 +41,14 @@ If you prefer to run the application without Docker, you will need the following
 
 ## Setup Environment Variables
 
-Create a `.env.local` file in the root directory with the following environment variable:
+Create a `.env.local` file in the root directory with the following environment variables:
 
 ```plaintext
 OPENAI_API_KEY=your_openai_api_key_here
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
 ```
 
-Replace `your_openai_api_key_here` with your actual OpenAI API key.
+Replace `your_openai_api_key_here` with your actual OpenAI API key and `your_anthropic_api_key_here` with your actual Anthropic API key.
 
 ## Installation
 
@@ -108,9 +109,16 @@ The application now includes the following API endpoints:
 - `GET /api/test` - Test endpoint to verify the API is working
 - `GET /api/healthz` - Health check endpoint
 - `POST /api/chat` - Main chat endpoint for OpenAI interactions with streaming support
+- `POST /api/design-chat` - Design assistant endpoint using Claude (Anthropic) with streaming support
 
 ## Troubleshooting
 
 - If you encounter any issues with Docker, ensure that Docker is installed and running correctly.
 - For manual setup, ensure all prerequisites are installed, and environment paths are set correctly.
-- Make sure to set the `OPENAI_API_KEY` environment variable in your `.env.local` file.
+- Make sure to set both `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` environment variables in your `.env.local` file.
+
+## Design Education Pedagogy
+
+- Bauhaus Method
+- Constructive Critique
+- Double Diamond Process

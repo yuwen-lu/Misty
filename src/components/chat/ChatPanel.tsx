@@ -232,7 +232,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="px-4 pb-4 pt-2">
         <ChatInput
           input={input}
           setInput={setInput}

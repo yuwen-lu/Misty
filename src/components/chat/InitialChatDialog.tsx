@@ -30,7 +30,7 @@ const InitialChatDialog: React.FC<InitialChatDialogProps> = ({ onStartChat, onCl
   ] as const;
 
   const suggestedPrompts = [
-    "I want to create a portfolio website for a photographer",
+    "Create a portfolio website for a photographer",
     "Help me design a modern e-commerce site for clothing",
     "I need a landing page for a tech startup",
     "Create a blog layout for food recipes"
@@ -46,7 +46,7 @@ const InitialChatDialog: React.FC<InitialChatDialogProps> = ({ onStartChat, onCl
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Send a message."
+              placeholder="What do you want to design today?"
               className="w-full resize-none border-none outline-none text-gray-700 placeholder-gray-400 bg-transparent"
               rows={1}
               style={{ minHeight: '24px', maxHeight: '120px' }}
