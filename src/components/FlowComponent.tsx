@@ -28,6 +28,7 @@ import WebsitePreviewNode from "./customNodes/WebsitePreviewNode";
 import FontNode from "./customNodes/FontNode";
 import TextInstructionNode from "./customNodes/TextInstructionNode";
 import DesignNotesNode from "./customNodes/DesignNotesNode";
+import DesignCritiqueNode from "./customNodes/DesignCritiqueNode";
 import CodeEditorPanel from "./CodeEditorPanel";
 import { ChatPanel } from "./chat/ChatPanel";
 import { Models } from "./chat/ChatInput";
@@ -69,6 +70,7 @@ const nodeTypes: NodeTypes = {
     fontNode: FontNode,
     textInstructionNode: TextInstructionNode,
     designNotesNode: DesignNotesNode,
+    designCritiqueNode: DesignCritiqueNode,
 };
 
 const edgeTypes = {
@@ -336,7 +338,8 @@ const FlowComponent: React.FC = () => {
                             )
                         );
                     },
-                    onShowFeedbackPopup: handleShowFeedbackPopup
+                    onShowFeedbackPopup: handleShowFeedbackPopup,
+                    onGenerateCritique: handleGenerateCritique
                 },
                 style: { width: nodeWidth, height: nodeHeight },
             });
@@ -468,7 +471,6 @@ const FlowComponent: React.FC = () => {
             id: `edge-${sourceNodeId}-${notesNodeId}`,
             source: sourceNodeId,
             target: notesNodeId,
-            sourceHandle: 'b', // Right handle of WebPreview node
             animated: true,
             style: { stroke: '#10b981', strokeWidth: 2 }
         };
@@ -476,6 +478,103 @@ const FlowComponent: React.FC = () => {
         // Add node and edge to the flow
         setNodes(prevNodes => [...prevNodes, newNotesNode]);
         setEdges(prevEdges => [...prevEdges, newEdge]);
+    };
+
+    // Function to create design critique node connected to WebPreview node
+    const handleGenerateCritique = async (sourceNodeId: string, websiteUrl: string, screenshotUrl: string) => {
+        console.log("Generating critique for website:", websiteUrl);
+        console.log("sourceNodeId:", sourceNodeId);
+        const sourceNode = nodes.find(node => node.id === sourceNodeId);
+        if (!sourceNode) return;
+
+        // Position the critique node below the notes node area
+        const critiqueNodeId = `design-critique-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const critiqueX = sourceNode.position.x + 1380; // WebPreview width (1280) + small gap (100)
+        const critiqueY = sourceNode.position.y + 350; // Below notes nodes
+        
+        // Create the critique node with loading state first
+        const newCritiqueNode: Node = {
+            id: critiqueNodeId,
+            type: 'designCritiqueNode',
+            position: { x: critiqueX, y: critiqueY },
+            data: {
+                critique: '', // Start empty, will be filled by API
+                websiteUrl,
+                timestamp: new Date()
+            }
+        };
+
+        // Create edge connecting WebPreview to Critique
+        const newEdge: Edge = {
+            id: `edge-${sourceNodeId}-${critiqueNodeId}`,
+            source: sourceNodeId,
+            target: critiqueNodeId,
+            animated: true,
+            style: { stroke: '#3b82f6', strokeWidth: 2 }
+        };
+
+        // Add node and edge to the flow first (with loading state)
+        setNodes(prevNodes => [...prevNodes, newCritiqueNode]);
+        setEdges(prevEdges => [...prevEdges, newEdge]);
+
+        // Convert screenshot URL to base64
+        const convertImageToBase64 = async (imageUrl: string): Promise<string> => {
+            console.log("Converting image to base64:", imageUrl);
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx?.drawImage(img, 0, 0);
+                    const dataURL = canvas.toDataURL('image/png');
+                    resolve(dataURL);
+                };
+                img.onerror = () => reject(new Error('Failed to load image'));
+                img.src = imageUrl;
+            });
+        };
+
+        // Make API call to get critique
+        try {
+            const screenshotBase64 = await convertImageToBase64(screenshotUrl);
+            console.log("Screenshot base64:", screenshotBase64.slice(0, 100));
+            const response = await fetch('/api/design-critique', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    websiteUrl,
+                    screenshotBase64
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.critique) {
+                // Update the node with the actual critique
+                setNodes(prevNodes => 
+                    prevNodes.map(node => 
+                        node.id === critiqueNodeId 
+                            ? { ...node, data: { ...node.data, critique: data.critique } }
+                            : node
+                    )
+                );
+            }
+        } catch (error) {
+            console.error('Error generating critique:', error);
+            // Update node with error message
+            setNodes(prevNodes => 
+                prevNodes.map(node => 
+                    node.id === critiqueNodeId 
+                        ? { ...node, data: { ...node.data, critique: 'Sorry, I encountered an error while analyzing this design. Please try again.' } }
+                        : node
+                )
+            );
+        }
     };
 
 

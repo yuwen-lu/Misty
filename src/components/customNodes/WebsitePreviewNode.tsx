@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
-import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuAlertCircle, LuPenTool } from 'react-icons/lu';
+import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuPenTool, LuEye } from 'react-icons/lu';
+import { CircleAlert } from 'lucide-react';
 import { useCoins } from '../../contexts/CoinContext';
 
 const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
@@ -11,7 +12,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [screenshotUrl, setScreenshotUrl] = useState<string>('');
   const [hasVisited, setHasVisited] = useState<boolean>(false);
   
-  const { celebrateCoins } = useCoins();
+  const { celebrateCoins, celebrateCoinsWithMessage } = useCoins();
 
   const formatUrl = (inputUrl: string): string => {
     if (!inputUrl) return '';
@@ -82,6 +83,15 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const handleTakeNotes = () => {
     if (url && data.onShowFeedbackPopup) {
       data.onShowFeedbackPopup(id, url);
+    }
+  };
+
+  const handleReadCritique = async () => {
+    if (url && screenshotUrl && data.onGenerateCritique) {
+      celebrateCoins(1);
+      console.log("Generating critique for website:", url);
+      console.log("node id:", id);
+      data.onGenerateCritique(id, url, screenshotUrl);
     }
   };
 
@@ -171,7 +181,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         </div>
         {error && (
           <div className="text-red-500 text-sm mt-1 flex items-center gap-1">
-            <LuAlertCircle size={16} />
+            <CircleAlert size={16} />
             {error}
           </div>
         )}
@@ -211,7 +221,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
             {!screenshotUrl && !isLoading && (
               <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 p-8">
                 <LuImage size={48} className="mb-2" />
-                <div className="text-center">Click "Load" to preview the website</div>
+                <div className="text-center">Click &quot;Load&quot; to preview the website</div>
               </div>
             )}
           </div>
@@ -237,6 +247,13 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
             >
               <LuPenTool size={16} />
               Take Notes <span className="text-sm font-mono">(+2💎)</span>
+            </button>
+            <button
+              onClick={handleReadCritique}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors font-semibold"
+            >
+              <LuEye size={16} />
+              Read Critique <span className="text-sm font-mono">(+1💎)</span>
             </button>
           </div>
         </>

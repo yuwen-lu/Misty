@@ -65,6 +65,7 @@
     ]
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/clarinet": "^0.12.3",
     "@types/react-color": "^3.0.12",
     "eslint": "^8",

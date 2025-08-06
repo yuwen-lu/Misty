@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useCoins } from '../contexts/CoinContext';
-import confetti from 'canvas-confetti';
+import { celebrate } from '../utils/celebration';
 
 interface DesignFeedbackPopupProps {
   isVisible: boolean;
@@ -23,63 +23,12 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
   const celebrateFeedback = (amount: number) => {
     addCoins(amount);
     
-    // Trigger confetti celebration
-    const colors = ['#FFD700', '#00FF00', '#0099FF', '#FF6B6B', '#9B59B6'];
-    
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: colors,
+    // Use the reusable celebration utility
+    celebrate({
+      message: 'Great feedback!',
+      amount,
+      showDiamonds: true
     });
-
-    // Add a second burst after slight delay
-    setTimeout(() => {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 },
-        colors: colors,
-      });
-    }, 200);
-
-    // Show celebration text without "Website opening..."
-    const celebrationDiv = document.createElement('div');
-    celebrationDiv.innerHTML = `
-      <div style="
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        color: #059669;
-        padding: 20px 40px;
-        border-radius: 50px;
-        font-size: 2.5rem;
-        font-weight: bold;
-        font-family: monospace;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        border: 4px solid #059669;
-        z-index: 9999;
-        animation: bounce 0.6s ease-out;
-      ">
-        You earned ${amount} 💎!
-      </div>
-      <style>
-        @keyframes bounce {
-          0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
-          50% { transform: translate(-50%, -50%) scale(1.1); }
-          100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-      </style>
-    `;
-    
-    document.body.appendChild(celebrationDiv);
-    
-    // Remove the celebration text after 2 seconds
-    setTimeout(() => {
-      document.body.removeChild(celebrationDiv);
-    }, 2000);
   };
 
   const handleSubmit = async () => {
@@ -113,7 +62,7 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
       <div className="bg-yellow-50 rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-yellow-700 p-6 max-w-md w-full mx-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-yellow-900">
-            Document your learnings
+            How did you like it?
           </h3>
           <button
             onClick={handleClose}
