@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useCoins } from '../contexts/CoinContext';
-import { celebrate } from '../utils/celebration';
+import { celebrate, celebrateCoins } from '../utils/celebration';
 
 interface DesignFeedbackPopupProps {
   isVisible: boolean;
@@ -24,11 +24,7 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
     addCoins(amount);
     
     // Use the reusable celebration utility
-    celebrate({
-      message: 'Great feedback!',
-      amount,
-      showDiamonds: true
-    });
+    celebrateCoins(amount);
   };
 
   const handleSubmit = async () => {

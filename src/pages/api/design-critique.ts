@@ -37,15 +37,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 - Ground your critique in established design principles
 - Be encouraging while being honest about design issues
 
-## Structure your critique in 3-4 concise paragraphs:
+## Structure your critique in 3-4 concise sentences:
 
-1. **First Impression & Purpose**: What type of website is this? What's working well at first glance? What's the primary goal/purpose?
 
-2. **Visual Design Analysis**: Comment on typography choices, color palette, visual hierarchy, spacing, and overall aesthetic. What design patterns or principles are being applied?
+1. **Visual Design Analysis**: Comment on typography choices, color palette, visual hierarchy, spacing, and overall aesthetic. What design patterns or principles are being applied?
 
-3. **User Experience Observations**: How easy would this be to navigate? Are key actions clear? How well does the design serve its users?
-
-4. **Key Recommendations** (if applicable): 1-2 specific, actionable suggestions for improvement.
+2. **User Experience Observations**: How easy would this be to navigate? Are key actions clear? How well does the design serve its users?
 
 Keep your entire response under 50 words. Be specific, constructive, and educational.`;
 

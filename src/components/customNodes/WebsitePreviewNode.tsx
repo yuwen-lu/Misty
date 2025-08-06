@@ -259,6 +259,17 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         </>
       )}
 
+      {/* Minimal handle for connections */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{
+          background: '#fbbf24',
+          width: '12px',
+          height: '12px',
+          border: '2px solid white',
+        }}
+      />
       
       {url && (
         <NodeResizeControl

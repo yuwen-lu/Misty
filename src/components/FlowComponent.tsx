@@ -168,6 +168,27 @@ const FlowComponent: React.FC = () => {
         };
     }, [abortController]);
 
+    // Add initial WebsitePreviewNode on mount
+    useEffect(() => {
+        // Small delay to ensure all handlers are ready
+        setTimeout(() => {
+            const initialWebPreviewNode: Node = {
+                id: "web-preview-initial",
+                type: "websitePreviewNode",
+                position: { x: 600, y: 100 },
+                data: { 
+                    url: "https://yuwen.io",
+                    annotation: "A clean, minimalist portfolio design showcasing thoughtful typography and effective use of whitespace",
+                    onShowFeedbackPopup: handleShowFeedbackPopup,
+                    onGenerateCritique: handleGenerateCritique
+                },
+                style: { width: 1280, height: 950 },
+            };
+            
+            setNodes((nds) => [...nds, initialWebPreviewNode]);
+        }, 100);
+    }, []); // Empty dependency array means this runs once on mount
+
     const toggleCodePanelVisible = () => {
         setCodePanelVisible(!codePanelVisible);
     };
@@ -484,13 +505,27 @@ const FlowComponent: React.FC = () => {
     const handleGenerateCritique = async (sourceNodeId: string, websiteUrl: string, screenshotUrl: string) => {
         console.log("Generating critique for website:", websiteUrl);
         console.log("sourceNodeId:", sourceNodeId);
-        const sourceNode = nodes.find(node => node.id === sourceNodeId);
-        if (!sourceNode) return;
+        
+        // First, get the source node position
+        let sourceNodePosition: { x: number; y: number } | null = null;
+        
+        setNodes((currentNodes) => {
+            const sourceNode = currentNodes.find(node => node.id === sourceNodeId);
+            if (sourceNode) {
+                sourceNodePosition = sourceNode.position;
+            }
+            return currentNodes;
+        });
+        
+        if (!sourceNodePosition) {
+            console.error("Source node not found!");
+            return;
+        }
 
         // Position the critique node below the notes node area
         const critiqueNodeId = `design-critique-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const critiqueX = sourceNode.position.x + 1380; // WebPreview width (1280) + small gap (100)
-        const critiqueY = sourceNode.position.y + 350; // Below notes nodes
+        const critiqueX = sourceNodePosition.x + 1380; // WebPreview width (1280) + small gap (100)
+        const critiqueY = sourceNodePosition.y + 350; // Below notes nodes
         
         // Create the critique node with loading state first
         const newCritiqueNode: Node = {
@@ -539,8 +574,13 @@ const FlowComponent: React.FC = () => {
 
         // Make API call to get critique
         try {
+            console.log("Starting API call for critique...");
+            console.log("Screenshot URL:", screenshotUrl);
             const screenshotBase64 = await convertImageToBase64(screenshotUrl);
-            console.log("Screenshot base64:", screenshotBase64.slice(0, 100));
+            console.log("Screenshot base64 length:", screenshotBase64.length);
+            console.log("Screenshot base64 preview:", screenshotBase64.slice(0, 100));
+            
+            console.log("Making API request to /api/design-critique...");
             const response = await fetch('/api/design-critique', {
                 method: 'POST',
                 headers: {
@@ -552,7 +592,9 @@ const FlowComponent: React.FC = () => {
                 })
             });
 
+            console.log("API response status:", response.status);
             const data = await response.json();
+            console.log("API response data:", data);
             
             if (data.critique) {
                 // Update the node with the actual critique
