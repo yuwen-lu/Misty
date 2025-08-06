@@ -67,24 +67,24 @@ const DesignCritiqueNode: React.FC<DesignCritiqueNodeProps> = ({ id, data }) => 
       <div className="bg-blue-50 px-4 py-3 border-b border-blue-200 rounded-t-lg">
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <h3 className="font-semibold text-blue-800 text-sm flex items-center">
+            <h3 className="font-semibold text-blue-800 text-md flex items-center">
               <span className="mr-2">🎨</span>
               Design Critique
             </h3>
             {persona && (
-              <p className="text-xs text-blue-600 mt-2 font-medium">
+              <p className="text-md text-blue-600 mt-2 font-medium">
                 From {persona}&apos;s Perspective
               </p>
             )}
           </div>
           {timestamp && (
-            <div className="text-xs text-blue-600">
+            <div className="text-md text-blue-600">
               {formatTimestamp(timestamp)}
             </div>
           )}
         </div>
         {/* {websiteUrl && (
-          <p className="text-xs text-blue-600 mt-1 break-all">
+          <p className="text-md text-blue-600 mt-1 break-all">
             {new URL(websiteUrl).hostname}
           </p>
         )} */}
@@ -93,11 +93,11 @@ const DesignCritiqueNode: React.FC<DesignCritiqueNodeProps> = ({ id, data }) => 
       {/* Content */}
       <div className="p-4 space-y-3">
         {critique ? (
-          <div className="text-sm text-gray-600 whitespace-pre-wrap">
+          <div className="text-md text-gray-600 whitespace-pre-wrap">
             {critique}
           </div>
         ) : (
-          <p className="text-sm text-gray-400">Generating critique...</p>
+          <p className="text-md text-gray-400">Generating critique...</p>
         )}
       </div>
     </div>
