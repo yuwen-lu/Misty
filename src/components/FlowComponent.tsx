@@ -27,6 +27,7 @@ import DynamicUI from "./customNodes/DynamicUI";
 import WebsitePreviewNode from "./customNodes/WebsitePreviewNode";
 import FontNode from "./customNodes/FontNode";
 import TextInstructionNode from "./customNodes/TextInstructionNode";
+import DesignNotesNode from "./customNodes/DesignNotesNode";
 import CodeEditorPanel from "./CodeEditorPanel";
 import { ChatPanel } from "./chat/ChatPanel";
 import { Models } from "./chat/ChatInput";
@@ -53,6 +54,7 @@ import {
     CategorizedChange,
 } from "../prompts";
 import ErrorPopup from "./ErrorPopup";
+import DesignFeedbackPopup from "./DesignFeedbackPopup";
 import { BookList } from "./renderCode/BookList";
 import ButtonEdge from "./ButtonEdge";
 
@@ -66,6 +68,7 @@ const nodeTypes: NodeTypes = {
     websitePreviewNode: WebsitePreviewNode,
     fontNode: FontNode,
     textInstructionNode: TextInstructionNode,
+    designNotesNode: DesignNotesNode,
 };
 
 const edgeTypes = {
@@ -148,6 +151,11 @@ const FlowComponent: React.FC = () => {
     const [initialMessage, setInitialMessage] = useState<string>('');
     const [selectedModel, setSelectedModel] = useState<Models>(Models.claudeSonnet4);
     
+    // Design feedback states
+    const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+    const [currentFeedbackNodeId, setCurrentFeedbackNodeId] = useState<string>('');
+    const [currentFeedbackUrl, setCurrentFeedbackUrl] = useState<string>('');
+    
 
     useEffect(() => {
         // Cleanup on unmount
@@ -177,6 +185,27 @@ const FlowComponent: React.FC = () => {
 
     const handleToggleChatMinimize = () => {
         setIsChatMinimized(!isChatMinimized);
+    };
+
+    // Design feedback handlers
+    const handleShowFeedbackPopup = (nodeId: string, websiteUrl: string) => {
+        setCurrentFeedbackNodeId(nodeId);
+        setCurrentFeedbackUrl(websiteUrl);
+        setShowFeedbackPopup(true);
+    };
+
+    const handleFeedbackSubmit = (feedback: { liked: string; disliked: string }) => {
+        // Create notes node connected to the WebPreview node
+        createDesignNotesNode(currentFeedbackNodeId, currentFeedbackUrl, feedback);
+        setShowFeedbackPopup(false);
+        setCurrentFeedbackNodeId('');
+        setCurrentFeedbackUrl('');
+    };
+
+    const handleFeedbackClose = () => {
+        setShowFeedbackPopup(false);
+        setCurrentFeedbackNodeId('');
+        setCurrentFeedbackUrl('');
     };
 
     // Simple function to center canvas view on a position
@@ -252,7 +281,7 @@ const FlowComponent: React.FC = () => {
         const newNodes: Node[] = [];
         const nodeWidth = 1280; // Match default WebsitePreviewNode width
         const nodeHeight = 950; // Increased to accommodate header, annotation, and controls
-        const horizontalSpacing = 100; // Space between columns
+        const horizontalSpacing = 700; // Increased space to accommodate notes nodes
         const verticalSpacing = 250; // Space between rows
 
         let firstNodePosition: { x: number, y: number } | null = null;
@@ -306,7 +335,8 @@ const FlowComponent: React.FC = () => {
                                     : node
                             )
                         );
-                    }
+                    },
+                    onShowFeedbackPopup: handleShowFeedbackPopup
                 },
                 style: { width: nodeWidth, height: nodeHeight },
             });
@@ -410,6 +440,42 @@ const FlowComponent: React.FC = () => {
         if (newNodes.length > 0) {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
         }
+    };
+
+    // Function to create design notes node connected to WebPreview node
+    const createDesignNotesNode = (sourceNodeId: string, websiteUrl: string, feedback: { liked: string; disliked: string }) => {
+        const sourceNode = nodes.find(node => node.id === sourceNodeId);
+        if (!sourceNode) return;
+
+        // Position the notes node to the right of the WebPreview node
+        const notesNodeId = `design-notes-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const notesX = sourceNode.position.x + 1380; // WebPreview width (1280) + small gap (100)
+        const notesY = sourceNode.position.y + 50; // Slightly offset vertically
+        
+        const newNotesNode: Node = {
+            id: notesNodeId,
+            type: 'designNotesNode',
+            position: { x: notesX, y: notesY },
+            data: {
+                feedback,
+                websiteUrl,
+                timestamp: new Date()
+            }
+        };
+
+        // Create edge connecting WebPreview to Notes
+        const newEdge: Edge = {
+            id: `edge-${sourceNodeId}-${notesNodeId}`,
+            source: sourceNodeId,
+            target: notesNodeId,
+            sourceHandle: 'b', // Right handle of WebPreview node
+            animated: true,
+            style: { stroke: '#10b981', strokeWidth: 2 }
+        };
+
+        // Add node and edge to the flow
+        setNodes(prevNodes => [...prevNodes, newNotesNode]);
+        setEdges(prevEdges => [...prevEdges, newEdge]);
     };
 
 
@@ -1463,6 +1529,14 @@ const FlowComponent: React.FC = () => {
                     onCenterCanvas={handleCenterOnPosition}
                 />
             )}
+            
+            {/* Design Feedback Popup */}
+            <DesignFeedbackPopup
+                isVisible={showFeedbackPopup}
+                onClose={handleFeedbackClose}
+                onSubmit={handleFeedbackSubmit}
+                websiteUrl={currentFeedbackUrl}
+            />
             
             {/* <TSXDiff /> */}
         </div>

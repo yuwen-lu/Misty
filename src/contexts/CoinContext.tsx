@@ -80,6 +80,8 @@ export const CoinProvider: React.FC<{ children: React.ReactNode }> = ({ children
         animation: bounce 0.6s ease-out;
       ">
         You earned ${amount} 💎!
+        <br />
+        Website opening...
       </div>
       <style>
         @keyframes bounce {

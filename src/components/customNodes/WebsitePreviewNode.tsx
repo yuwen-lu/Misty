@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
-import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuAlertCircle } from 'react-icons/lu';
+import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuAlertCircle, LuPenTool } from 'react-icons/lu';
 import { useCoins } from '../../contexts/CoinContext';
 
 const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
@@ -9,6 +9,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [screenshotUrl, setScreenshotUrl] = useState<string>('');
+  const [hasVisited, setHasVisited] = useState<boolean>(false);
   
   const { celebrateCoins } = useCoins();
 
@@ -52,13 +53,35 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
   const handleOpenInNewTab = () => {
     if (url) {
-      // Trigger celebration with confetti and coin reward
+      // Mark as visited and trigger celebration
+      setHasVisited(true);
       celebrateCoins(1);
+      
+      // Track window visibility to detect return
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && hasVisited) {
+          // User returned - show feedback popup
+          if (data.onShowFeedbackPopup) {
+            data.onShowFeedbackPopup(id, url);
+          }
+          // Clean up listener
+          document.removeEventListener('visibilitychange', handleVisibilityChange);
+        }
+      };
+      
+      // Add visibility listener
+      document.addEventListener('visibilitychange', handleVisibilityChange);
       
       // Open website after delay
       setTimeout(() => {
         window.open(url, '_blank', 'noopener,noreferrer');
       }, 1000);
+    }
+  };
+
+  const handleTakeNotes = () => {
+    if (url && data.onShowFeedbackPopup) {
+      data.onShowFeedbackPopup(id, url);
     }
   };
 
@@ -178,8 +201,8 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
                   title={`Click to open ${url}`}
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center cursor-pointer" onClick={handleOpenInNewTab}>
-                  <div className="text-white text-3xl font-bold font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                    Inspect This Design (+1💎)
+                  <div className="text-white text-3xl font-bold font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center flex items-center gap-2">
+                      <LuExternalLink className="mr-2" size={36} /> Inspect Design (+1💎)
                   </div>
                 </div>
               </>
@@ -206,28 +229,19 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
               className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"
             >
               <LuExternalLink size={16} />
-              Inspect This Design <span className="text-sm font-mono">(+1💎)</span>
+              Inspect Design <span className="text-sm font-mono">(+1💎)</span>
+            </button>
+            <button
+              onClick={handleTakeNotes}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors font-semibold"
+            >
+              <LuPenTool size={16} />
+              Take Notes <span className="text-sm font-mono">(+2💎)</span>
             </button>
           </div>
         </>
       )}
 
-      <Handle
-        className="bg-yellow-700 opacity-50"
-        style={{
-          width: '20px',
-          height: '60px',
-          borderRadius: '5px',
-          borderWidth: '2px',
-          borderColor: 'white',
-          borderStyle: 'solid',
-          marginRight: '-5px',
-        }}
-        type="source"
-        position={Position.Right}
-        id="b"
-        isConnectable={true}
-      />
       
       {url && (
         <NodeResizeControl
