@@ -37,21 +37,37 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     const jsonBlocks = content.match(/```json\n([\s\S]*?)```/g);
     if (!jsonBlocks) return;
     
+    // Collect all tools by type
+    const webPreviewNodes: any[] = [];
+    const fontNodes: any[] = [];
+    const textInstructionNodes: any[] = [];
+    
     for (const block of jsonBlocks) {
       try {
         const jsonContent = block.replace(/```json\n/, '').replace(/```$/, '');
         const parsed = JSON.parse(jsonContent);
         
-        if (parsed.tool === 'createWebPreviewNode' && parsed.parameters && onCreateWebPreviewNode) {
-          onCreateWebPreviewNode([parsed]);
-        } else if (parsed.tool === 'createFontNode' && parsed.parameters && onCreateFontNode) {
-          onCreateFontNode([parsed]);
-        } else if (parsed.tool === 'createTextInstructionNode' && parsed.parameters && onCreateTextInstructionNode) {
-          onCreateTextInstructionNode([parsed]);
+        if (parsed.tool === 'createWebPreviewNode' && parsed.parameters) {
+          webPreviewNodes.push(parsed);
+        } else if (parsed.tool === 'createFontNode' && parsed.parameters) {
+          fontNodes.push(parsed);
+        } else if (parsed.tool === 'createTextInstructionNode' && parsed.parameters) {
+          textInstructionNodes.push(parsed);
         }
       } catch (e) {
         console.warn('Failed to parse tool call:', e);
       }
+    }
+    
+    // Execute tool functions with batched tools
+    if (webPreviewNodes.length > 0 && onCreateWebPreviewNode) {
+      onCreateWebPreviewNode(webPreviewNodes);
+    }
+    if (fontNodes.length > 0 && onCreateFontNode) {
+      onCreateFontNode(fontNodes);
+    }
+    if (textInstructionNodes.length > 0 && onCreateTextInstructionNode) {
+      onCreateTextInstructionNode(textInstructionNodes);
     }
   };
 

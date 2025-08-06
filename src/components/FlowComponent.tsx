@@ -364,10 +364,14 @@ const FlowComponent: React.FC = () => {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
             
             // Zoom to fit new nodes if this is the first of a new request
-            if (!hasZoomedForCurrentRequest.current) {
+            if (!hasZoomedForCurrentRequest.current && newNodes.length > 0) {
                 setTimeout(() => {
-                    fitView({ padding: 0.1, maxZoom: 1.2 });
                     hasZoomedForCurrentRequest.current = true;
+                    fitView({ 
+                        nodes: [newNodes[0]],
+                        duration: 800,
+                        padding: 0.2
+                    });
                 }, 100);
             }
         }
@@ -403,10 +407,14 @@ const FlowComponent: React.FC = () => {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
             
             // Zoom to fit new nodes if this is the first of a new request
-            if (!hasZoomedForCurrentRequest.current) {
+            if (!hasZoomedForCurrentRequest.current && newNodes.length > 0) {
                 setTimeout(() => {
-                    fitView({ padding: 0.1, maxZoom: 1.2 });
                     hasZoomedForCurrentRequest.current = true;
+                    fitView({ 
+                        nodes: [newNodes[0]],
+                        duration: 800,
+                        padding: 0.2
+                    });
                 }, 100);
             }
         }
