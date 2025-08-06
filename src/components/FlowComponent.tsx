@@ -507,20 +507,13 @@ const FlowComponent: React.FC = () => {
         console.log("sourceNodeId:", sourceNodeId);
         
         // First, get the source node position
-        let sourceNodePosition: { x: number; y: number } | null = null;
-        
-        setNodes((currentNodes) => {
-            const sourceNode = currentNodes.find(node => node.id === sourceNodeId);
-            if (sourceNode) {
-                sourceNodePosition = sourceNode.position;
-            }
-            return currentNodes;
-        });
-        
-        if (!sourceNodePosition) {
+        const sourceNode = nodes.find(node => node.id === sourceNodeId);
+        if (!sourceNode) {
             console.error("Source node not found!");
             return;
         }
+        
+        const sourceNodePosition = sourceNode.position;
 
         // Position the critique node below the notes node area
         const critiqueNodeId = `design-critique-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

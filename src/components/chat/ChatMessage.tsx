@@ -3,6 +3,7 @@ import { User, Bot } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { PotentialUsersChips } from './PotentialUsersChips';
+import { ToolCallWidget, ToolCall } from './ToolCallWidget';
 
 export type ChatMessageRole = 'user' | 'assistant';
 
@@ -37,13 +38,17 @@ interface ChatMessageProps {
   content: string;
   timestamp?: Date;
   onAddToInput?: (text: string) => void;
+  toolCalls?: ToolCall[];
+  onNavigateToCanvas?: (x: number, y: number) => void;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ 
   role, 
   content, 
   timestamp,
-  onAddToInput
+  onAddToInput,
+  toolCalls,
+  onNavigateToCanvas
 }) => {
   // Parse content to extract and format JSON blocks and detect potentialUsers
   const { processedContent, potentialUsers } = useMemo(() => {
@@ -57,6 +62,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         if (parsed.potentialUsers && Array.isArray(parsed.potentialUsers)) {
           users = parsed.potentialUsers;
           // Hide the JSON block since we'll show chips instead
+          return '';
+        }
+        
+        // Check if this JSON contains tool calls (hide since we show widgets instead)
+        if (parsed.tool && typeof parsed.tool === 'string') {
+          // This is a tool call JSON block, hide it
           return '';
         }
         
@@ -145,6 +156,19 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             users={potentialUsers} 
             onChipClick={handleChipClick}
           />
+        )}
+        
+        {/* Tool Call Widgets */}
+        {toolCalls && toolCalls.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {toolCalls.map((toolCall) => (
+              <ToolCallWidget
+                key={toolCall.id}
+                toolCall={toolCall}
+                onNavigate={onNavigateToCanvas}
+              />
+            ))}
+          </div>
         )}
         
         {timestamp && (

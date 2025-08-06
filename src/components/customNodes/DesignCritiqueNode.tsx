@@ -73,7 +73,7 @@ const DesignCritiqueNode: React.FC<DesignCritiqueNodeProps> = ({ id, data }) => 
             </h3>
             {persona && (
               <p className="text-xs text-blue-600 mt-2 font-medium">
-                From {persona}'s Perspective
+                From {persona}&apos;s Perspective
               </p>
             )}
           </div>

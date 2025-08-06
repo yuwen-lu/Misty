@@ -3,6 +3,7 @@ import { Minimize2, Maximize2 } from 'lucide-react';
 import { ChatInput, Models } from './ChatInput';
 import { ChatMessageList, Message } from './ChatMessageList';
 import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from './ChatMessage';
+import { ToolCall } from './ToolCallWidget';
 
 interface ChatPanelProps {
   isMinimized: boolean;
@@ -33,14 +34,15 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   const hasProcessedInitialMessage = useRef(false);
   
   // Function to parse and execute tool calls from API response
-  const executeToolCalls = async (content: string) => {
+  const executeToolCalls = async (content: string): Promise<ToolCall[]> => {
     const jsonBlocks = content.match(/```json\n([\s\S]*?)```/g);
-    if (!jsonBlocks) return;
+    if (!jsonBlocks) return [];
     
     // Collect all tools by type
     const webPreviewNodes: any[] = [];
     const fontNodes: any[] = [];
     const textInstructionNodes: any[] = [];
+    const toolCalls: ToolCall[] = [];
     
     for (const block of jsonBlocks) {
       try {
@@ -73,18 +75,55 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       }
     };
     
-    // Execute tool functions with batched tools - WebPreview first since they're most common
+    // Execute tool functions with batched tools and track created nodes
     if (webPreviewNodes.length > 0 && onCreateWebPreviewNode) {
+      const nodePositions: Array<{id: string; position: { x: number; y: number }}>  = [];
+      
+      // We need to simulate the positions since we don't have direct access to the actual node creation
+      let baseX = 2500, baseY = 200;
+      webPreviewNodes.forEach((_, index) => {
+        nodePositions.push({
+          id: `web-preview-${Date.now()}-${index}`,
+          position: { x: baseX + (index % 2) * 1980, y: baseY + Math.floor(index / 2) * 1200 }
+        });
+      });
+      
+      toolCalls.push({
+        id: `web-preview-${Date.now()}`,
+        toolName: 'createWebPreviewNode',
+        description: `${webPreviewNodes.length} website preview${webPreviewNodes.length > 1 ? 's' : ''} created`,
+        nodesCreated: nodePositions,
+        isClickable: true
+      });
+      
       onCreateWebPreviewNode(webPreviewNodes, handleFirstNode);
     }
+    
     if (fontNodes.length > 0 && onCreateFontNode && !hasHandledFirstNode) {
+      toolCalls.push({
+        id: `font-${Date.now()}`,
+        toolName: 'createFontNode',
+        description: `${fontNodes.length} font selection tool${fontNodes.length > 1 ? 's' : ''} created`,
+        nodesCreated: [],
+        isClickable: false
+      });
+      
       onCreateFontNode(fontNodes);
-      // Note: FontNodes don't have position callback yet, but WebPreview takes priority
     }
+    
     if (textInstructionNodes.length > 0 && onCreateTextInstructionNode && !hasHandledFirstNode) {
+      toolCalls.push({
+        id: `text-instruction-${Date.now()}`,
+        toolName: 'createTextInstructionNode',
+        description: `${textInstructionNodes.length} design instruction${textInstructionNodes.length > 1 ? 's' : ''} created`,
+        nodesCreated: [],
+        isClickable: false
+      });
+      
       onCreateTextInstructionNode(textInstructionNodes);
-      // Note: TextInstructionNodes don't have position callback yet, but WebPreview takes priority
     }
+    
+    return toolCalls;
   };
 
   const scrollToBottom = () => {
@@ -151,7 +190,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
             const { done, value } = await reader.read();
             if (done) {
               // Execute any tool calls found in the complete response
-              await executeToolCalls(accumulatedContent);
+              const toolCalls = await executeToolCalls(accumulatedContent);
+              // Update the message with tool calls
+              setMessages(prev => prev.map(msg => 
+                msg.id === assistantMessage.id 
+                  ? { ...msg, content: accumulatedContent, toolCalls }
+                  : msg
+              ));
               break;
             }
 
@@ -238,7 +283,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         const { done, value } = await reader.read();
         if (done) {
           // Execute any tool calls found in the complete response
-          await executeToolCalls(accumulatedContent);
+          const toolCalls = await executeToolCalls(accumulatedContent);
+          // Update the message with tool calls
+          setMessages(prev => prev.map(msg => 
+            msg.id === assistantMessage.id 
+              ? { ...msg, content: accumulatedContent, toolCalls }
+              : msg
+          ));
           break;
         }
 
@@ -301,6 +352,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
         <ChatMessageList
           messages={messages}
           onAddToInput={handleAddToInput}
+          onNavigateToCanvas={onCenterCanvas}
         />
         
         {isLoading && (
