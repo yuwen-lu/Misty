@@ -56,7 +56,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     if (url) {
       // Mark as visited and trigger celebration
       setHasVisited(true);
-      celebrateCoins(1);
+      celebrateCoinsWithMessage(1, "Website opening...");
       
       // Track window visibility to detect return
       const handleVisibilityChange = () => {

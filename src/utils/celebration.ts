@@ -1,43 +1,43 @@
-import confetti from 'canvas-confetti';
+import confetti from "canvas-confetti";
 
 interface CelebrationOptions {
-  message: string;
-  amount?: number;
-  showDiamonds?: boolean;
-  duration?: number;
-  colors?: string[];
+    message: string;
+    amount?: number;
+    showDiamonds?: boolean;
+    duration?: number;
+    colors?: string[];
 }
 
 export const celebrate = ({
-  message,
-  amount,
-  showDiamonds = true,
-  duration = 2000,
-  colors = ['#FFD700', '#00FF00', '#0099FF', '#FF6B6B', '#9B59B6']
+    message,
+    amount,
+    showDiamonds = true,
+    duration = 2000,
+    colors = ["#FFD700", "#00FF00", "#0099FF", "#FF6B6B", "#9B59B6"],
 }: CelebrationOptions) => {
-  // Trigger confetti celebration
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.6 },
-    colors: colors,
-  });
-
-  // Add a second burst after slight delay
-  setTimeout(() => {
+    // Trigger confetti celebration
     confetti({
-      particleCount: 50,
-      spread: 60,
-      origin: { y: 0.7 },
-      colors: colors,
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: colors,
     });
-  }, 200);
 
-  // Show celebration text
-  const celebrationDiv = document.createElement('div');
-  const diamondText = showDiamonds && amount ? `${amount} 💎` : '';
-  
-  celebrationDiv.innerHTML = `
+    // Add a second burst after slight delay
+    setTimeout(() => {
+        confetti({
+            particleCount: 50,
+            spread: 60,
+            origin: { y: 0.7 },
+            colors: colors,
+        });
+    }, 200);
+
+    // Show celebration text
+    const celebrationDiv = document.createElement("div");
+    const diamondText = showDiamonds && amount ? `${amount} 💎` : "";
+
+    celebrationDiv.innerHTML = `
     <div style="
       position: fixed;
       top: 50%;
@@ -56,8 +56,8 @@ export const celebrate = ({
       animation: bounce 0.6s ease-out;
       text-align: center;
     ">
-      ${message ? `<div>${message}</div>` : ''}
-      ${diamondText ? `<div style="font-size: 2.5rem; ${message ? 'margin-top: 10px;' : ''}">You earned ${diamondText}!</div>` : ''}
+      ${diamondText ? `<div style="font-size: 2.5rem; ${message ? "margin-top: 10px;" : ""}">You earned ${diamondText}!</div>` : ""}
+      ${message ? `<div>${message}</div>` : ""}
     </div>
     <style>
       @keyframes bounce {
@@ -67,44 +67,44 @@ export const celebrate = ({
       }
     </style>
   `;
-  
-  document.body.appendChild(celebrationDiv);
-  
-  // Remove the celebration text after specified duration
-  setTimeout(() => {
-    document.body.removeChild(celebrationDiv);
-  }, duration);
+
+    document.body.appendChild(celebrationDiv);
+
+    // Remove the celebration text after specified duration
+    setTimeout(() => {
+        document.body.removeChild(celebrationDiv);
+    }, duration);
 };
 
 // Specific celebration functions for common use cases
 export const celebrateCoins = (amount: number) => {
-  celebrate({
-    message: '',
-    amount,
-    showDiamonds: true
-  });
+    celebrate({
+        message: "",
+        amount,
+        showDiamonds: true,
+    });
 };
 
 export const celebrateCoinsWithMessage = (amount: number, message: string) => {
-  celebrate({
-    message,
-    amount,
-    showDiamonds: true
-  });
+    celebrate({
+        message,
+        amount,
+        showDiamonds: true,
+    });
 };
 
 export const celebrateAchievement = (message: string) => {
-  celebrate({
-    message,
-    showDiamonds: false,
-    colors: ['#FFD700', '#FFA500', '#FF6347', '#FFE4B5', '#FFC0CB']
-  });
+    celebrate({
+        message,
+        showDiamonds: false,
+        colors: ["#FFD700", "#FFA500", "#FF6347", "#FFE4B5", "#FFC0CB"],
+    });
 };
 
 export const celebrateSuccess = (message: string) => {
-  celebrate({
-    message,
-    showDiamonds: false,
-    colors: ['#00FF00', '#32CD32', '#228B22', '#7CFC00', '#00FA9A']
-  });
+    celebrate({
+        message,
+        showDiamonds: false,
+        colors: ["#00FF00", "#32CD32", "#228B22", "#7CFC00", "#00FA9A"],
+    });
 };
