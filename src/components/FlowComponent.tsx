@@ -299,7 +299,7 @@ const FlowComponent: React.FC = () => {
     // Global tracker for column position (0 or 1 for two columns)
     const currentColumn = React.useRef(0);
     // Function to create WebPreviewNodes from chat API responses
-    const createWebPreviewNodes = async (webPreviewNodesData: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void) => {
+    const createWebPreviewNodes = async (webPreviewNodesData: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void, nodeIds?: string[]) => {
         
         const newNodes: Node[] = [];
         const nodeWidth = 1280; // Match default WebsitePreviewNode width
@@ -313,7 +313,8 @@ const FlowComponent: React.FC = () => {
         for (let index = 0; index < webPreviewNodesData.length; index++) {
             const webPreviewData = webPreviewNodesData[index];
             
-            const nodeId = `web-preview-${Date.now()}-${index}`;
+            // Use provided nodeId or generate one if not provided (fallback)
+            const nodeId = nodeIds?.[index] || `web-preview-${Date.now()}-${index}`;
             const positionX = nextWebPreviewPosition.current.x + currentColumn.current * (nodeWidth + horizontalSpacing);
             const positionY = nextWebPreviewPosition.current.y;
             
@@ -384,6 +385,7 @@ const FlowComponent: React.FC = () => {
         if (firstNodePosition && onFirstNodeCreated) {
             onFirstNodeCreated(firstNodePosition.x, firstNodePosition.y);
         }
+
     };
 
     // Function to create FontNodes from chat API responses
@@ -506,19 +508,32 @@ const FlowComponent: React.FC = () => {
         console.log("Generating critique for website:", websiteUrl);
         console.log("sourceNodeId:", sourceNodeId);
         
-        // First, get the source node position
-        const sourceNode = nodes.find(node => node.id === sourceNodeId);
-        if (!sourceNode) {
-            console.error("Source node not found!");
+        // Get the current nodes using functional state update to avoid stale closure
+        let sourceNodePosition: { x: number; y: number } | null = null;
+        
+        setNodes((currentNodes) => {
+            const sourceNode = currentNodes.find(node => node.id === sourceNodeId);
+            if (sourceNode) {
+                sourceNodePosition = sourceNode.position;
+                console.log("✅ Found source node:", sourceNodeId, "at position:", sourceNodePosition);
+            } else {
+                console.error("❌ Source node not found! Looking for:", sourceNodeId, "Available:", currentNodes.map(n => n.id));
+            }
+            return currentNodes; // Don't modify nodes, just read them
+        });
+        
+        if (!sourceNodePosition) {
+            console.error("Unable to get source node position, aborting critique generation");
             return;
         }
         
-        const sourceNodePosition = sourceNode.position;
+        // TypeScript assertion since we know sourceNodePosition is not null at this point
+        const position = sourceNodePosition as { x: number; y: number };
 
         // Position the critique node below the notes node area
-        const critiqueNodeId = `design-critique-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const critiqueX = sourceNodePosition.x + 1380; // WebPreview width (1280) + small gap (100)
-        const critiqueY = sourceNodePosition.y + 350; // Below notes nodes
+        const critiqueNodeId = `design-critique-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+        const critiqueX = position.x + 1380; // WebPreview width (1280) + small gap (100)
+        const critiqueY = position.y + 350; // Below notes nodes
         
         // Create the critique node with loading state first
         const newCritiqueNode: Node = {
@@ -710,47 +725,24 @@ const FlowComponent: React.FC = () => {
         });
     };
 
-    // Initialize nodes with positions, and update whenever the code list gets updated. usememo can avoid performance issues
-    const memoizedNodes = useMemo(
-        () => getCodeRenderNodes(getInitialPositions()),
-        [renderCodeContentList]
-    );
-
+    // Simple approach - just add code render nodes when renderCodeContentList changes
     useEffect(() => {
-        setNodes((prevNodes) => {
-            // Create a new list of nodes by either keeping the existing one or replacing it if necessary
-            const updatedNodes = memoizedNodes.map((newNode) => {
-                const existingNode = prevNodes.find((n) => n.id === newNode.id);
-                if (existingNode) {
-                    if (
-                        existingNode.data.renderCode !== newNode.data.renderCode
-                    ) {
-                        // console.log(
-                        //     "Updating node with id " +
-                        //         newNode.id +
-                        //         " due to code change..."
-                        // );
-                        return newNode; // Replace with updated node
-                    } else {
-                        return existingNode; // Keep the existing node
-                    }
-                } else {
-                    // console.log(
-                    //     "Adding new node with id " + newNode.id + "..."
-                    // );
-                    return newNode; // Add new node
+        if (renderCodeContentList.length > 0) {
+            const codeNodes = getCodeRenderNodes(getInitialPositions());
+            setNodes((prevNodes) => {
+                // Only add code render nodes that don't already exist
+                const existingCodeNodeIds = new Set(
+                    prevNodes.filter(n => n.type === 'codeRenderNode').map(n => n.id)
+                );
+                const newCodeNodes = codeNodes.filter(n => !existingCodeNodeIds.has(n.id));
+                
+                if (newCodeNodes.length > 0) {
+                    return [...prevNodes, ...newCodeNodes];
                 }
+                return prevNodes;
             });
-
-            // Include any nodes from prevNodes that weren't in memoizedNodes
-            const remainingOldNodes = prevNodes.filter(
-                (oldNode) =>
-                    !memoizedNodes.some((newNode) => newNode.id === oldNode.id)
-            );
-
-            return [...remainingOldNodes, ...updatedNodes];
-        });
-    }, [memoizedNodes]);
+        }
+    }, [renderCodeContentList]);
 
     const processReplacementPromptResponse = async (
         finishedResponse: string,

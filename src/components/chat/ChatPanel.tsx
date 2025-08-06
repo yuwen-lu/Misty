@@ -10,7 +10,7 @@ interface ChatPanelProps {
   onToggleMinimize: () => void;
   initialMessage?: string;
   selectedModel?: Models;
-  onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void) => void;
+  onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void, nodeIds?: string[]) => void;
   onCreateFontNode?: (fontNodes: FontNodeData[]) => void;
   onCreateTextInstructionNode?: (textInstructionNodes: TextInstructionNodeData[]) => void;
   onCenterCanvas?: (x: number, y: number) => void;
@@ -77,26 +77,26 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     
     // Execute tool functions with batched tools and track created nodes
     if (webPreviewNodes.length > 0 && onCreateWebPreviewNode) {
-      const nodePositions: Array<{id: string; position: { x: number; y: number }}>  = [];
+      // Generate node IDs here and pass them to the creation function
+      const timestamp = Date.now();
+      const nodeIds = webPreviewNodes.map((_, index) => `web-preview-${timestamp}-${index}`);
       
-      // We need to simulate the positions since we don't have direct access to the actual node creation
+      // Create the tool call with predetermined node IDs
       let baseX = 2500, baseY = 200;
-      webPreviewNodes.forEach((_, index) => {
-        nodePositions.push({
-          id: `web-preview-${Date.now()}-${index}`,
-          position: { x: baseX + (index % 2) * 1980, y: baseY + Math.floor(index / 2) * 1200 }
-        });
-      });
+      const nodePositions = nodeIds.map((id, index) => ({
+        id,
+        position: { x: baseX + (index % 2) * 1980, y: baseY + Math.floor(index / 2) * 1200 }
+      }));
       
       toolCalls.push({
-        id: `web-preview-${Date.now()}`,
+        id: `web-preview-${timestamp}`,
         toolName: 'createWebPreviewNode',
         description: `${webPreviewNodes.length} website preview${webPreviewNodes.length > 1 ? 's' : ''} created`,
         nodesCreated: nodePositions,
         isClickable: true
       });
       
-      onCreateWebPreviewNode(webPreviewNodes, handleFirstNode);
+      onCreateWebPreviewNode(webPreviewNodes, handleFirstNode, nodeIds);
     }
     
     if (fontNodes.length > 0 && onCreateFontNode && !hasHandledFirstNode) {
