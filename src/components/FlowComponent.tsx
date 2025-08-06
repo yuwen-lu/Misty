@@ -75,9 +75,16 @@ const edgeTypes = {
 const initialNodes: Node[] = [
     {
         id: "1",
-        type: "imageUploadNode",
+        type: "textInstructionNode",
         position: { x: 150, y: 100 },
-        data: { onUpload: () => {} },
+        data: { 
+            title: "How This Canvas Works",
+            instructions: [
+                "Use the chat to describe your design",
+                "Interact with canvas to earn 💎",
+                "Use 💎 to generate design"
+            ]
+        },
     },
 ];
 
