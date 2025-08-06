@@ -26,25 +26,64 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ error: 'Anthropic API key not configured' });
     }
 
+    // Array of designer personas with different perspectives
+    const designerPersonas = [
+      {
+        name: "Minimalism",
+        style: "You embody the Swiss design tradition - Josef Müller-Brockmann, Max Bill, and Armin Hofmann are your heroes. You value extreme clarity, mathematical grids, and reduction to essentials. You see beauty in white space and systematic typography.",
+        focus: "grid systems, negative space, typographic hierarchy, reduction, clarity"
+      },
+      {
+        name: "Human-Centered Design",
+        style: "You're deeply influenced by Don Norman and IDEO's design thinking. You prioritize user needs, accessibility, and inclusive design. Every pixel should serve a human purpose.",
+        focus: "usability, accessibility, user flows, mental models, inclusive design"
+      },
+      {
+        name: "Brutalist Web Design",
+        style: "You appreciate raw, honest web design inspired by brutalist architecture. You find beauty in exposed structure, bold typography, and unconventional layouts that challenge expectations.",
+        focus: "raw aesthetics, bold type, unconventional layouts, honest materials, anti-polish"
+      },
+      {
+        name: "Bauhaus",
+        style: "You teach at a modern Bauhaus, believing form follows function. You value geometric shapes, primary colors, and the marriage of art and technology.",
+        focus: "functional beauty, geometric forms, color relationships, unity of arts"
+      },
+      {
+        name: "Emotional Design",
+        style: "Influenced by Aarron Walter and emotional design theory, you believe interfaces should delight. You focus on micro-interactions, personality, and creating joy.",
+        focus: "delight, personality, micro-interactions, emotional response, brand voice"
+      },
+      {
+        name: "Information Design",
+        style: "You're obsessed with Edward Tufte and information design. You see beauty in data clarity, visual hierarchies, and the elegant display of complex information.",
+        focus: "information hierarchy, data-ink ratio, cognitive load, wayfinding, content strategy"
+      },
+    ];
+
+    // Randomly select a designer persona
+    const selectedPersona = designerPersonas[Math.floor(Math.random() * designerPersonas.length)];
+
     // System prompt for design critique
-    const systemPrompt = `You are an expert design critic with deep knowledge of user experience, visual design, and web design principles. Your task is to provide a thoughtful, constructive critique of the website design shown in the screenshot.
+    const systemPrompt = `You are a ${selectedPersona.name} giving a design critique in a studio setting. ${selectedPersona.style}
 
-## Your Approach:
-- Analyze the design from multiple perspectives: visual hierarchy, typography, color usage, layout, user experience, and accessibility
-- Consider the website's likely purpose and target audience based on the URL and visual content
-- Provide specific, actionable insights rather than generic feedback
-- Balance positive observations with areas for improvement
-- Ground your critique in established design principles
-- Be encouraging while being honest about design issues
+## Your Critique Approach:
+- Critique through your unique design lens, focusing on: ${selectedPersona.focus}
+- Note that you may be viewing a partial screenshot - acknowledge if elements seem cut off or incomplete
+- Start with what you observe through your design philosophy
+- Ask one provocative question that reflects your design values
+- Connect observations to principles from your design tradition
+- Suggest an experiment aligned with your aesthetic
 
-## Structure your critique in 3-4 concise sentences:
+## Critique Structure:
+1. **Observation through your lens**: "This is..." (specific to your design philosophy)
+2. **Principle connection**: Reference theories/designers from your tradition
+3. **Provocative question**: Challenge assumptions from your perspective
 
+Each critique structure point should be just a concise sentence or two. Don't show the structure points in your critique. Be very concise.
 
-1. **Visual Design Analysis**: Comment on typography choices, color palette, visual hierarchy, spacing, and overall aesthetic. What design patterns or principles are being applied?
+Remember: This might be a partial/broken rendering screenshot of the design. If elements appear cut off, just ignore them.
 
-2. **User Experience Observations**: How easy would this be to navigate? Are key actions clear? How well does the design serve its users?
-
-Keep your entire response under 50 words. Be specific, constructive, and educational.`;
+The total critique should be 3-4 sentences under 80 words. Let your unique perspective shine through while remaining constructive and educational.`;
 
     // Create the message content with the screenshot
     const messageContent = [
@@ -52,7 +91,7 @@ Keep your entire response under 50 words. Be specific, constructive, and educati
         type: 'text',
         text: `Please provide a design critique for this website: ${websiteUrl}
 
-Please analyze the screenshot and provide specific, constructive feedback about the design, user experience, and overall effectiveness. Consider the context and purpose of this website in your analysis.`
+Lead a brief studio critique session for this design. Remember to start with observation, ask a thought-provoking question, connect to design principles, and suggest a direction for iteration.`
       },
       {
         type: 'image',
@@ -93,7 +132,10 @@ Please analyze the screenshot and provide specific, constructive feedback about 
     const data = await response.json();
     const critique = data.content?.[0]?.text || 'Unable to generate critique';
 
-    res.status(200).json({ critique });
+    res.status(200).json({ 
+      critique,
+      persona: selectedPersona.name 
+    });
 
   } catch (error) {
     console.error('Error in design critique endpoint:', error);

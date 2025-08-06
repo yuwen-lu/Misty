@@ -597,11 +597,11 @@ const FlowComponent: React.FC = () => {
             console.log("API response data:", data);
             
             if (data.critique) {
-                // Update the node with the actual critique
+                // Update the node with the actual critique and persona
                 setNodes(prevNodes => 
                     prevNodes.map(node => 
                         node.id === critiqueNodeId 
-                            ? { ...node, data: { ...node.data, critique: data.critique } }
+                            ? { ...node, data: { ...node.data, critique: data.critique, persona: data.persona } }
                             : node
                     )
                 );

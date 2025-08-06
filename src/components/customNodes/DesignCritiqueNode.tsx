@@ -5,13 +5,14 @@ interface DesignCritiqueNodeProps {
   id: string;
   data: {
     critique: string;
+    persona?: string;
     websiteUrl?: string;
     timestamp?: Date;
   };
 }
 
 const DesignCritiqueNode: React.FC<DesignCritiqueNodeProps> = ({ id, data }) => {
-  const { critique, websiteUrl, timestamp } = data;
+  const { critique, persona, websiteUrl, timestamp } = data;
   
   const formatTimestamp = (date: Date) => {
     const now = new Date();
@@ -44,9 +45,10 @@ const DesignCritiqueNode: React.FC<DesignCritiqueNodeProps> = ({ id, data }) => 
 
   return (
     <div 
-      className="bg-white rounded-lg shadow-lg border-2 border-blue-200 min-w-80 max-w-md"
+      className="bg-white rounded-lg shadow-lg border-2 border-blue-200 min-w-80 max-w-xl"
       style={{
         transform: `translate(${offsetX}px, ${offsetY}px)`,
+        width: '448px', // 320px (min-w-80) * 1.4 = 448px
       }}
     >
       {/* Connection handle from left side */}
@@ -64,21 +66,28 @@ const DesignCritiqueNode: React.FC<DesignCritiqueNodeProps> = ({ id, data }) => 
       {/* Header */}
       <div className="bg-blue-50 px-4 py-3 border-b border-blue-200 rounded-t-lg">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-blue-800 text-sm flex items-center">
-            <span className="mr-2">🎨</span>
-            Design Critique
-          </h3>
+          <div className="flex flex-col">
+            <h3 className="font-semibold text-blue-800 text-sm flex items-center">
+              <span className="mr-2">🎨</span>
+              Design Critique
+            </h3>
+            {persona && (
+              <p className="text-xs text-blue-600 mt-2 font-medium">
+                From {persona}'s Perspective
+              </p>
+            )}
+          </div>
           {timestamp && (
             <div className="text-xs text-blue-600">
               {formatTimestamp(timestamp)}
             </div>
           )}
         </div>
-        {websiteUrl && (
+        {/* {websiteUrl && (
           <p className="text-xs text-blue-600 mt-1 break-all">
             {new URL(websiteUrl).hostname}
           </p>
-        )}
+        )} */}
       </div>
 
       {/* Content */}
