@@ -3,6 +3,8 @@ import type { AppProps } from 'next/app';
 import { ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import '../index.css';
+import { CoinProvider } from '../contexts/CoinContext';
+import CoinDisplay from '../components/CoinDisplay';
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -21,8 +23,11 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <ReactFlowProvider>
-      <Component {...pageProps} />
-    </ReactFlowProvider>
+    <CoinProvider>
+      <ReactFlowProvider>
+        <Component {...pageProps} />
+        <CoinDisplay />
+      </ReactFlowProvider>
+    </CoinProvider>
   );
 } 
