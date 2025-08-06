@@ -178,7 +178,6 @@ const FlowComponent: React.FC = () => {
                 position: { x: 600, y: 100 },
                 data: { 
                     url: "https://yuwen.io",
-                    annotation: "A clean, minimalist portfolio design showcasing thoughtful typography and effective use of whitespace",
                     onShowFeedbackPopup: handleShowFeedbackPopup,
                     onGenerateCritique: handleGenerateCritique
                 },
@@ -303,7 +302,7 @@ const FlowComponent: React.FC = () => {
         
         const newNodes: Node[] = [];
         const nodeWidth = 1280; // Match default WebsitePreviewNode width
-        const nodeHeight = 950; // Increased to accommodate header, annotation, and controls
+        const nodeHeight = 950; // Increased to accommodate header and controls
         const horizontalSpacing = 700; // Increased space to accommodate notes nodes
         const verticalSpacing = 250; // Space between rows
 
@@ -350,7 +349,6 @@ const FlowComponent: React.FC = () => {
                 data: { 
                     url: finalUrl,
                     originalQuery: webPreviewData.parameters.url,
-                    annotation: webPreviewData.parameters.annotation,
                     onUrlChange: (nodeId: string, newUrl: string) => {
                         setNodes((nds) =>
                             nds.map((node) =>

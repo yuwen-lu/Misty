@@ -11,7 +11,6 @@ export interface WebPreviewNodeData {
   tool: 'createWebPreviewNode';
   parameters: {
     url: string;
-    annotation: string;
   };
 }
 

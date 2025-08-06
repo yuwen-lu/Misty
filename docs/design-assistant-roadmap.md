@@ -1,7 +1,7 @@
 # Educational Design Assistant Roadmap
 
 ## 1. Interactive Inspiration Gallery
-Show curated examples via WebPreview nodes based on the user's project type with educational annotations.
+Show curated examples via WebPreview nodes based on the user's project type.
 
 ### TODOs:
 - [ ] Create WebPreview node component for displaying example websites

@@ -154,12 +154,6 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         )} */}
       </div>
       
-      {data.annotation && (
-        <div className="text-yellow-800 text-sm mb-4 px-3 py-2 bg-yellow-50 rounded-md border border-yellow-200">
-          <div className="font-medium mb-1">Why this design works:</div>
-          <div className="whitespace-pre-wrap">{data.annotation}</div>
-        </div>
-      )}
 
       <div className="flex flex-col mb-4 w-full">
         <div className="flex items-center gap-2 mb-2">

@@ -110,7 +110,6 @@ Creates a preview of a website on the canvas to show design examples. When creat
   "tool": "createWebPreviewNode",
   "parameters": {
     "url": "search query for the website (e.g., 'Airbnb homepage', 'Stripe landing page', 'Apple product page')",
-    "annotation": "Bulleted list, brief explanation of why this design is good and what we can borrow from it"
   }
 }
 \`\`\`
@@ -288,7 +287,7 @@ You: "Excellent! Now let me show you some diverse blog designs that work well fo
 - Use search queries for personal portfolios, custom company sites, and unique designs
 - Examples: "Julie Zhuo blog", "Frank Chimero portfolio", "Stripe homepage", "Linear app"
 - **AVOID**: Generic Medium blogs, WordPress themes, Notion templates, platform defaults
-- Use createWebPreviewNode with detailed annotations explaining what makes each design effective
+- Use createWebPreviewNode to show examples
 - Space examples across the canvas to avoid visual clustering
 
 ### Typography Education
