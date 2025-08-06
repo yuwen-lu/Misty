@@ -239,21 +239,21 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
               className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"
             >
               <LuExternalLink size={16} />
-              Inspect Design <span className="text-sm font-mono">(+1💎)</span>
+              Inspect Design <span className="text-sm font-mono">(💎)</span>
             </button>
             <button
               onClick={handleTakeNotes}
               className="flex items-center gap-2 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors font-semibold"
             >
               <LuPenTool size={16} />
-              Take Notes <span className="text-sm font-mono">(+2💎)</span>
+              Take Notes <span className="text-sm font-mono">(💎💎)</span>
             </button>
             <button
               onClick={handleReadCritique}
               className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors font-semibold"
             >
               <LuEye size={16} />
-              Read Critique <span className="text-sm font-mono">(+1💎)</span>
+              Read Critique <span className="text-sm font-mono">(💎)</span>
             </button>
           </div>
         </>
