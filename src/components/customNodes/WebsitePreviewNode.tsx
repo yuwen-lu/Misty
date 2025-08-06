@@ -220,7 +220,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
             )}
           </div>
 
-          <div className="flex gap-2 mt-4">
+          <div className="flex justify-end gap-2 mt-4">
             {/* <button
               onClick={handleRefresh}
               className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"
@@ -230,24 +230,24 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
             </button> */}
             <button
               onClick={handleOpenInNewTab}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"
+              className="flex items-center gap-2 px-4 py-4 text-lg bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"
             >
-              <LuExternalLink size={16} />
-              Inspect Design <span className="text-sm font-mono">(💎)</span>
+              <LuExternalLink size={24} />
+              Inspect Design <span className="text-lg font-mono">(+💎)</span>
             </button>
             <button
               onClick={handleTakeNotes}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors font-semibold"
+              className="flex items-center gap-2 px-4 py-4 text-lg bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors font-semibold"
             >
-              <LuPenTool size={16} />
-              Take Notes <span className="text-sm font-mono">(💎💎)</span>
+              <LuPenTool size={24} />
+              Take Notes <span className="text-lg font-mono">(+💎💎)</span>
             </button>
             <button
               onClick={handleReadCritique}
-              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors font-semibold"
+              className="flex items-center gap-2 px-4 py-4 text-lg bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors font-semibold"
             >
-              <LuEye size={16} />
-              Read Critique <span className="text-sm font-mono">(💎)</span>
+              <LuEye size={24} />
+              Read Critique <span className="text-lg font-mono">(+💎)</span>
             </button>
           </div>
         </>
