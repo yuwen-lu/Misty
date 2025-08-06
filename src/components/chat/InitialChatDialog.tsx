@@ -55,12 +55,12 @@ const InitialChatDialog: React.FC<InitialChatDialogProps> = ({ onStartChat, onCl
           
           {/* Action buttons */}
           <div className="flex items-center gap-2">
-            <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
+            {/* <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
               <Paperclip size={20} />
             </button>
             <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
               <Mic size={20} />
-            </button>
+            </button> */}
             <button
               onClick={handleSend}
               disabled={!message.trim()}

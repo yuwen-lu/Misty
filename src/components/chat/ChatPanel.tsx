@@ -9,10 +9,10 @@ interface ChatPanelProps {
   onToggleMinimize: () => void;
   initialMessage?: string;
   selectedModel?: Models;
-  onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[]) => void;
+  onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void) => void;
   onCreateFontNode?: (fontNodes: FontNodeData[]) => void;
   onCreateTextInstructionNode?: (textInstructionNodes: TextInstructionNodeData[]) => void;
-  onNewChatRequest?: () => void;
+  onCenterCanvas?: (x: number, y: number) => void;
 }
 
 export const ChatPanel: React.FC<ChatPanelProps> = ({
@@ -23,7 +23,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   onCreateWebPreviewNode,
   onCreateFontNode,
   onCreateTextInstructionNode,
-  onNewChatRequest
+  onCenterCanvas
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -59,15 +59,31 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       }
     }
     
-    // Execute tool functions with batched tools
+    // Track if this is the first tool creating nodes
+    let hasHandledFirstNode = false;
+    
+    // Create callback for centering on first node
+    const handleFirstNode = (x: number, y: number) => {
+      if (!hasHandledFirstNode && onCenterCanvas) {
+        hasHandledFirstNode = true;
+        // Center with a slight delay to ensure node is rendered
+        setTimeout(() => {
+          onCenterCanvas(x, y);
+        }, 200);
+      }
+    };
+    
+    // Execute tool functions with batched tools - WebPreview first since they're most common
     if (webPreviewNodes.length > 0 && onCreateWebPreviewNode) {
-      onCreateWebPreviewNode(webPreviewNodes);
+      onCreateWebPreviewNode(webPreviewNodes, handleFirstNode);
     }
-    if (fontNodes.length > 0 && onCreateFontNode) {
+    if (fontNodes.length > 0 && onCreateFontNode && !hasHandledFirstNode) {
       onCreateFontNode(fontNodes);
+      // Note: FontNodes don't have position callback yet, but WebPreview takes priority
     }
-    if (textInstructionNodes.length > 0 && onCreateTextInstructionNode) {
+    if (textInstructionNodes.length > 0 && onCreateTextInstructionNode && !hasHandledFirstNode) {
       onCreateTextInstructionNode(textInstructionNodes);
+      // Note: TextInstructionNodes don't have position callback yet, but WebPreview takes priority
     }
   };
 
@@ -171,10 +187,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
-    // Reset zoom tracker for new request
-    if (onNewChatRequest) {
-      onNewChatRequest();
-    }
 
     const userMessage: Message = {
       id: Date.now().toString(),

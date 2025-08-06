@@ -125,7 +125,7 @@ const FlowComponent: React.FC = () => {
         useState<string>("");
 
     const { x, y, zoom } = useViewport();
-    const { fitView } = useReactFlow();
+    const { fitView, setCenter, setViewport } = useReactFlow();
     const [response, setResponse] = useState("");
     const [loadingStates, setLoadingStates] = useState<loadingIdState[]>([]);
     const [showError, setShowError] = useState(false);
@@ -172,10 +172,38 @@ const FlowComponent: React.FC = () => {
         setIsChatMinimized(!isChatMinimized);
     };
 
-    // Reset zoom tracker when user sends a new message
-    const handleNewChatRequest = useCallback(() => {
-        hasZoomedForCurrentRequest.current = false;
-    }, []);
+    // Simple function to center canvas view on a position
+    const handleCenterOnPosition = useCallback((x: number, y: number) => {
+        console.log('🎯 Centering canvas view on position:', { x, y });
+        
+        // Method 1: Try setCenter (React Flow's built-in method)
+        try {
+            setCenter(x, y, { zoom: 0.8, duration: 800 });
+            console.log('✅ setCenter called');
+        } catch (error) {
+            console.error('❌ setCenter failed:', error);
+        }
+        
+        // Method 2: Try setViewport (direct viewport manipulation)
+        setTimeout(() => {
+            try {
+                // Calculate viewport position to center the target coordinates
+                // We need to offset by half the viewport size to center it
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                
+                const newX = -x + (viewportWidth / 2);
+                const newY = -y + (viewportHeight / 2);
+                
+                console.log('📐 Calculated viewport position:', { newX, newY });
+                
+                setViewport({ x: newX, y: newY, zoom: 0.8 }, { duration: 800 });
+                console.log('✅ setViewport called');
+            } catch (viewportError) {
+                console.error('❌ setViewport failed:', viewportError);
+            }
+        }, 100);
+    }, [setCenter, setViewport]);
 
     // Function to search for URLs using Brave Search API
     const searchForWebsiteUrl = async (query: string): Promise<string | null> => {
@@ -211,11 +239,8 @@ const FlowComponent: React.FC = () => {
     const nextWebPreviewPosition = React.useRef({ x: 2500, y: 200 });
     // Global tracker for column position (0 or 1 for two columns)
     const currentColumn = React.useRef(0);
-    // Global tracker to ensure we only zoom on the first node of a new conversation
-    const hasZoomedForCurrentRequest = React.useRef(false);
-
     // Function to create WebPreviewNodes from chat API responses
-    const createWebPreviewNodes = async (webPreviewNodesData: WebPreviewNodeData[]) => {
+    const createWebPreviewNodes = async (webPreviewNodesData: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void) => {
         
         const newNodes: Node[] = [];
         const nodeWidth = 1280; // Match default WebsitePreviewNode width
@@ -223,6 +248,7 @@ const FlowComponent: React.FC = () => {
         const horizontalSpacing = 100; // Space between columns
         const verticalSpacing = 250; // Space between rows
 
+        let firstNodePosition: { x: number, y: number } | null = null;
 
         // Process each node and search for the correct URL
         for (let index = 0; index < webPreviewNodesData.length; index++) {
@@ -231,6 +257,11 @@ const FlowComponent: React.FC = () => {
             const nodeId = `web-preview-${Date.now()}-${index}`;
             const positionX = nextWebPreviewPosition.current.x + currentColumn.current * (nodeWidth + horizontalSpacing);
             const positionY = nextWebPreviewPosition.current.y;
+            
+            // Record the first node position
+            if (index === 0) {
+                firstNodePosition = { x: positionX + nodeWidth / 2, y: positionY + nodeHeight / 2 };
+            }
             
             console.log(`Creating WebPreview node ${index}: column=${currentColumn.current}, x=${positionX}, y=${positionY}`);
             
@@ -285,22 +316,13 @@ const FlowComponent: React.FC = () => {
             console.log(`Updated column to: ${currentColumn.current}`);
         }
 
-
-
         // Add all new nodes to the flow
         setNodes((nds) => [...nds, ...newNodes]);
 
-        // Focus on only the first newly created node of the current request
-        setTimeout(() => {
-            if (newNodes.length > 0 && !hasZoomedForCurrentRequest.current) {
-                hasZoomedForCurrentRequest.current = true;
-                fitView({ 
-                    nodes: [newNodes[0]],
-                    duration: 800,
-                    padding: 0.2
-                });
-            }
-        }, 100);
+        // Call the callback with first node position if provided
+        if (firstNodePosition && onFirstNodeCreated) {
+            onFirstNodeCreated(firstNodePosition.x, firstNodePosition.y);
+        }
     };
 
     // Function to create FontNodes from chat API responses
@@ -349,18 +371,6 @@ const FlowComponent: React.FC = () => {
         
         if (newNodes.length > 0) {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
-            
-            // Zoom to fit new nodes if this is the first of a new request
-            if (!hasZoomedForCurrentRequest.current && newNodes.length > 0) {
-                setTimeout(() => {
-                    hasZoomedForCurrentRequest.current = true;
-                    fitView({ 
-                        nodes: [newNodes[0]],
-                        duration: 800,
-                        padding: 0.2
-                    });
-                }, 100);
-            }
         }
     };
 
@@ -392,18 +402,6 @@ const FlowComponent: React.FC = () => {
         
         if (newNodes.length > 0) {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
-            
-            // Zoom to fit new nodes if this is the first of a new request
-            if (!hasZoomedForCurrentRequest.current && newNodes.length > 0) {
-                setTimeout(() => {
-                    hasZoomedForCurrentRequest.current = true;
-                    fitView({ 
-                        nodes: [newNodes[0]],
-                        duration: 800,
-                        padding: 0.2
-                    });
-                }, 100);
-            }
         }
     };
 
@@ -1455,7 +1453,7 @@ const FlowComponent: React.FC = () => {
                     onCreateWebPreviewNode={createWebPreviewNodes}
                     onCreateFontNode={createFontNodes}
                     onCreateTextInstructionNode={createTextInstructionNodes}
-                    onNewChatRequest={handleNewChatRequest}
+                    onCenterCanvas={handleCenterOnPosition}
                 />
             )}
             

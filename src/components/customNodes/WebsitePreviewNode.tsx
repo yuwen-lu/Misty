@@ -161,9 +161,11 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
               <img
                 src={screenshotUrl}
                 alt={`Preview of ${url}`}
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover object-top cursor-pointer hover:opacity-90 transition-opacity"
                 onLoad={handleImageLoad}
                 onError={handleImageError}
+                onClick={handleOpenInNewTab}
+                title={`Click to open ${url}`}
               />
             )}
             
@@ -176,13 +178,13 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
           </div>
 
           <div className="flex gap-2 mt-4">
-            <button
+            {/* <button
               onClick={handleRefresh}
               className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"
             >
               <LuRefreshCw size={16} />
               Refresh
-            </button>
+            </button> */}
             <button
               onClick={handleOpenInNewTab}
               className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"

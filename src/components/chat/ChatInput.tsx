@@ -69,14 +69,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           />
 
           {/* File upload button */}
-          <button className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
+          {/* <button className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
             <Paperclip size={16} />
-          </button>
+          </button> */}
 
           {/* Voice recording button */}
-          <button className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
+          {/* <button className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
             <Mic size={16} />
-          </button>
+          </button> */}
 
           {/* Submit button */}
           <button
