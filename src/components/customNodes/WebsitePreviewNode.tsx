@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
 import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuAlertCircle } from 'react-icons/lu';
+import { useCoins } from '../../contexts/CoinContext';
 
 const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [url, setUrl] = useState<string>(data.url || '');
@@ -8,6 +9,8 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [screenshotUrl, setScreenshotUrl] = useState<string>('');
+  
+  const { celebrateCoins } = useCoins();
 
   const formatUrl = (inputUrl: string): string => {
     if (!inputUrl) return '';
@@ -30,8 +33,8 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     setError('');
     setIsLoading(true);
     
-    // Get screenshot URL
-    const newScreenshotUrl = getScreenshotUrl(websiteUrl);
+    // Get screenshot URL with timestamp to force refresh
+    const newScreenshotUrl = getScreenshotUrl(websiteUrl) + '&t=' + Date.now();
     setScreenshotUrl(newScreenshotUrl);
     
     if (data.onUrlChange) {
@@ -49,7 +52,13 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
   const handleOpenInNewTab = () => {
     if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
+      // Trigger celebration with confetti and coin reward
+      celebrateCoins(1);
+      
+      // Open website after delay
+      setTimeout(() => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }, 1000);
     }
   };
 
@@ -94,14 +103,14 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
   return (
     <div 
-      className="website-preview-node flex flex-col px-4 py-4 text-white bg-yellow-600 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-yellow-700 transition-all duration-300 ease-in-out"
-      style={{
-        width: '100%',
-        height: '100%',
-        minWidth: '400px',
-        minHeight: '500px'
-      }}
-    >
+        className="website-preview-node flex flex-col px-4 py-4 text-white bg-yellow-600 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-yellow-700 transition-all duration-300 ease-in-out"
+        style={{
+          width: '100%',
+          height: '100%',
+          minWidth: '400px',
+          minHeight: '500px'
+        }}
+      >
       
       <div className="font-semibold text-yellow-900 text-xl mb-3">
         Design Inspiration
@@ -147,7 +156,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
       {url && (
         <>
-          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1 w-full" style={{ minHeight: '400px' }}>
+          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1 w-full group" style={{ minHeight: '400px' }}>
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
                 <div className="text-gray-600 flex flex-col items-center gap-2">
@@ -158,15 +167,22 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
             )}
             
             {screenshotUrl && (
-              <img
-                src={screenshotUrl}
-                alt={`Preview of ${url}`}
-                className="w-full h-full object-cover object-top cursor-pointer hover:opacity-90 transition-opacity"
-                onLoad={handleImageLoad}
-                onError={handleImageError}
-                onClick={handleOpenInNewTab}
-                title={`Click to open ${url}`}
-              />
+              <>
+                <img
+                  src={screenshotUrl}
+                  alt={`Preview of ${url}`}
+                  className="w-full h-full object-cover object-top cursor-pointer transition-opacity"
+                  onLoad={handleImageLoad}
+                  onError={handleImageError}
+                  onClick={handleOpenInNewTab}
+                  title={`Click to open ${url}`}
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center cursor-pointer" onClick={handleOpenInNewTab}>
+                  <div className="text-white text-3xl font-bold font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
+                    Inspect This Design (+1💎)
+                  </div>
+                </div>
+              </>
             )}
             
             {!screenshotUrl && !isLoading && (
@@ -190,7 +206,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
               className="flex items-center gap-2 px-4 py-2 text-sm bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors font-semibold"
             >
               <LuExternalLink size={16} />
-              Open in New Tab
+              Inspect This Design <span className="text-sm font-mono">(+1💎)</span>
             </button>
           </div>
         </>

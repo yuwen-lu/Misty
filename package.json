@@ -21,6 +21,7 @@
     "@uiw/codemirror-themes": "^4.23.0",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.2",
+    "canvas-confetti": "^1.9.3",
     "clarinet": "^0.12.6",
     "codemirror": "^6.0.1",
     "fuzzball": "^2.1.2",
