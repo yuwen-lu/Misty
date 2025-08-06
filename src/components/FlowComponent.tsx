@@ -79,20 +79,6 @@ const initialNodes: Node[] = [
         position: { x: 150, y: 100 },
         data: { onUpload: () => {} },
     },
-    {
-        id: "font-instructions",
-        type: "textInstructionNode",
-        position: { x: 350, y: 100 },
-        data: {
-            title: "💡 Font Selection Tips",
-            instructions: [
-                "Choose at least one Sans Serif OR Serif as your main font",
-                "Sans Serif fonts feel modern and clean",
-                "Serif fonts add elegance and readability", 
-                "Use decorative fonts sparingly for accents"
-            ]
-        },
-    },
 ];
 
 const initialEdges: Edge[] = [];
@@ -154,6 +140,7 @@ const FlowComponent: React.FC = () => {
     const [isChatMinimized, setIsChatMinimized] = useState(false);
     const [initialMessage, setInitialMessage] = useState<string>('');
     const [selectedModel, setSelectedModel] = useState<Models>(Models.claudeSonnet4);
+    
 
     useEffect(() => {
         // Cleanup on unmount

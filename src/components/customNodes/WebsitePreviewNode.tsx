@@ -1,13 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
-import { LuExternalLink, LuRefreshCw, LuLink } from 'react-icons/lu';
+import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuAlertCircle } from 'react-icons/lu';
 
 const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [url, setUrl] = useState<string>(data.url || '');
   const [inputUrl, setInputUrl] = useState<string>(data.url || '');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [screenshotUrl, setScreenshotUrl] = useState<string>('');
 
   const formatUrl = (inputUrl: string): string => {
     if (!inputUrl) return '';
@@ -19,16 +19,31 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     return inputUrl;
   };
 
+  // Function to get screenshot URL from URLBox service
+  const getScreenshotUrl = (websiteUrl: string): string => {
+    const encodedUrl = encodeURIComponent(websiteUrl);
+    // Using URLBox direct API endpoint
+    return `https://api.urlbox.io/v1/ubx_zNrA3L7l3L0uPom6/png?url=${encodedUrl}&width=1280&height=800`;
+  };
+
+  const loadScreenshot = (websiteUrl: string) => {
+    setError('');
+    setIsLoading(true);
+    
+    // Get screenshot URL
+    const newScreenshotUrl = getScreenshotUrl(websiteUrl);
+    setScreenshotUrl(newScreenshotUrl);
+    
+    if (data.onUrlChange) {
+      data.onUrlChange(id, websiteUrl);
+    }
+  };
+
   const handleUrlSubmit = () => {
     const formattedUrl = formatUrl(inputUrl);
     if (formattedUrl) {
       setUrl(formattedUrl);
-      setError('');
-      setIsLoading(true);
-      
-      if (data.onUrlChange) {
-        data.onUrlChange(id, formattedUrl);
-      }
+      loadScreenshot(formattedUrl);
     }
   };
 
@@ -39,27 +54,43 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   };
 
   const handleRefresh = () => {
-    if (iframeRef.current && url) {
+    if (url) {
       setIsLoading(true);
-      iframeRef.current.src = url;
+      // Force refresh by adding timestamp
+      const newScreenshotUrl = getScreenshotUrl(url) + '&t=' + Date.now();
+      setScreenshotUrl(newScreenshotUrl);
     }
   };
 
-  const handleIframeLoad = () => {
+  const handleImageLoad = () => {
     setIsLoading(false);
+    setError('');
   };
 
-  const handleIframeError = () => {
+  const handleImageError = () => {
     setIsLoading(false);
-    setError('Unable to load website in preview. This site blocks iframe embedding due to security policies. Click "Open in New Tab" to view it directly.');
+    setError('Unable to load website preview. The screenshot service may be unavailable or the website may be blocking access.');
   };
 
+  // Auto-load screenshot when URL is provided via data prop
   useEffect(() => {
     if (data.url && data.url !== url) {
-      setUrl(data.url);
+      const formattedUrl = formatUrl(data.url);
+      setUrl(formattedUrl);
       setInputUrl(data.url);
+      loadScreenshot(formattedUrl);
     }
   }, [data.url]);
+
+  // Auto-load screenshot on initial mount if URL is provided
+  useEffect(() => {
+    if (data.url && !screenshotUrl) {
+      const formattedUrl = formatUrl(data.url);
+      setUrl(formattedUrl);
+      setInputUrl(data.url);
+      loadScreenshot(formattedUrl);
+    }
+  }, []);
 
   return (
     <div 
@@ -67,18 +98,18 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
       style={{
         width: '100%',
         height: '100%',
-        minWidth: '1200px',
-        minHeight: '900px'
+        minWidth: '400px',
+        minHeight: '500px'
       }}
     >
       
       <div className="font-semibold text-yellow-900 text-xl mb-3">
-        Website Preview
-        {data.originalQuery && data.originalQuery !== data.url && (
+        Design Inspiration
+        {/* {data.originalQuery && data.originalQuery !== data.url && (
           <div className="text-yellow-700 text-sm font-normal mt-1">
             Found via search: &quot;{data.originalQuery}&quot;
           </div>
-        )}
+        )} */}
       </div>
       
       {data.annotation && (
@@ -107,7 +138,8 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
           </button>
         </div>
         {error && (
-          <div className="text-red-500 text-sm mt-1">
+          <div className="text-red-500 text-sm mt-1 flex items-center gap-1">
+            <LuAlertCircle size={16} />
             {error}
           </div>
         )}
@@ -115,27 +147,32 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
       {url && (
         <>
-          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1 w-full" style={{ minHeight: '600px' }}>
+          <div className="relative bg-white rounded-lg overflow-hidden shadow-inner flex-1 w-full" style={{ minHeight: '400px' }}>
             {isLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
-                <div className="text-gray-600">Loading website...</div>
+                <div className="text-gray-600 flex flex-col items-center gap-2">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                  <div>Loading preview...</div>
+                </div>
               </div>
             )}
-            <iframe
-              ref={iframeRef}
-              src={url}
-              title="Website Preview"
-              className="w-full h-full"
-              sandbox="allow-scripts allow-same-origin allow-forms"
-              onLoad={handleIframeLoad}
-              onError={handleIframeError}
-            />
             
-            <div 
-              className="absolute inset-0 cursor-pointer z-20"
-              onClick={handleOpenInNewTab}
-              title="Click to open in new tab"
-            />
+            {screenshotUrl && (
+              <img
+                src={screenshotUrl}
+                alt={`Preview of ${url}`}
+                className="w-full h-full object-cover object-top"
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+              />
+            )}
+            
+            {!screenshotUrl && !isLoading && (
+              <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 p-8">
+                <LuImage size={48} className="mb-2" />
+                <div className="text-center">Click "Load" to preview the website</div>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2 mt-4">
@@ -184,7 +221,7 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
             height: '60px'
           }}
           minWidth={400}
-          minHeight={300}
+          minHeight={500}
         />
       )}
       

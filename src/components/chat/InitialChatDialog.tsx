@@ -25,8 +25,8 @@ const InitialChatDialog: React.FC<InitialChatDialogProps> = ({ onStartChat, onCl
   };
 
   const models = [
-    { id: 'claude-sonnet', name: 'Claude Sonnet', description: 'great performance and speed' },
-    { id: 'claude-opus', name: 'Claude Opus', description: 'most capable, but slower and more expensive' }
+    { id: 'claude-sonnet', name: 'Claude Sonnet 4', description: 'great performance and speed' },
+    { id: 'claude-opus', name: 'Claude Opus 4', description: 'most capable, but slower and more expensive' }
   ] as const;
 
   const suggestedPrompts = [
