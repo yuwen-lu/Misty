@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { celebrateCoins as celebrateCoinsUtil, celebrateCoinsWithMessage } from '../utils/celebration';
 import { checkForNewFeatureDiscovery, markFeatureAsDiscovered, DiscoverableFeature } from '../utils/featureDiscovery';
+import { loggedSessionStorage } from '../utils/localStorageLogger';
 
 interface CoinContextType {
   coins: number;
@@ -22,7 +23,7 @@ export const CoinProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const isInitializedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    const savedCoins = localStorage.getItem('userCoins');
+    const savedCoins = loggedSessionStorage.getItem('userCoins');
     if (savedCoins) {
       const coinValue = parseInt(savedCoins, 10);
       setCoins(coinValue);
@@ -32,7 +33,7 @@ export const CoinProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('userCoins', coins.toString());
+    loggedSessionStorage.setItem('userCoins', coins.toString());
     previousCoinsRef.current = coins;
   }, [coins]);
 

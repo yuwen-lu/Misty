@@ -1,4 +1,5 @@
 // Feature discovery utility functions
+import { loggedSessionStorage } from './localStorageLogger';
 
 export interface DiscoverableFeature {
   id: string;
@@ -34,7 +35,7 @@ const STORAGE_KEY = 'discovered-features';
 // Get list of features that have been discovered (shown to user)
 export const getDiscoveredFeatures = (): string[] => {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = loggedSessionStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
@@ -47,7 +48,7 @@ export const markFeatureAsDiscovered = (featureId: string): void => {
     const discovered = getDiscoveredFeatures();
     if (!discovered.includes(featureId)) {
       discovered.push(featureId);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(discovered));
+      loggedSessionStorage.setItem(STORAGE_KEY, JSON.stringify(discovered));
     }
   } catch (error) {
     console.error('Failed to mark feature as discovered:', error);
