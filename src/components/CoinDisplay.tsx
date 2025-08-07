@@ -41,34 +41,37 @@ const CoinDisplay: React.FC = () => {
             {/* Menu */}
             {showMenu && (
                 <div
-                    className="absolute bottom-full left-0 mb-2 font-bold bg-green-500 rounded-xl shadow-lg py-2 min-w-56 animate-slide-up"
+                    className="absolute bottom-full left-0 mb-2 font-bold bg-green-500 rounded-xl shadow-lg py-2 min-w-64 animate-slide-up"
                     style={{ fontFamily: "Geist Mono, cursive" }}
                 >
                     <div className="px-4 py-3 text-lg text-white">
                         Use Diamonds
                     </div>
+
                     <button
                         onClick={handleFontPickingClick}
-                        className="w-full pl-4 py-3 text-left hover:bg-green-600 text-white flex items-center space-x-6 transition-colors rounded-lg"
+                        className="w-full px-4 py-3 hover:bg-green-600 text-white flex items-center justify-between transition-colors rounded-lg"
                     >
-                        <span className="flex items-center space-x-2">
-                            <span className="text-2xl">📝</span>
-                            <span className="font-md">Pick Font</span>
+                        <span className="flex items-center">
+                            <span className="text-2xl w-10 flex-shrink-0">📝</span>
+                            <span className="font-medium text-left ml-1">Pick Font</span>
                         </span>
-                        <span className="ml-auto text-md font-bold opacity-90">
-                            3 💎
+                        <span className="flex items-center space-x-2 text-md font-bold">
+                            <span>3</span>
+                            <span className="text-xl">💎</span>
                         </span>
                     </button>
                     <button
                         onClick={handleGenerateDesignClick}
-                        className="w-full pl-4 py-3 text-left hover:bg-green-600 text-white flex items-center space-x-6 transition-colors rounded-lg"
+                        className="w-full px-4 py-3 hover:bg-green-600 text-white flex items-center justify-between transition-colors rounded-lg"
                     >
-                        <span className="flex items-center space-x-2">
-                            <span className="text-2xl">🎨</span>
-                            <span className="font-md">Generate Design</span>
+                        <span className="flex items-center">
+                            <span className="text-2xl w-10 flex-shrink-0">🎨</span>
+                            <span className="font-medium text-left ml-1">Generate Design</span>
                         </span>
-                        <span className="ml-auto text-md font-bold opacity-90">
-                            5 💎
+                        <span className="flex items-center space-x-2 text-md font-bold">
+                            <span>5</span>
+                            <span className="text-xl">💎</span>
                         </span>
                     </button>
                 </div>
