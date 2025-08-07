@@ -44,17 +44,23 @@ const CoinDisplay: React.FC = () => {
                     className="absolute bottom-full left-0 mb-2 font-bold bg-green-500 rounded-xl shadow-lg py-2 min-w-64 animate-slide-up"
                     style={{ fontFamily: "Geist Mono, cursive" }}
                 >
-                    <div className="px-4 py-3 text-lg text-white">
-                        Use Diamonds
+                    <div className="px-4 py-3 text-white">
+                        <div className="text-lg font-bold">Use Diamonds</div>
+                        <div className="text-sm opacity-90 mt-1">Unlock more design help</div>
                     </div>
 
                     <button
-                        onClick={handleFontPickingClick}
-                        className="w-full px-4 py-3 hover:bg-green-600 text-white flex items-center justify-between transition-colors rounded-lg"
+                        onClick={coins >= 3 ? handleFontPickingClick : undefined}
+                        disabled={coins < 3}
+                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg ${
+                            coins >= 3 ? 'hover:bg-green-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                        }`}
                     >
                         <span className="flex items-center">
                             <span className="text-2xl w-10 flex-shrink-0">📝</span>
-                            <span className="font-medium text-left ml-1">Pick Font</span>
+                            <span className="font-medium text-left ml-1">
+                                {coins >= 3 ? 'Pick Font' : 'Collect more to unlock'}
+                            </span>
                         </span>
                         <span className="flex items-center space-x-2 text-md font-bold">
                             <span>3</span>
@@ -62,12 +68,17 @@ const CoinDisplay: React.FC = () => {
                         </span>
                     </button>
                     <button
-                        onClick={handleGenerateDesignClick}
-                        className="w-full px-4 py-3 hover:bg-green-600 text-white flex items-center justify-between transition-colors rounded-lg"
+                        onClick={coins >= 5 ? handleGenerateDesignClick : undefined}
+                        disabled={coins < 5}
+                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg ${
+                            coins >= 5 ? 'hover:bg-green-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                        }`}
                     >
                         <span className="flex items-center">
                             <span className="text-2xl w-10 flex-shrink-0">🎨</span>
-                            <span className="font-medium text-left ml-1">Generate Design</span>
+                            <span className="font-medium text-left ml-1">
+                                {coins >= 5 ? 'Generate Design' : 'Collect more to unlock'}
+                            </span>
                         </span>
                         <span className="flex items-center space-x-2 text-md font-bold">
                             <span>5</span>
