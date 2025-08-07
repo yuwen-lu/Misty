@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { LuInfo } from 'react-icons/lu';
 import { useCoins } from '../../contexts/CoinContext';
+import { saveFontSelection, removeFontSelection, getUserFontSelections } from '../../utils/userInteractionStorage';
 
 interface FontData {
   name: string;
@@ -100,6 +101,18 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [rewardedCategories, setRewardedCategories] = useState<Set<string>>(new Set());
   const { celebrateCoinsWithMessage } = useCoins();
 
+  // Load existing font selections from storage on mount
+  useEffect(() => {
+    const storedSelections = getUserFontSelections();
+    const selectedFontNames: { [category: string]: string } = {};
+    
+    Object.entries(storedSelections).forEach(([category, selection]) => {
+      selectedFontNames[category] = selection.fontName;
+    });
+    
+    setSelectedFonts(selectedFontNames);
+  }, []);
+
   // Find the category based on the data.category prop, defaulting to Sans Serif
   const categoryTitle = data.category || 'Sans Serif';
   const currentCategoryData = fontCategories.find(cat => cat.title === categoryTitle) || fontCategories[0];
@@ -112,9 +125,19 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     if (selectedFonts[currentCategoryData.title] === currentFont.name) {
       // Deselect if already selected
       delete newSelectedFonts[currentCategoryData.title];
+      removeFontSelection(currentCategoryData.title);
     } else {
       // Select if not selected
       newSelectedFonts[currentCategoryData.title] = currentFont.name;
+      
+      // Save to session storage
+      saveFontSelection(
+        currentCategoryData.title,
+        currentFont.name,
+        currentFont.fontFamily,
+        currentFont.personality,
+        currentFont.description
+      );
       
       // Award diamonds for Sans Serif or Serif selections (not Decorative)
       if ((currentCategoryData.title === 'Sans Serif' || currentCategoryData.title === 'Serif') 

@@ -5,8 +5,7 @@ interface DesignNotesNodeProps {
   id: string;
   data: {
     feedback: {
-      liked: string;
-      disliked: string;
+      notes: string;
     };
     websiteUrl?: string;
     timestamp?: Date;
@@ -86,15 +85,9 @@ const DesignNotesNode: React.FC<DesignNotesNodeProps> = ({ id, data }) => {
 
       {/* Content */}
       <div className="p-4 space-y-3">
-        {feedback.liked && (
-          <p className="text-sm text-gray-600">{feedback.liked}</p>
-        )}
-
-        {feedback.disliked && (
-          <p className="text-sm text-gray-600">{feedback.disliked}</p>
-        )}
-
-        {!feedback.liked && !feedback.disliked && (
+        {feedback.notes ? (
+          <p className="text-sm text-gray-600">{feedback.notes}</p>
+        ) : (
           <p className="text-sm text-gray-400">No feedback provided</p>
         )}
       </div>

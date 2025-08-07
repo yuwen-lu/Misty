@@ -5,7 +5,7 @@ import { celebrate, celebrateCoins } from "../utils/celebration";
 interface DesignFeedbackPopupProps {
     isVisible: boolean;
     onClose: () => void;
-    onSubmit: (feedback: { liked: string; disliked: string }) => void;
+    onSubmit: (feedback: { notes: string }) => void;
     websiteUrl?: string;
 }
 
@@ -15,8 +15,7 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
     onSubmit,
     websiteUrl,
 }) => {
-    const [liked, setLiked] = useState("");
-    const [disliked, setDisliked] = useState("");
+    const [notes, setNotes] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { addCoins } = useCoins();
 
@@ -28,7 +27,7 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
     };
 
     const handleSubmit = async () => {
-        if (!liked.trim() && !disliked.trim()) return;
+        if (!notes.trim()) return;
 
         setIsSubmitting(true);
 
@@ -36,18 +35,16 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
         celebrateFeedback(2);
 
         // Submit feedback
-        onSubmit({ liked: liked.trim(), disliked: disliked.trim() });
+        onSubmit({ notes: notes.trim() });
 
         // Reset form
-        setLiked("");
-        setDisliked("");
+        setNotes("");
         setIsSubmitting(false);
         onClose();
     };
 
     const handleClose = () => {
-        setLiked("");
-        setDisliked("");
+        setNotes("");
         onClose();
     };
 
@@ -104,8 +101,8 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
                 <div className="space-y-4">
                     <div>
                         <textarea
-                            value={liked}
-                            onChange={(e) => setLiked(e.target.value)}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
                             placeholder="Uses clean sans-serif with good hierarchy..."
                             className="w-full p-3 bg-white bg-opacity-50 border border-yellow-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none text-yellow-700 placeholder-yellow-700/50"
                             rows={6}
@@ -123,7 +120,7 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
                     <button
                         onClick={handleSubmit}
                         disabled={
-                            isSubmitting || (!liked.trim() && !disliked.trim())
+                            isSubmitting || !notes.trim()
                         }
                         className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center space-x-2 font-semibold"
                     >

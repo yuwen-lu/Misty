@@ -239,7 +239,22 @@ Adds resources to the user's learning cart for deeper study.
 }
 \`\`\`
 
-### 6. deductDiamonds
+### 6. storeUserIntent
+Stores user design requirements and preferences for design generation context. Use this when users share project details.
+\`\`\`json
+{
+  "tool": "storeUserIntent",
+  "parameters": {
+    "projectType": "blog website",
+    "audience": "casual readers, students", 
+    "topic": "creative arts",
+    "style": "modern",
+    "requirements": ["mobile-friendly", "easy to read"]
+  }
+}
+\`\`\`
+
+### 7. deductDiamonds
 Deducts diamonds when providing premium features. Only use this AFTER successfully providing the feature.
 \`\`\`json
 {

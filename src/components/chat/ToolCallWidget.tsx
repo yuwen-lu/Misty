@@ -106,6 +106,8 @@ const getToolDisplayName = (toolName: string): string => {
     createTextInstructionNode: 'Design Notes',
     createDesignNotesNode: 'User Feedback',
     createDesignCritiqueNode: 'Design Critique',
+    storeUserIntent: 'Requirements Stored',
+    deductDiamonds: 'Use Diamonds',
     imageUpload: 'Image Upload',
     codeRender: 'Code Generation',
   };

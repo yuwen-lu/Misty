@@ -28,6 +28,7 @@ import WebsitePreviewNode from "./customNodes/WebsitePreviewNode";
 import FontNode from "./customNodes/FontNode";
 import TextInstructionNode from "./customNodes/TextInstructionNode";
 import DesignNotesNode from "./customNodes/DesignNotesNode";
+import { addDesignNote } from '../utils/userInteractionStorage';
 import DesignCritiqueNode from "./customNodes/DesignCritiqueNode";
 import CodeEditorPanel from "./CodeEditorPanel";
 import { ChatPanel } from "./chat/ChatPanel";
@@ -221,7 +222,7 @@ const FlowComponent: React.FC = () => {
         setShowFeedbackPopup(true);
     };
 
-    const handleFeedbackSubmit = (feedback: { liked: string; disliked: string }) => {
+    const handleFeedbackSubmit = (feedback: { notes: string }) => {
         // Create notes node connected to the WebPreview node
         createDesignNotesNode(currentFeedbackNodeId, currentFeedbackUrl, feedback);
         setShowFeedbackPopup(false);
@@ -517,9 +518,15 @@ const FlowComponent: React.FC = () => {
     }, [setNodes, currentColumn]);
 
     // Function to create design notes node connected to WebPreview node
-    const createDesignNotesNode = useCallback((sourceNodeId: string, websiteUrl: string, feedback: { liked: string; disliked: string }) => {
+    const createDesignNotesNode = useCallback((sourceNodeId: string, websiteUrl: string, feedback: { notes: string }) => {
         const sourceNode = nodes.find(node => node.id === sourceNodeId);
         if (!sourceNode) return;
+
+        // Extract website name from URL for storage
+        const websiteName = websiteUrl ? new URL(websiteUrl).hostname : 'Unknown Website';
+        
+        // Save the design note to session storage
+        const noteId = addDesignNote(websiteName, feedback.notes);
 
         // Position the notes node to the right of the WebPreview node
         const notesNodeId = `design-notes-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -533,7 +540,8 @@ const FlowComponent: React.FC = () => {
             data: {
                 feedback,
                 websiteUrl,
-                timestamp: new Date()
+                timestamp: new Date(),
+                noteId // Store the note ID for potential future reference
             }
         };
 

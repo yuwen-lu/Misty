@@ -5,6 +5,7 @@ import { ChatMessageList, Message } from './ChatMessageList';
 import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from './ChatMessage';
 import { ToolCall } from './ToolCallWidget';
 import { useCoins } from '../../contexts/CoinContext';
+import { storeUserIntent } from '../../utils/userInteractionStorage';
 
 interface ChatPanelProps {
   isMinimized: boolean;
@@ -58,6 +59,15 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
           fontNodes.push(parsed);
         } else if (parsed.tool === 'createTextInstructionNode' && parsed.parameters) {
           textInstructionNodes.push(parsed);
+        } else if (parsed.tool === 'storeUserIntent' && parsed.parameters) {
+          storeUserIntent(parsed.parameters);
+          toolCalls.push({
+            id: `store-intent-${Date.now()}`,
+            toolName: 'storeUserIntent',
+            description: 'User design requirements stored',
+            nodesCreated: [],
+            isClickable: false
+          });
         } else if (parsed.tool === 'deductDiamonds' && parsed.parameters) {
           const amount = parsed.parameters.amount || 0;
           totalDiamondsToDeduct += amount;
