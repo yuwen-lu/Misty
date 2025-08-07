@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Minimize2, Maximize2 } from 'lucide-react';
+import { Minimize2, MessageCircle } from 'lucide-react';
 import { ChatInput, Models } from './ChatInput';
 import { ChatMessageList, Message } from './ChatMessageList';
 import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from './ChatMessage';
@@ -135,6 +135,14 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Scroll to bottom when chat opens
+  useEffect(() => {
+    if (!isMinimized) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [isMinimized]);
 
   // Handle initial message when component mounts
   useEffect(() => {
@@ -329,7 +337,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
           onClick={onToggleMinimize}
           className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-colors"
         >
-          <Maximize2 size={20} />
+          <MessageCircle size={20} />
         </button>
       </div>
     );

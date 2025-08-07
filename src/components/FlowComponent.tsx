@@ -79,7 +79,7 @@ const edgeTypes = {
 
 const initialNodes: Node[] = [
     {
-        id: "1",
+        id: "initial-instruction",
         type: "textInstructionNode",
         position: { x: 150, y: 100 },
         data: { 
@@ -167,26 +167,6 @@ const FlowComponent: React.FC = () => {
             }
         };
     }, [abortController]);
-
-    // Add initial WebsitePreviewNode on mount
-    useEffect(() => {
-        // Small delay to ensure all handlers are ready
-        setTimeout(() => {
-            const initialWebPreviewNode: Node = {
-                id: "web-preview-initial",
-                type: "websitePreviewNode",
-                position: { x: 600, y: 100 },
-                data: { 
-                    url: "https://yuwen.io",
-                    onShowFeedbackPopup: handleShowFeedbackPopup,
-                    onGenerateCritique: handleGenerateCritique
-                },
-                style: { width: 1280, height: 950 },
-            };
-            
-            setNodes((nds) => [...nds, initialWebPreviewNode]);
-        }, 100);
-    }, []); // Empty dependency array means this runs once on mount
 
     const toggleCodePanelVisible = () => {
         setCodePanelVisible(!codePanelVisible);

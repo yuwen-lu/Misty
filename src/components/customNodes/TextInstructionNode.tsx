@@ -40,13 +40,10 @@ const TextInstructionNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
       <Handle
         className="bg-blue-600 opacity-50"
         style={{
-          width: '20px',
-          height: '60px',
+          width: '5px',
+          height: '5px',
           borderRadius: '5px',
-          borderWidth: '2px',
-          borderColor: 'white',
-          borderStyle: 'solid',
-          marginRight: '-5px',
+          marginRight: '-2px',
         }}
         type="source"
         position={Position.Right}

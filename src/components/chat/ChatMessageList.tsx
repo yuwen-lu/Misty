@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { ChatMessage, ChatMessageRole } from './ChatMessage';
 import { ToolCall } from './ToolCallWidget';
 
@@ -16,7 +16,7 @@ interface ChatMessageListProps {
   onNavigateToCanvas?: (x: number, y: number) => void;
 }
 
-export const ChatMessageList: React.FC<ChatMessageListProps> = ({
+export const ChatMessageList: React.FC<ChatMessageListProps> = memo(({
   messages,
   onAddToInput,
   onNavigateToCanvas,
@@ -41,4 +41,4 @@ export const ChatMessageList: React.FC<ChatMessageListProps> = ({
       ))}
     </div>
   );
-};
+});

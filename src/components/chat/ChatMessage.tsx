@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 import { User, Bot } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -41,7 +41,46 @@ interface ChatMessageProps {
   onNavigateToCanvas?: (x: number, y: number) => void;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ 
+// Define markdown components outside component to prevent recreation
+const markdownComponents = {
+  p: ({ children }: any) => <p className="mb-2 last:mb-0">{children}</p>,
+  pre: ({ children }: any) => (
+    <pre className="bg-gray-50 p-3 rounded-md overflow-x-auto my-2 text-sm whitespace-pre-wrap">
+      {children}
+    </pre>
+  ),
+  code: ({ inline, className, children, ...props }: any) => {
+    const match = /language-(\w+)/.exec(className || '');
+    return inline ? (
+      <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+        {children}
+      </code>
+    ) : (
+      <code className={`${className} font-mono block whitespace-pre`} {...props}>
+        {children}
+      </code>
+    );
+  },
+  ul: ({ children }: any) => <ul className="list-disc list-inside mb-2">{children}</ul>,
+  ol: ({ children }: any) => <ol className="list-decimal list-inside mb-2">{children}</ol>,
+  li: ({ children }: any) => <li className="mb-1">{children}</li>,
+  blockquote: ({ children }: any) => <blockquote className="border-l-4 border-gray-300 pl-4 italic my-2">{children}</blockquote>,
+  h1: ({ children }: any) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+  h2: ({ children }: any) => <h2 className="text-base font-bold mb-2">{children}</h2>,
+  h3: ({ children }: any) => <h3 className="text-sm font-bold mb-1">{children}</h3>,
+  a: ({ children, href }: any) => <a href={href} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+  table: ({ children }: any) => <table className="border-collapse table-auto w-full my-2">{children}</table>,
+  thead: ({ children }: any) => <thead className="bg-gray-50">{children}</thead>,
+  tbody: ({ children }: any) => <tbody>{children}</tbody>,
+  tr: ({ children }: any) => <tr className="border-b">{children}</tr>,
+  th: ({ children }: any) => <th className="border px-4 py-2 text-left font-medium">{children}</th>,
+  td: ({ children }: any) => <td className="border px-4 py-2">{children}</td>,
+  hr: () => <hr className="my-4 border-gray-300" />,
+  strong: ({ children }: any) => <strong className="font-semibold">{children}</strong>,
+  em: ({ children }: any) => <em className="italic">{children}</em>,
+};
+
+export const ChatMessage: React.FC<ChatMessageProps> = memo(({ 
   role, 
   content, 
   timestamp,
@@ -108,43 +147,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         <div className="prose prose-sm max-w-none text-sm">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            components={{
-              p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-              pre: ({ children }) => (
-                <pre className="bg-gray-50 p-3 rounded-md overflow-x-auto my-2 text-sm whitespace-pre-wrap">
-                  {children}
-                </pre>
-              ),
-              code: ({ inline, className, children, ...props }: any) => {
-                const match = /language-(\w+)/.exec(className || '');
-                return inline ? (
-                  <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
-                    {children}
-                  </code>
-                ) : (
-                  <code className={`${className} font-mono block whitespace-pre`} {...props}>
-                    {children}
-                  </code>
-                );
-              },
-              ul: ({ children }) => <ul className="list-disc list-inside mb-2">{children}</ul>,
-              ol: ({ children }) => <ol className="list-decimal list-inside mb-2">{children}</ol>,
-              li: ({ children }) => <li className="mb-1">{children}</li>,
-              blockquote: ({ children }) => <blockquote className="border-l-4 border-gray-300 pl-4 italic my-2">{children}</blockquote>,
-              h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
-              h2: ({ children }) => <h2 className="text-base font-bold mb-2">{children}</h2>,
-              h3: ({ children }) => <h3 className="text-sm font-bold mb-1">{children}</h3>,
-              a: ({ children, href }) => <a href={href} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">{children}</a>,
-              table: ({ children }) => <table className="border-collapse table-auto w-full my-2">{children}</table>,
-              thead: ({ children }) => <thead className="bg-gray-50">{children}</thead>,
-              tbody: ({ children }) => <tbody>{children}</tbody>,
-              tr: ({ children }) => <tr className="border-b">{children}</tr>,
-              th: ({ children }) => <th className="border px-4 py-2 text-left font-medium">{children}</th>,
-              td: ({ children }) => <td className="border px-4 py-2">{children}</td>,
-              hr: () => <hr className="my-4 border-gray-300" />,
-              strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-              em: ({ children }) => <em className="italic">{children}</em>,
-            }}
+            components={markdownComponents}
           >
             {processedContent}
           </ReactMarkdown>
@@ -178,4 +181,4 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       </div>
     </div>
   );
-};
+});
