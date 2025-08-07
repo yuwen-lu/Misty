@@ -3,6 +3,7 @@ import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
 import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuPenTool, LuEye } from 'react-icons/lu';
 import { CircleAlert } from 'lucide-react';
 import { useCoins } from '../../contexts/CoinContext';
+import { showInstructionalPopup } from '../../utils/celebration';
 
 const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [url, setUrl] = useState<string>(data.url || '');
@@ -54,29 +55,32 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
   const handleOpenInNewTab = () => {
     if (url) {
-      // Mark as visited and trigger celebration
-      setHasVisited(true);
-      celebrateCoinsWithMessage(1, "Website opening...");
-      
-      // Track window visibility to detect return
-      const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible' && hasVisited) {
-          // User returned - show feedback popup
-          if (data.onShowFeedbackPopup) {
-            data.onShowFeedbackPopup(id, url);
+      // Show instructional popup first
+      showInstructionalPopup(() => {
+        // Mark as visited and trigger celebration
+        setHasVisited(true);
+        celebrateCoinsWithMessage(1, "Website opening...");
+        
+        // Track window visibility to detect return
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === 'visible' && hasVisited) {
+            // User returned - show feedback popup
+            if (data.onShowFeedbackPopup) {
+              data.onShowFeedbackPopup(id, url);
+            }
+            // Clean up listener
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
           }
-          // Clean up listener
-          document.removeEventListener('visibilitychange', handleVisibilityChange);
-        }
-      };
-      
-      // Add visibility listener
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-      
-      // Open website after delay
-      setTimeout(() => {
-        window.open(url, '_blank', 'noopener,noreferrer');
-      }, 1000);
+        };
+        
+        // Add visibility listener
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+        // Open website after delay
+        setTimeout(() => {
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }, 1000);
+      });
     }
   };
 

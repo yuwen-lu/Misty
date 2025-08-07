@@ -236,7 +236,7 @@ const FlowComponent: React.FC = () => {
         
         // Method 1: Try setCenter (React Flow's built-in method)
         try {
-            setCenter(x, y, { zoom: 0.8, duration: 800 });
+            setCenter(x, y, { zoom: 0.3, duration: 800 });
             console.log('✅ setCenter called');
         } catch (error) {
             console.error('❌ setCenter failed:', error);
@@ -255,7 +255,7 @@ const FlowComponent: React.FC = () => {
                 
                 console.log('📐 Calculated viewport position:', { newX, newY });
                 
-                setViewport({ x: newX, y: newY, zoom: 0.8 }, { duration: 800 });
+                setViewport({ x: newX, y: newY, zoom: 0.3 }, { duration: 800 });
                 console.log('✅ setViewport called');
             } catch (viewportError) {
                 console.error('❌ setViewport failed:', viewportError);
