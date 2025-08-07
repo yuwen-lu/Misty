@@ -87,7 +87,7 @@ const initialNodes: Node[] = [
             instructions: [
                 "Use the chat to describe your design",
                 "Interact with canvas to earn 💎",
-                "Use 💎 to generate design"
+                "Accumulate 10 💎 to generate design"
             ]
         },
     },
@@ -185,9 +185,9 @@ const FlowComponent: React.FC = () => {
         setShowInitialDialog(false);
     };
 
-    const handleToggleChatMinimize = () => {
-        setIsChatMinimized(!isChatMinimized);
-    };
+    const handleToggleChatMinimize = useCallback(() => {
+        setIsChatMinimized(prev => !prev);
+    }, []);
 
     // Design feedback handlers
     const handleShowFeedbackPopup = (nodeId: string, websiteUrl: string) => {
@@ -274,11 +274,11 @@ const FlowComponent: React.FC = () => {
     };
 
     // Global tracker for next available position to prevent overlaps
-    const nextWebPreviewPosition = React.useRef({ x: 2500, y: 200 });
+    const nextWebPreviewPosition = React.useRef({ x: 1500, y: 200 });
     // Global tracker for column position (0 or 1 for two columns)
     const currentColumn = React.useRef(0);
     // Function to create WebPreviewNodes from chat API responses
-    const createWebPreviewNodes = async (webPreviewNodesData: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void, nodeIds?: string[]) => {
+    const createWebPreviewNodes = useCallback(async (webPreviewNodesData: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void, nodeIds?: string[]) => {
         
         const newNodes: Node[] = [];
         const nodeWidth = 1280; // Match default WebsitePreviewNode width
@@ -364,10 +364,10 @@ const FlowComponent: React.FC = () => {
             onFirstNodeCreated(firstNodePosition.x, firstNodePosition.y);
         }
 
-    };
+    }, [nodes, setNodes, nextWebPreviewPosition, currentColumn, searchForWebsiteUrl]);
 
     // Function to create FontNodes from chat API responses
-    const createFontNodes = async (fontNodesData: FontNodeData[]) => {
+    const createFontNodes = useCallback(async (fontNodesData: FontNodeData[]) => {
         const newNodes: Node[] = [];
         const nodeWidth = 700;
         const nodeHeight = 650;
@@ -413,10 +413,10 @@ const FlowComponent: React.FC = () => {
         if (newNodes.length > 0) {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
         }
-    };
+    }, [setNodes, currentColumn]);
 
     // Function to create TextInstructionNodes from chat API responses
-    const createTextInstructionNodes = async (textInstructionNodesData: TextInstructionNodeData[]) => {
+    const createTextInstructionNodes = useCallback(async (textInstructionNodesData: TextInstructionNodeData[]) => {
         const newNodes: Node[] = [];
         const nodeWidth = 350;
         const nodeHeight = 200;
@@ -444,10 +444,10 @@ const FlowComponent: React.FC = () => {
         if (newNodes.length > 0) {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
         }
-    };
+    }, [setNodes, currentColumn]);
 
     // Function to create design notes node connected to WebPreview node
-    const createDesignNotesNode = (sourceNodeId: string, websiteUrl: string, feedback: { liked: string; disliked: string }) => {
+    const createDesignNotesNode = useCallback((sourceNodeId: string, websiteUrl: string, feedback: { liked: string; disliked: string }) => {
         const sourceNode = nodes.find(node => node.id === sourceNodeId);
         if (!sourceNode) return;
 
@@ -479,10 +479,10 @@ const FlowComponent: React.FC = () => {
         // Add node and edge to the flow
         setNodes(prevNodes => [...prevNodes, newNotesNode]);
         setEdges(prevEdges => [...prevEdges, newEdge]);
-    };
+    }, [nodes, setNodes, setEdges]);
 
     // Function to create design critique node connected to WebPreview node
-    const handleGenerateCritique = async (sourceNodeId: string, websiteUrl: string, screenshotUrl: string) => {
+    const handleGenerateCritique = useCallback(async (sourceNodeId: string, websiteUrl: string, screenshotUrl: string) => {
         console.log("Generating critique for website:", websiteUrl);
         console.log("sourceNodeId:", sourceNodeId);
         
@@ -603,7 +603,7 @@ const FlowComponent: React.FC = () => {
                 )
             );
         }
-    };
+    }, [setNodes, setEdges, nodes]);
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { Minimize2, MessageCircle } from 'lucide-react';
 import { ChatInput, Models } from './ChatInput';
 import { ChatMessageList, Message } from './ChatMessageList';
@@ -16,7 +16,7 @@ interface ChatPanelProps {
   onCenterCanvas?: (x: number, y: number) => void;
 }
 
-export const ChatPanel: React.FC<ChatPanelProps> = ({
+const ChatPanelComponent: React.FC<ChatPanelProps> = ({
   isMinimized,
   onToggleMinimize,
   initialMessage,
@@ -139,7 +139,6 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   // Scroll to bottom when chat opens
   useEffect(() => {
     if (!isMinimized) {
-      // Small delay to ensure DOM is rendered
       setTimeout(scrollToBottom, 100);
     }
   }, [isMinimized]);
@@ -393,3 +392,18 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
     </div>
   );
 };
+
+// Custom comparison function to prevent unnecessary re-renders
+const arePropsEqual = (prevProps: ChatPanelProps, nextProps: ChatPanelProps) => {
+  // Only re-render if these critical props change
+  return (
+    prevProps.isMinimized === nextProps.isMinimized &&
+    prevProps.initialMessage === nextProps.initialMessage &&
+    prevProps.selectedModel === nextProps.selectedModel &&
+    prevProps.onToggleMinimize === nextProps.onToggleMinimize
+    // Ignore onCenterCanvas, onCreateWebPreviewNode, etc. as they change frequently
+    // but don't affect the display when chat is just open
+  );
+};
+
+export const ChatPanel = memo(ChatPanelComponent, arePropsEqual);
