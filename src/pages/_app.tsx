@@ -1,11 +1,57 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { AppProps } from 'next/app';
 import { ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import '../index.css';
-import { CoinProvider } from '../contexts/CoinContext';
+import { CoinProvider, useCoins } from '../contexts/CoinContext';
 import { ChatProvider } from '../contexts/ChatContext';
 import CoinDisplay from '../components/CoinDisplay';
+import FeatureDiscoveryBanner from '../components/FeatureDiscoveryBanner';
+
+// Inner component that has access to CoinContext
+const AppContent: React.FC<{ Component: React.ComponentType<any>; pageProps: any }> = ({
+  Component,
+  pageProps
+}) => {
+  const { discoveredFeature, clearDiscoveredFeature } = useCoins();
+  const [showFeatureBanner, setShowFeatureBanner] = useState(false);
+  const [highlightedFeature, setHighlightedFeature] = useState<string | null>(null);
+
+  // Handle feature discovery
+  useEffect(() => {
+    if (discoveredFeature) {
+      setShowFeatureBanner(true);
+      setHighlightedFeature(discoveredFeature.id);
+      
+      // Clear highlighted feature after 6 seconds (banner auto-closes after 6s)
+      const timer = setTimeout(() => {
+        setHighlightedFeature(null);
+      }, 6000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [discoveredFeature]);
+
+  const handleCloseBanner = () => {
+    setShowFeatureBanner(false);
+    clearDiscoveredFeature();
+  };
+
+  return (
+    <>
+      <Component {...pageProps} />
+      <CoinDisplay 
+        highlightFeatureId={highlightedFeature}
+        forceShowMenu={!!highlightedFeature}
+      />
+      <FeatureDiscoveryBanner
+        isVisible={showFeatureBanner && !!discoveredFeature}
+        onClose={handleCloseBanner}
+        feature={discoveredFeature || { name: '', icon: '', cost: 0, description: '' }}
+      />
+    </>
+  );
+};
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -27,8 +73,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <CoinProvider>
       <ChatProvider>
         <ReactFlowProvider>
-          <Component {...pageProps} />
-          <CoinDisplay />
+          <AppContent Component={Component} pageProps={pageProps} />
         </ReactFlowProvider>
       </ChatProvider>
     </CoinProvider>

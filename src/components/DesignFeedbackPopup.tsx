@@ -70,7 +70,7 @@ const DesignFeedbackPopup: React.FC<DesignFeedbackPopupProps> = ({
 
                 <div className="mb-4">
                     {/* Design aspect prompts */}
-                    <div className="text-xs text-yellow-700 mb-3 bg-yellow-100 bg-opacity-50 p-3 rounded border-l-4 border-yellow-600">
+                    <div className="text-sm text-yellow-700 mb-3 bg-yellow-100 bg-opacity-50 p-3 rounded border-l-4 border-yellow-600">
                         <p className="font-semibold mb-2">
                             Consider sharing thoughts on:
                         </p>

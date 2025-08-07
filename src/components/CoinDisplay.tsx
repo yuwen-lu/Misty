@@ -1,12 +1,22 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useCoins } from "../contexts/CoinContext";
 import { useChat } from "../contexts/ChatContext";
 
-const CoinDisplay: React.FC = () => {
+interface CoinDisplayProps {
+    highlightFeatureId?: string | null;
+    forceShowMenu?: boolean;
+}
+
+const CoinDisplay: React.FC<CoinDisplayProps> = ({ 
+    highlightFeatureId = null, 
+    forceShowMenu = false
+}) => {
     const { coins } = useCoins();
     const { sendChatMessage } = useChat();
     const [showMenu, setShowMenu] = useState(false);
+    const [highlightedFeature, setHighlightedFeature] = useState<string | null>(null);
     const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const highlightTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleMouseEnter = () => {
         if (closeTimeoutRef.current) {
@@ -32,6 +42,35 @@ const CoinDisplay: React.FC = () => {
         setShowMenu(false);
     };
 
+    // Handle feature highlighting from props
+    useEffect(() => {
+        if (highlightFeatureId) {
+            setHighlightedFeature(highlightFeatureId);
+            setShowMenu(true);
+            
+            // Clear highlight after 4 seconds
+            highlightTimeoutRef.current = setTimeout(() => {
+                setHighlightedFeature(null);
+                if (!forceShowMenu) {
+                    setShowMenu(false);
+                }
+            }, 4000);
+        }
+        
+        return () => {
+            if (highlightTimeoutRef.current) {
+                clearTimeout(highlightTimeoutRef.current);
+            }
+        };
+    }, [highlightFeatureId, forceShowMenu]);
+
+    // Handle forced menu display
+    useEffect(() => {
+        if (forceShowMenu) {
+            setShowMenu(true);
+        }
+    }, [forceShowMenu]);
+
     return (
         <div
             className="fixed bottom-4 left-20 z-50"
@@ -41,7 +80,7 @@ const CoinDisplay: React.FC = () => {
             {/* Menu */}
             {showMenu && (
                 <div
-                    className="absolute bottom-full left-0 mb-2 font-bold bg-green-500 rounded-xl shadow-lg py-2 min-w-64 animate-slide-up"
+                    className="absolute bottom-full left-0 mb-2 font-bold bg-green-500 rounded-xl shadow-lg pt-2 min-w-64 animate-slide-up"
                     style={{ fontFamily: "Geist Mono, cursive" }}
                 >
                     <div className="px-4 py-3 text-white">
@@ -52,8 +91,10 @@ const CoinDisplay: React.FC = () => {
                     <button
                         onClick={coins >= 3 ? handleFontPickingClick : undefined}
                         disabled={coins < 3}
-                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg relative group ${
+                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-all rounded-lg relative group ${
                             coins >= 3 ? 'hover:bg-green-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                        } ${
+                            highlightedFeature === 'pick-font' ? 'bg-green-400 animate-pulse shadow-lg' : ''
                         }`}
                         title={coins < 3 ? 'Collect more diamonds to unlock' : ''}
                     >
@@ -74,8 +115,10 @@ const CoinDisplay: React.FC = () => {
                     <button
                         onClick={coins >= 5 ? handleGenerateDesignClick : undefined}
                         disabled={coins < 5}
-                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg relative group ${
+                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-all rounded-lg relative group ${
                             coins >= 5 ? 'hover:bg-green-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
+                        } ${
+                            highlightedFeature === 'generate-design' ? 'bg-green-400 animate-pulse shadow-lg' : ''
                         }`}
                         title={coins < 5 ? 'Collect more diamonds to unlock' : ''}
                     >
