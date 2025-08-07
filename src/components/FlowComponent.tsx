@@ -369,51 +369,90 @@ const FlowComponent: React.FC = () => {
     // Function to create FontNodes from chat API responses
     const createFontNodes = useCallback(async (fontNodesData: FontNodeData[]) => {
         const newNodes: Node[] = [];
+        const newEdges: Edge[] = [];
         const nodeWidth = 700;
         const nodeHeight = 650;
         const horizontalSpacing = 50;
         const verticalSpacing = 100;
         
+        // First, create a text instruction node with font guidance
+        const instructionNodeWidth = 400;
+        const instructionNodeX = currentColumn.current * (nodeWidth + horizontalSpacing) + 50;
+        const instructionNodeY = 50;
+        
+        const instructionNode: Node = {
+            id: `font-instruction-${Date.now()}`,
+            type: 'textInstructionNode',
+            position: { x: instructionNodeX, y: instructionNodeY },
+            data: {
+                title: 'Font Selection Guidelines',
+                instructions: [
+                    '• Use 1-2 fonts maximum for consistency',
+                    '• Headers: Bold, impactful fonts',
+                    '• Body text: Readable, comfortable fonts',
+                    '• Match font personality to brand voice',
+                    '• Test readability at all sizes'
+                ],
+                designContext: 'Choosing the right fonts sets the tone for your entire design'
+            },
+            style: {
+                width: instructionNodeWidth,
+            },
+        };
+        
+        newNodes.push(instructionNode);
+        
         // Create separate nodes for each font category
         const categories = ['Sans Serif', 'Serif', 'Decorative'];
+        const baseX = instructionNodeX + instructionNodeWidth + horizontalSpacing + 100;
+        const baseY = instructionNodeY;
         
-        for (const fontNodeData of fontNodesData) {
-            const baseX = currentColumn.current * (nodeWidth + horizontalSpacing) + 50;
-            const baseY = 50;
+        // Extract the preview text from the first font data
+        const previewText = fontNodesData.length > 0 ? fontNodesData[0].parameters.textToDisplay : "Your text here";
+        
+        categories.forEach((category, categoryIndex) => {
+            const x = baseX + (categoryIndex * (nodeWidth + horizontalSpacing));
+            const y = baseY;
             
-            categories.forEach((category, categoryIndex) => {
-                const x = baseX + (categoryIndex * (nodeWidth + horizontalSpacing));
-                const y = baseY;
-                
-                const newNode: Node = {
-                    id: `font-${category.toLowerCase().replace(' ', '-')}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                    type: 'fontNode',
-                    position: { x, y },
-                    data: {
-                        previewText: fontNodeData.parameters.previewText,
-                        category: category,
-                        onFontSelect: (nodeId: string, selectedFonts: { [category: string]: string }) => {
-                            console.log('Font selection:', selectedFonts);
-                            // Here you could trigger additional actions when fonts are selected
-                        }
-                    },
-                    style: {
-                        width: nodeWidth,
-                        height: nodeHeight,
-                    },
-                };
-                
-                newNodes.push(newNode);
-            });
+            const fontNode: Node = {
+                id: `font-${category.toLowerCase().replace(' ', '-')}-${Date.now()}`,
+                type: 'fontNode',
+                position: { x, y },
+                data: {
+                    previewText: previewText,
+                    category: category,
+                    onFontSelect: (nodeId: string, selectedFonts: { [category: string]: string }) => {
+                        console.log('Font selection:', selectedFonts);
+                    }
+                },
+                style: {
+                    width: nodeWidth,
+                    height: nodeHeight,
+                },
+            };
             
-            // Move to next row for next set of font nodes
-            currentColumn.current++;
-        }
+            newNodes.push(fontNode);
+            
+            // Create edge from instruction node to font node
+            const edge: Edge = {
+                id: `edge-${instructionNode.id}-${fontNode.id}`,
+                source: instructionNode.id,
+                target: fontNode.id,
+                targetHandle: 'a', // The FontNode has a target handle with id="a"
+                type: 'smoothstep',
+            };
+            
+            newEdges.push(edge);
+        });
+        
+        // Move to next column for future nodes
+        currentColumn.current += 4; // Account for instruction node + 3 font nodes
         
         if (newNodes.length > 0) {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
+            setEdges((prevEdges) => [...prevEdges, ...newEdges]);
         }
-    }, [setNodes, currentColumn]);
+    }, [setNodes, setEdges, currentColumn]);
 
     // Function to create TextInstructionNodes from chat API responses
     const createTextInstructionNodes = useCallback(async (textInstructionNodesData: TextInstructionNodeData[]) => {

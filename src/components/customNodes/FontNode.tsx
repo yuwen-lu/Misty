@@ -132,12 +132,14 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
   return (
     <div 
-      className="font-node flex flex-col px-6 py-5 text-gray-900 bg-gray-50 bg-opacity-90 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-gray-900 transition-all duration-300 ease-in-out overflow-hidden"
+      className="font-node flex flex-col px-6 py-5 text-gray-900 bg-gray-50 bg-opacity-90 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg border-t-8 border-t-gray-900 transition-all duration-300 ease-in-out"
       style={{
         width: '100%',
         height: '100%',
         minWidth: '700px',
-        minHeight: '750px'
+        minHeight: '750px',
+        maxHeight: '750px',
+        overflow: 'hidden'
       }}
     >
       
@@ -146,15 +148,15 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
       </div>
 
       {/* Font Selection Layout */}
-      <div className="flex gap-4 flex-1 min-h-0">
+      <div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
         {/* Font List Sidebar */}
-        <div className="w-48 bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="w-48 bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
           <div className="p-3 bg-gray-50 border-b border-gray-200">
             <div className="font-medium text-gray-900 text-sm">
               {currentCategoryData.title} Fonts
             </div>
           </div>
-          <div className="overflow-auto max-h-96">
+          <div className="overflow-auto flex-1">
             {currentCategoryData.fonts.map((font, index) => {
               const isSelected = selectedFonts[currentCategoryData.title] === font.name;
               const isActive = currentFontIndex === index;
@@ -186,7 +188,7 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         </div>
 
         {/* Font Preview Panel */}
-        <div className="flex-1 bg-white rounded-lg p-6 border border-gray-200">
+        <div className="flex-1 bg-white rounded-lg p-6 border border-gray-200 overflow-auto">
           {/* Current Font Header */}
           <div className="mb-6">
             <div 
@@ -203,7 +205,7 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
           {/* Font Preview Text */}
           <div className="mb-6">
             <div 
-              className="text-3xl mb-3 text-gray-900"
+              className="text-xl mb-3 text-gray-900 break-words leading-relaxed"
               style={{ fontFamily: currentFont.fontFamily }}
             >
               {previewText}
@@ -254,7 +256,7 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
 
       {/* Validation Status */}
       {!hasRequiredFont && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 mb-3">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 mt-4">
           <div className="text-xs text-yellow-800">
             ⚠️ Please select at least one Sans Serif or Serif font for your main typography
           </div>
@@ -273,6 +275,24 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
         </div>
       )}
 
+      {/* Target handle on the left */}
+      <Handle
+        className="bg-gray-900 opacity-50"
+        style={{
+          width: '20px',
+          height: '60px',
+          borderRadius: '5px',
+          borderWidth: '2px',
+          borderColor: 'white',
+          borderStyle: 'solid',
+          marginLeft: '-10px',
+        }}
+        type="target"
+        position={Position.Left}
+        id="a"
+      />
+      
+      {/* Source handle on the right */}
       <Handle
         className="bg-gray-900 opacity-50"
         style={{

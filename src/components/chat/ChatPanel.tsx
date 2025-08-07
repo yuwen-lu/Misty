@@ -90,6 +90,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
     
     // Execute tool functions with batched tools and track created nodes
     if (webPreviewNodes.length > 0 && onCreateWebPreviewNode) {
+      console.log('Creating web preview nodes:', webPreviewNodes);
       // Generate node IDs here and pass them to the creation function
       const timestamp = Date.now();
       const nodeIds = webPreviewNodes.map((_, index) => `web-preview-${timestamp}-${index}`);

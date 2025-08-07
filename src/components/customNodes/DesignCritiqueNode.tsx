@@ -97,7 +97,7 @@ const DesignCritiqueNode: React.FC<DesignCritiqueNodeProps> = ({ id, data }) => 
             {critique}
           </div>
         ) : (
-          <p className="text-md text-gray-400">Generating critique...</p>
+          <p className="text-md text-gray-400">Loading critique...</p>
         )}
       </div>
     </div>
