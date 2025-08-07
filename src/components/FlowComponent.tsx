@@ -57,6 +57,7 @@ import {
 } from "../prompts";
 import ErrorPopup from "./ErrorPopup";
 import DesignFeedbackPopup from "./DesignFeedbackPopup";
+import WebInspectionGuidePopup from "./WebInspectionGuidePopup";
 import { BookList } from "./renderCode/BookList";
 import ButtonEdge from "./ButtonEdge";
 
@@ -162,6 +163,10 @@ const FlowComponent: React.FC = () => {
     const [currentFeedbackNodeId, setCurrentFeedbackNodeId] = useState<string>('');
     const [currentFeedbackUrl, setCurrentFeedbackUrl] = useState<string>('');
     
+    // Web inspection guide states
+    const [showInspectionGuide, setShowInspectionGuide] = useState(false);
+    const [inspectionCallback, setInspectionCallback] = useState<(() => void) | null>(null);
+    
 
     useEffect(() => {
         // Cleanup on unmount
@@ -228,6 +233,25 @@ const FlowComponent: React.FC = () => {
         setShowFeedbackPopup(false);
         setCurrentFeedbackNodeId('');
         setCurrentFeedbackUrl('');
+    };
+
+    // Web inspection guide handlers
+    const handleShowInspectionGuide = (onConfirm: () => void) => {
+        setInspectionCallback(() => onConfirm);
+        setShowInspectionGuide(true);
+    };
+
+    const handleInspectionGuideClose = () => {
+        setShowInspectionGuide(false);
+        setInspectionCallback(null);
+    };
+
+    const handleInspectionGuideConfirm = () => {
+        setShowInspectionGuide(false);
+        if (inspectionCallback) {
+            inspectionCallback();
+        }
+        setInspectionCallback(null);
     };
 
     // Simple function to center canvas view on a position
@@ -359,6 +383,7 @@ const FlowComponent: React.FC = () => {
                         );
                     },
                     onShowFeedbackPopup: handleShowFeedbackPopup,
+                    onShowInspectionGuide: handleShowInspectionGuide,
                     onGenerateCritique: handleGenerateCritique
                 },
                 style: { width: nodeWidth, height: nodeHeight },
@@ -1703,6 +1728,13 @@ const FlowComponent: React.FC = () => {
                 onClose={handleFeedbackClose}
                 onSubmit={handleFeedbackSubmit}
                 websiteUrl={currentFeedbackUrl}
+            />
+            
+            {/* Web Inspection Guide Popup */}
+            <WebInspectionGuidePopup
+                isVisible={showInspectionGuide}
+                onClose={handleInspectionGuideClose}
+                onConfirm={handleInspectionGuideConfirm}
             />
             
             {/* <TSXDiff /> */}

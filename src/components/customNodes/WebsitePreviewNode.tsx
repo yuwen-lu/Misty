@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps, NodeResizeControl } from 'reactflow';
 import { LuExternalLink, LuRefreshCw, LuLink, LuImage, LuPenTool, LuEye } from 'react-icons/lu';
 import { CircleAlert } from 'lucide-react';
 import { useCoins } from '../../contexts/CoinContext';
-import { showInstructionalPopup } from '../../utils/celebration';
+// Removed HTML-creating function import - now using proper React component
 
 const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [url, setUrl] = useState<string>(data.url || '');
@@ -59,7 +59,8 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const handleOpenInNewTab = () => {
     if (url) {
       // Show instructional popup first
-      showInstructionalPopup(() => {
+      if (data.onShowInspectionGuide) {
+        data.onShowInspectionGuide(() => {
         // Clean up any existing listener first
         if (visibilityListenerRef.current) {
           document.removeEventListener('visibilitychange', visibilityListenerRef.current);
@@ -103,7 +104,8 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
           console.log('🚀 Opening website:', url);
           window.open(url, '_blank', 'noopener,noreferrer');
         }, 1000);
-      });
+        });
+      }
     }
   };
 
