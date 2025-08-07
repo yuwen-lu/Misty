@@ -87,7 +87,7 @@ const initialNodes: Node[] = [
             instructions: [
                 "Use the chat to describe your design",
                 "Interact with canvas to earn 💎",
-                "Accumulate 10 💎 to generate design"
+                "Accumulate 💎 to unlock next steps"
             ]
         },
     },

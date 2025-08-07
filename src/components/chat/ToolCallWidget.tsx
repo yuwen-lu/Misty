@@ -6,7 +6,8 @@ import {
   MousePointer,
   Image,
   Code,
-  Settings
+  Settings,
+  Gem
 } from 'lucide-react';
 
 export interface ToolCall {
@@ -91,6 +92,8 @@ const getToolIcon = (toolName: string) => {
       return <Image {...iconProps} />;
     case 'codeRender':
       return <Code {...iconProps} />;
+    case 'deductDiamonds':
+      return <Gem {...iconProps} />;
     default:
       return <Settings {...iconProps} />;
   }
