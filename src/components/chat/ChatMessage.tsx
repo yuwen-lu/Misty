@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, memo } from 'react';
 import { User, Bot } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { PotentialUsersChips } from './PotentialUsersChips';
+import { ChatOptionsChips } from './ChatOptionsChips';
 import { ToolCallWidget, ToolCall } from './ToolCallWidget';
 
 export type ChatMessageRole = 'user' | 'assistant';
@@ -88,17 +88,24 @@ export const ChatMessage: React.FC<ChatMessageProps> = memo(({
   toolCalls,
   onNavigateToCanvas
 }) => {
-  // Parse content to extract and format JSON blocks and detect potentialUsers
-  const { processedContent, potentialUsers } = useMemo(() => {
-    let users: string[] | null = null;
+  // Parse content to extract and format JSON blocks and detect chatOptions
+  const { processedContent, chatOptions } = useMemo(() => {
+    let options: string[] | null = null;
     
     const processed = content.replace(/```json\n([\s\S]*?)```/g, (match, jsonContent) => {
       try {
         const parsed = JSON.parse(jsonContent);
         
-        // Check if this JSON contains potentialUsers
+        // Check if this JSON contains chatOptions (new format)
+        if (parsed.chatOptions && Array.isArray(parsed.chatOptions)) {
+          options = parsed.chatOptions;
+          // Hide the JSON block since we'll show chips instead
+          return '';
+        }
+        
+        // Check if this JSON contains potentialUsers (legacy format)
         if (parsed.potentialUsers && Array.isArray(parsed.potentialUsers)) {
-          users = parsed.potentialUsers;
+          options = parsed.potentialUsers;
           // Hide the JSON block since we'll show chips instead
           return '';
         }
@@ -119,13 +126,15 @@ export const ChatMessage: React.FC<ChatMessageProps> = memo(({
     
     return { 
       processedContent: processed, 
-      potentialUsers: users
+      chatOptions: options
     };
   }, [content]);
   
-  const handleChipClick = useCallback((user: string) => {
+  const handleChipClick = useCallback((option: string) => {
     if (onAddToInput) {
-      onAddToInput(user);
+      // Extract just the response part for diamond options (e.g., "Yes (-3 💎)" -> "Yes")
+      const response = option.includes('(-') ? option.split(' (')[0] : option;
+      onAddToInput(response);
     }
   }, [onAddToInput]);
 
@@ -153,9 +162,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = memo(({
           </ReactMarkdown>
         </div>
         
-        {potentialUsers && onAddToInput && (
-          <PotentialUsersChips 
-            users={potentialUsers} 
+        {chatOptions && onAddToInput && (
+          <ChatOptionsChips 
+            options={chatOptions} 
             onChipClick={handleChipClick}
           />
         )}

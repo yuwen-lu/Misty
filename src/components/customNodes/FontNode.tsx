@@ -225,10 +225,10 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
           {/* Font Personality Info */}
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
-              <LuInfo size={18} className="text-gray-500 mt-0.5 flex-shrink-0" />
+              {/* <LuInfo size={18} className="text-gray-500 mt-0.5 flex-shrink-0" /> */}
               <div>
                 <div className="font-medium text-gray-900 mb-1">
-                  Personality: {currentFont.personality}
+                  {currentFont.personality}
                 </div>
                 <div className="text-sm text-gray-600">
                   {currentFont.description}
