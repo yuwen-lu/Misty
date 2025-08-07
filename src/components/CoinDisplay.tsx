@@ -52,38 +52,46 @@ const CoinDisplay: React.FC = () => {
                     <button
                         onClick={coins >= 3 ? handleFontPickingClick : undefined}
                         disabled={coins < 3}
-                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg ${
+                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg relative group ${
                             coins >= 3 ? 'hover:bg-green-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
                         }`}
+                        title={coins < 3 ? 'Collect more diamonds to unlock' : ''}
                     >
                         <span className="flex items-center">
                             <span className="text-2xl w-10 flex-shrink-0">📝</span>
-                            <span className="font-medium text-left ml-1">
-                                {coins >= 3 ? 'Pick Font' : 'Collect more to unlock'}
-                            </span>
+                            <span className="font-medium text-left ml-1">Pick Font</span>
                         </span>
                         <span className="flex items-center space-x-2 text-md font-bold">
                             <span>3</span>
                             <span className="text-xl">💎</span>
                         </span>
+                        {coins < 3 && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-green-600 bg-opacity-90 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="text-sm font-medium">Collect more 💎 to unlock</span>
+                            </div>
+                        )}
                     </button>
                     <button
                         onClick={coins >= 5 ? handleGenerateDesignClick : undefined}
                         disabled={coins < 5}
-                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg ${
+                        className={`w-full px-4 py-3 text-white flex items-center justify-between transition-colors rounded-lg relative group ${
                             coins >= 5 ? 'hover:bg-green-600 cursor-pointer' : 'opacity-50 cursor-not-allowed'
                         }`}
+                        title={coins < 5 ? 'Collect more diamonds to unlock' : ''}
                     >
                         <span className="flex items-center">
                             <span className="text-2xl w-10 flex-shrink-0">🎨</span>
-                            <span className="font-medium text-left ml-1">
-                                {coins >= 5 ? 'Generate Design' : 'Collect more to unlock'}
-                            </span>
+                            <span className="font-medium text-left ml-1">Generate Design</span>
                         </span>
                         <span className="flex items-center space-x-2 text-md font-bold">
                             <span>5</span>
                             <span className="text-xl">💎</span>
                         </span>
+                        {coins < 5 && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-green-600 bg-opacity-90 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                                <span className="text-sm font-medium">Collect more 💎 to unlock</span>
+                            </div>
+                        )}
                     </button>
                 </div>
             )}
