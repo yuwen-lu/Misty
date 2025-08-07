@@ -116,13 +116,17 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
     if (fontNodes.length > 0 && onCreateFontNode) {
       const fontInstructionNodeId = `font-instruction-${Date.now()}`;
       
+      // Calculate approximate position to the right of web preview area
+      const webPreviewAreaWidth = 600 + 2 * (1280 + 700); // Same calculation as in FlowComponent
+      const fontNodeX = webPreviewAreaWidth + 200;
+      
       toolCalls.push({
         id: `font-${Date.now()}`,
         toolName: 'createFontNode',
         description: `${fontNodes.length} font selection tool${fontNodes.length > 1 ? 's' : ''} created`,
         nodesCreated: [{
           id: fontInstructionNodeId,
-          position: { x: 250, y: 3300 } // Position of the instruction node
+          position: { x: fontNodeX, y: 200 } // Position to the right of web preview area
         }],
         isClickable: true
       });

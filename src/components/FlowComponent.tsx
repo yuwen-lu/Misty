@@ -258,34 +258,14 @@ const FlowComponent: React.FC = () => {
     const handleCenterOnPosition = useCallback((x: number, y: number) => {
         console.log('🎯 Centering canvas view on position:', { x, y });
         
-        // Method 1: Try setCenter (React Flow's built-in method)
         try {
-            setCenter(x, y, { zoom: 0.3, duration: 800 });
+            // Use setCenter with zoom out for better overview
+            setCenter(x, y, { zoom: 0.35, duration: 1000 });
             console.log('✅ setCenter called');
         } catch (error) {
             console.error('❌ setCenter failed:', error);
         }
-        
-        // Method 2: Try setViewport (direct viewport manipulation)
-        setTimeout(() => {
-            try {
-                // Calculate viewport position to center the target coordinates
-                // We need to offset by half the viewport size to center it
-                const viewportWidth = window.innerWidth;
-                const viewportHeight = window.innerHeight;
-                
-                const newX = -x + (viewportWidth / 2);
-                const newY = -y + (viewportHeight / 2);
-                
-                console.log('📐 Calculated viewport position:', { newX, newY });
-                
-                setViewport({ x: newX, y: newY, zoom: 0.3 }, { duration: 800 });
-                console.log('✅ setViewport called');
-            } catch (viewportError) {
-                console.error('❌ setViewport failed:', viewportError);
-            }
-        }, 100);
-    }, [setCenter, setViewport]);
+    }, [setCenter]);
 
     // Function to search for URLs using Brave Search API
     const searchForWebsiteUrl = async (query: string): Promise<string | null> => {
@@ -420,12 +400,13 @@ const FlowComponent: React.FC = () => {
         const horizontalSpacing = 50;
         const verticalSpacing = 100;
         
-        // Position below web preview nodes
-        const baseY = 3300; // Below typical web preview nodes
+        // Position to the right of web preview nodes to avoid overlap
+        const webPreviewAreaWidth = 600 + 2 * (1280 + 700); // Start + 2 columns * (width + spacing)
+        const baseY = nextWebPreviewPosition.current.y; // Same row as web preview nodes
         
-        // First, create a text instruction node with font guidance
+        // First, create a text instruction node with font guidance  
         const instructionNodeWidth = 400;
-        const instructionNodeX = 50; // Start from left
+        const instructionNodeX = webPreviewAreaWidth + 200; // Position to the right of web preview area
         const instructionNodeY = baseY;
         
         const instructionNode: Node = {
@@ -452,6 +433,7 @@ const FlowComponent: React.FC = () => {
         
         // Call the callback with instruction node position for viewport centering
         if (onFirstNodeCreated) {
+            // Center on the beginning of the font selection area (instruction node)
             onFirstNodeCreated(instructionNodeX + instructionNodeWidth / 2, instructionNodeY + 200);
         }
         
@@ -730,12 +712,13 @@ const FlowComponent: React.FC = () => {
         });
     };
 
-    // Function to get initial positions for nodes
+    // Function to get initial positions for nodes - position to the right of web preview area
     const getInitialPositions = () => {
-        const nodesPerRow = 3; // Number of nodes per row
+        const nodesPerRow = 2; // Number of nodes per row
         const horizontalSpacing = 800; // Spacing between nodes horizontally
         const verticalSpacing = 1200; // Spacing between nodes vertically
-        const startX = 3200; // Initial x position
+        // Position to the right of the web preview area
+        const startX = Math.max(nextWebPreviewPosition.current.x + 2800, 3200); // Position to the right of web preview nodes
         const startY = 300; // Initial y position
 
         return renderCodeContentList.map((_, idx) => {
@@ -794,7 +777,9 @@ const FlowComponent: React.FC = () => {
     // Simple approach - just add code render nodes when renderCodeContentList changes
     useEffect(() => {
         if (renderCodeContentList.length > 0) {
-            const codeNodes = getCodeRenderNodes(getInitialPositions());
+            const initialPositions = getInitialPositions();
+            const codeNodes = getCodeRenderNodes(initialPositions);
+            
             setNodes((prevNodes) => {
                 // Only add code render nodes that don't already exist
                 const existingCodeNodeIds = new Set(

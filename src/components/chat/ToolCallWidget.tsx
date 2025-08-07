@@ -118,13 +118,8 @@ export const ToolCallWidget: React.FC<ToolCallWidgetProps> = ({
   onNavigate
 }) => {
   const handleClick = () => {
-    if (toolCall.isClickable && toolCall.nodesCreated?.length && onNavigate) {
-      // Calculate center point of all created nodes
-      const nodes = toolCall.nodesCreated;
-      const avgX = nodes.reduce((sum, node) => sum + node.position.x, 0) / nodes.length;
-      const avgY = nodes.reduce((sum, node) => sum + node.position.y, 0) / nodes.length;
-      onNavigate(avgX, avgY);
-    }
+    // Disabled - clicking on tool widgets no longer moves the canvas
+    return;
   };
 
   const displayName = getToolDisplayName(toolCall.toolName);
@@ -133,21 +128,8 @@ export const ToolCallWidget: React.FC<ToolCallWidgetProps> = ({
     <div
       className={`
         inline-flex items-center gap-2 px-3 py-3 mb-2 rounded-lg border bg-white
-        transition-all duration-200 hover:shadow-sm
-        ${toolCall.isClickable 
-          ? 'cursor-pointer hover:bg-gray-50 border-gray-200' 
-          : 'border-gray-100'
-        }
+        transition-all duration-200 hover:shadow-sm border-gray-100
       `}
-      onClick={handleClick}
-      role={toolCall.isClickable ? 'button' : undefined}
-      tabIndex={toolCall.isClickable ? 0 : undefined}
-      onKeyDown={toolCall.isClickable ? (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleClick();
-        }
-      } : undefined}
     >
       {getToolIcon(toolCall.toolName)}
       
@@ -179,13 +161,8 @@ export const ConsolidatedToolCallWidget: React.FC<ConsolidatedToolCallWidgetProp
     <>
       {consolidated.map((consolidatedCall) => {
         const handleClick = () => {
-          if (consolidatedCall.isClickable && consolidatedCall.allNodesCreated.length && onNavigate) {
-            // Calculate center point of all created nodes
-            const nodes = consolidatedCall.allNodesCreated;
-            const avgX = nodes.reduce((sum, node) => sum + node.position.x, 0) / nodes.length;
-            const avgY = nodes.reduce((sum, node) => sum + node.position.y, 0) / nodes.length;
-            onNavigate(avgX, avgY);
-          }
+          // Disabled - clicking on tool widgets no longer moves the canvas
+          return;
         };
 
         const displayName = getToolDisplayName(consolidatedCall.toolName);
@@ -195,21 +172,8 @@ export const ConsolidatedToolCallWidget: React.FC<ConsolidatedToolCallWidgetProp
             key={consolidatedCall.id}
             className={`
               inline-flex items-center gap-2 px-3 py-3 mb-2 rounded-lg border bg-white
-              transition-all duration-200 hover:shadow-sm
-              ${consolidatedCall.isClickable 
-                ? 'cursor-pointer hover:bg-gray-50 border-gray-200' 
-                : 'border-gray-100'
-              }
+              transition-all duration-200 hover:shadow-sm border-gray-100
             `}
-            onClick={handleClick}
-            role={consolidatedCall.isClickable ? 'button' : undefined}
-            tabIndex={consolidatedCall.isClickable ? 0 : undefined}
-            onKeyDown={consolidatedCall.isClickable ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleClick();
-              }
-            } : undefined}
           >
             {getToolIcon(consolidatedCall.toolName)}
             
