@@ -34,6 +34,7 @@ import { ChatPanel } from "./chat/ChatPanel";
 import { Models } from "./chat/ChatInput";
 import InitialChatDialog from "./chat/InitialChatDialog";
 import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from "./chat/ChatMessage";
+import { useChat } from "../contexts/ChatContext";
 
 import {
     removeEscapedChars,
@@ -153,6 +154,9 @@ const FlowComponent: React.FC = () => {
     const [initialMessage, setInitialMessage] = useState<string>('');
     const [selectedModel, setSelectedModel] = useState<Models>(Models.claudeSonnet4);
     
+    // Chat context for diamond menu integration
+    const { registerChatHandler } = useChat();
+    
     // Design feedback states
     const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
     const [currentFeedbackNodeId, setCurrentFeedbackNodeId] = useState<string>('');
@@ -188,6 +192,20 @@ const FlowComponent: React.FC = () => {
     const handleToggleChatMinimize = useCallback(() => {
         setIsChatMinimized(prev => !prev);
     }, []);
+
+    // Handler for diamond menu chat messages
+    const handleDiamondMenuMessage = useCallback((message: string) => {
+        setInitialMessage(message);
+        setSelectedModel(Models.claudeSonnet4);
+        setShowInitialDialog(false);
+        setShowChatInterface(true);
+        setIsChatMinimized(false);
+    }, []);
+
+    // Register chat handler for diamond menu
+    useEffect(() => {
+        registerChatHandler(handleDiamondMenuMessage);
+    }, [registerChatHandler, handleDiamondMenuMessage]);
 
     // Design feedback handlers
     const handleShowFeedbackPopup = (nodeId: string, websiteUrl: string) => {
