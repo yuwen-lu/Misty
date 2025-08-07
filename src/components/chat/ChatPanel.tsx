@@ -358,6 +358,21 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
     setInput(prev => prev ? `${prev}, ${text}` : text);
   };
 
+  // State for send button animation
+  const [animateSendButton, setAnimateSendButton] = useState(false);
+
+  // Handle programmatic messages from diamond menu
+  useEffect(() => {
+    if (initialMessage && initialMessage.includes('__')) {
+      // Extract the actual message without timestamp
+      const actualMessage = initialMessage.split('__')[0];
+      setInput(actualMessage);
+      // Trigger send button animation
+      setAnimateSendButton(true);
+      setTimeout(() => setAnimateSendButton(false), 600);
+    }
+  }, [initialMessage]);
+
   if (isMinimized) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
@@ -416,6 +431,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
           isLoading={isLoading}
           model={currentModel}
           onModelChange={setCurrentModel}
+          animateSendButton={animateSendButton}
         />
       </div>
     </div>

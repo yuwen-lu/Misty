@@ -39,9 +39,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         focus: "usability, accessibility, user flows, mental models, inclusive design"
       },
       {
-        name: "Brutalist Web Design",
-        style: "You appreciate raw, honest web design inspired by brutalist architecture. You find beauty in exposed structure, bold typography, and unconventional layouts that challenge expectations.",
-        focus: "raw aesthetics, bold type, unconventional layouts, honest materials, anti-polish"
+        name: "Maximalism",
+        style: "You are a maximalist designer who believes in the power of bold, colorful, and detailed design. You value complexity and detail, and you are not afraid to use a lot of elements on the page.",
+        focus: "detailed, colorful, decorative, detail-oriented, well-crafted"
       },
       {
         name: "Bauhaus",
@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         focus: "delight, personality, micro-interactions, emotional response, brand voice"
       },
       {
-        name: "Information Design",
+        name: "Information Architecture",
         style: "You're obsessed with Edward Tufte and information design. You see beauty in data clarity, visual hierarchies, and the elegant display of complex information.",
         focus: "information hierarchy, data-ink ratio, cognitive load, wayfinding, content strategy"
       },

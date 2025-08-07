@@ -195,7 +195,9 @@ const FlowComponent: React.FC = () => {
 
     // Handler for diamond menu chat messages
     const handleDiamondMenuMessage = useCallback((message: string) => {
-        setInitialMessage(message);
+        // Generate a unique key to force re-render of ChatPanel
+        const messageWithTimestamp = `${message}__${Date.now()}`;
+        setInitialMessage(messageWithTimestamp);
         setSelectedModel(Models.claudeSonnet4);
         setShowInitialDialog(false);
         setShowChatInterface(true);

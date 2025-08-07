@@ -13,6 +13,7 @@ interface ChatInputProps {
   isLoading: boolean;
   model: Models;
   onModelChange: (model: Models) => void;
+  animateSendButton?: boolean;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -22,6 +23,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   isLoading,
   model,
   onModelChange,
+  animateSendButton = false,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -82,7 +84,11 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           <button
             onClick={handleSubmit}
             disabled={!input.trim() && !isLoading}
-            className="w-8 h-8 flex items-center justify-center bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-gray-300 transition-colors"
+            className={`w-8 h-8 flex items-center justify-center rounded-md transition-all ${
+              animateSendButton 
+                ? 'bg-green-500 hover:bg-green-600 text-white animate-bounce-scale' 
+                : 'bg-black hover:bg-gray-800 text-white disabled:bg-gray-300'
+            }`}
           >
             {isLoading ? (
               <CircleStop size={16} />
