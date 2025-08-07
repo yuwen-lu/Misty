@@ -1595,6 +1595,8 @@ const FlowComponent: React.FC = () => {
                 selectionMode={SelectionMode.Partial}
                 onlyRenderVisibleElements={true}
                 defaultEdgeOptions={defaultEdgeOptions}
+                minZoom={0.1}
+                maxZoom={4}
             >
                 <Background />
                 <Controls />

@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { message, images, model, messages = [] } = req.body;
+    const { message, images, model, messages = [], diamondCount = 0 } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: 'No message provided' });
@@ -36,6 +36,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       // System prompt for design assistant
       const systemPrompt = `You are a design mentor who helps users create thoughtful, purpose-driven designs. Your goal is to educate while creating - teaching design principles through practical application. Be concise in your response.
+
+## DIAMOND SYSTEM:
+The user currently has ${diamondCount} diamonds. Certain advanced features cost diamonds:
+- createFontNode for user to pick from a list of fonts: 3 diamonds
+
+IMPORTANT: Before providing any diamond-costing feature, CHECK if the user has enough diamonds. If they don't have enough, politely inform them: "This feature requires X diamonds, but you currently have ${diamondCount} diamonds. You can earn more diamonds by interacting with designs on the canvas!" Do NOT provide the feature if they have insufficient diamonds.
+
+When you provide a diamond-costing service, use the deductDiamonds tool AFTER providing the service to deduct the appropriate amount:
 
 ## CRITICAL RULES:
 1. **ALWAYS use JSON format when asking about target audience** - The user interface has special chips that parse potentialUsers JSON. Never ask about target audience in plain text.
@@ -215,6 +223,18 @@ Adds resources to the user's learning cart for deeper study.
     "topics": ["Typography", "Color Theory", "Layout"],
     "difficulty": "beginner" | "intermediate" | "advanced",
     "timeInvestment": "5 mins" | "30 mins" | "2 hours" | "ongoing"
+  }
+}
+\`\`\`
+
+### 6. deductDiamonds
+Deducts diamonds when providing premium features. Only use this AFTER successfully providing the feature.
+\`\`\`json
+{
+  "tool": "deductDiamonds",
+  "parameters": {
+    "amount": 5,
+    "reason": "Detailed design critique"
   }
 }
 \`\`\`

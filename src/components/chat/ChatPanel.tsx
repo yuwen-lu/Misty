@@ -4,6 +4,7 @@ import { ChatInput, Models } from './ChatInput';
 import { ChatMessageList, Message } from './ChatMessageList';
 import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from './ChatMessage';
 import { ToolCall } from './ToolCallWidget';
+import { useCoins } from '../../contexts/CoinContext';
 
 interface ChatPanelProps {
   isMinimized: boolean;
@@ -32,6 +33,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
   const [currentModel, setCurrentModel] = useState<Models>(selectedModel);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitialMessage = useRef(false);
+  const { coins, spendCoins } = useCoins();
   
   // Function to parse and execute tool calls from API response
   const executeToolCalls = async (content: string): Promise<ToolCall[]> => {
@@ -43,6 +45,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
     const fontNodes: any[] = [];
     const textInstructionNodes: any[] = [];
     const toolCalls: ToolCall[] = [];
+    let totalDiamondsToDeduct = 0;
     
     for (const block of jsonBlocks) {
       try {
@@ -55,6 +58,16 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
           fontNodes.push(parsed);
         } else if (parsed.tool === 'createTextInstructionNode' && parsed.parameters) {
           textInstructionNodes.push(parsed);
+        } else if (parsed.tool === 'deductDiamonds' && parsed.parameters) {
+          const amount = parsed.parameters.amount || 0;
+          totalDiamondsToDeduct += amount;
+          toolCalls.push({
+            id: `deduct-diamonds-${Date.now()}`,
+            toolName: 'deductDiamonds',
+            description: `${amount} diamonds deducted: ${parsed.parameters.reason}`,
+            nodesCreated: [],
+            isClickable: false
+          });
         }
       } catch (e) {
         console.warn('Failed to parse tool call:', e);
@@ -123,6 +136,14 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
       onCreateTextInstructionNode(textInstructionNodes);
     }
     
+    // Deduct diamonds if any were requested
+    if (totalDiamondsToDeduct > 0) {
+      const deducted = spendCoins(totalDiamondsToDeduct);
+      if (!deducted) {
+        console.warn('Insufficient diamonds to deduct:', totalDiamondsToDeduct);
+      }
+    }
+    
     return toolCalls;
   };
 
@@ -162,6 +183,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
         message: initialMessage,
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
         messages: [],
+        diamondCount: coins,
       };
       
       fetch('/api/design-chat', {
@@ -234,7 +256,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
         setIsLoading(false);
       });
     }
-  }, [initialMessage, currentModel]);
+  }, [initialMessage, currentModel, coins]);
 
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -256,6 +278,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
         message: input,
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
         messages: messages,
+        diamondCount: coins,
       };
       
       const response = await fetch('/api/design-chat', {
