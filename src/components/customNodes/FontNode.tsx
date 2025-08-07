@@ -153,19 +153,28 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
       }}
     >
       
-      <div className="font-bold text-gray-900 text-xl mb-4">
+      <div className="font-bold text-gray-900 text-xl mb-2">
         {currentCategoryData.title} Fonts
+      </div>
+      
+      <div className="text-sm text-gray-600 mb-4">
+        {currentCategoryData.title === 'Sans Serif' && 
+          "Clean and modern, great for body text, tech companies, and professional websites"}
+        {currentCategoryData.title === 'Serif' && 
+          "Traditional and trustworthy, perfect for news, blogs, and content-heavy sites"}
+        {currentCategoryData.title === 'Decorative' && 
+          "Eye-catching and unique, ideal for headlines and branding (optional for most websites)"}
       </div>
 
       {/* Font Selection Layout */}
       <div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
         {/* Font List Sidebar */}
         <div className="w-48 bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
-          <div className="p-3 bg-gray-50 border-b border-gray-200">
+          {/* <div className="p-3 bg-gray-50 border-b border-gray-200">
             <div className="font-medium text-gray-900 text-sm">
               {currentCategoryData.title} Fonts
             </div>
-          </div>
+          </div> */}
           <div className="overflow-auto flex-1">
             {currentCategoryData.fonts.map((font, index) => {
               const isSelected = selectedFonts[currentCategoryData.title] === font.name;
