@@ -119,7 +119,6 @@ Creates a preview of a website on the canvas to show design examples. When creat
 **Good search queries (specific, customized sites):**
 - "Julie Zhuo blog website" - Personal design leader's blog
 - "Tobias van Schneider portfolio" - Designer's personal site
-- "Bret Victor personal website" - Researcher's custom site  
 - "Jessica Hische portfolio website" - Lettering artist's site
 - "Frank Chimero blog" - Designer/writer's personal blog
 - "Stripe homepage" - Well-designed company site

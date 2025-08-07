@@ -274,7 +274,7 @@ const FlowComponent: React.FC = () => {
     };
 
     // Global tracker for next available position to prevent overlaps
-    const nextWebPreviewPosition = React.useRef({ x: 1500, y: 200 });
+    const nextWebPreviewPosition = React.useRef({ x: 600, y: 200 });
     // Global tracker for column position (0 or 1 for two columns)
     const currentColumn = React.useRef(0);
     // Function to create WebPreviewNodes from chat API responses
@@ -1589,8 +1589,6 @@ const FlowComponent: React.FC = () => {
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 nodeDragThreshold={4}
-                minZoom={0.25}
-                maxZoom={4}
                 panOnScroll
                 selectionOnDrag
                 panOnDrag={panOnDrag}
