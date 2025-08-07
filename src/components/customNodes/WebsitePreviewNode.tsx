@@ -13,6 +13,9 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [screenshotUrl, setScreenshotUrl] = useState<string>('');
   const [hasVisited, setHasVisited] = useState<boolean>(false);
   
+  // Keep track of the current visibility listener to prevent multiple listeners
+  const visibilityListenerRef = React.useRef<(() => void) | null>(null);
+  
   const { celebrateCoins, celebrateCoinsWithMessage } = useCoins();
 
   const formatUrl = (inputUrl: string): string => {
@@ -57,27 +60,47 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     if (url) {
       // Show instructional popup first
       showInstructionalPopup(() => {
+        // Clean up any existing listener first
+        if (visibilityListenerRef.current) {
+          document.removeEventListener('visibilitychange', visibilityListenerRef.current);
+          visibilityListenerRef.current = null;
+        }
+        
         // Mark as visited and trigger celebration
         setHasVisited(true);
         celebrateCoinsWithMessage(1, "Website opening...");
         
+        // Use a flag that's not dependent on React state
+        let websiteOpened = false;
+        
         // Track window visibility to detect return
         const handleVisibilityChange = () => {
-          if (document.visibilityState === 'visible' && hasVisited) {
+          console.log('🔍 Visibility change detected:', {
+            visibilityState: document.visibilityState,
+            websiteOpened,
+            nodeId: id
+          });
+          
+          if (document.visibilityState === 'visible' && websiteOpened) {
+            console.log('✅ Triggering feedback popup for node:', id);
             // User returned - show feedback popup
             if (data.onShowFeedbackPopup) {
               data.onShowFeedbackPopup(id, url);
             }
             // Clean up listener
             document.removeEventListener('visibilitychange', handleVisibilityChange);
+            visibilityListenerRef.current = null;
           }
         };
         
-        // Add visibility listener
+        // Store reference and add listener
+        visibilityListenerRef.current = handleVisibilityChange;
         document.addEventListener('visibilitychange', handleVisibilityChange);
         
         // Open website after delay
         setTimeout(() => {
+          websiteOpened = true; // Set flag immediately before opening
+          console.log('🚀 Opening website:', url);
           window.open(url, '_blank', 'noopener,noreferrer');
         }, 1000);
       });
@@ -136,6 +159,16 @@ const WebsitePreviewNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
       setInputUrl(data.url);
       loadScreenshot(formattedUrl);
     }
+  }, []);
+
+  // Cleanup visibility listener on unmount
+  useEffect(() => {
+    return () => {
+      if (visibilityListenerRef.current) {
+        document.removeEventListener('visibilitychange', visibilityListenerRef.current);
+        visibilityListenerRef.current = null;
+      }
+    };
   }, []);
 
   return (

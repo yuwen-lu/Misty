@@ -124,64 +124,92 @@ export const showInstructionalPopup = (onConfirm: () => void) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
-      backdrop-filter: blur(4px);
+      z-index: 50;
+      padding: 16px;
     ">
       <div style="
-        background: white;
-        color: #374151;
-        padding: 32px;
-        border-radius: 16px;
+        background: #fffbeb;
+        border-radius: 8px;
+        border: 2px solid rgba(120, 113, 108, 0.3);
+        border-top: 8px solid #b45309;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        max-width: 448px;
+        width: 100%;
         font-family: system-ui, -apple-system, sans-serif;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        border: 2px solid #f59e0b;
-        max-width: 500px;
-        margin: 20px;
-        text-align: center;
-        animation: slideIn 0.3s ease-out;
       ">
-        <div style="font-size: 2rem; margin-bottom: 16px;">🎨</div>
-        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 16px; color: #1f2937;">Design Inspection Guide</h2>
-        <div style="font-size: 1rem; line-height: 1.6; margin-bottom: 24px; text-align: left;">
-          <p style="margin-bottom: 12px;">When exploring this website, pay attention to:</p>
-          <ul style="margin-left: 20px; margin-bottom: 16px;">
-            <li style="margin-bottom: 8px;">• <strong>Typography:</strong> How many fonts are used? What styles?</li>
-            <li style="margin-bottom: 8px;">• <strong>Color palette:</strong> Primary and accent colors</li>
-            <li style="margin-bottom: 8px;">• <strong>Layout:</strong> Grid structure, spacing, alignment</li>
-            <li style="margin-bottom: 8px;">• <strong>Visual hierarchy:</strong> What draws your attention first?</li>
-            <li style="margin-bottom: 8px;">• <strong>Interactive elements:</strong> Buttons, forms, navigation</li>
-          </ul>
-          <p style="text-align: center; font-style: italic;">Come back to take notes on what you learned!</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 1.125rem; font-weight: 600; color: #78350f; margin: 0;">
+            🎨 Design Inspection Guide
+          </h3>
+          <button id="closeBtn" style="
+            color: #b45309;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 4px;
+            transition: color 0.2s;
+          " onmouseover="this.style.color='#78350f'" onmouseout="this.style.color='#b45309'">
+            ✕
+          </button>
         </div>
-        <button id="confirmBtn" style="
-          background: #f59e0b;
-          color: white;
-          padding: 12px 24px;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: background 0.2s;
-        " onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
-          Got it
-        </button>
+        
+        <div style="margin-bottom: 16px;">
+          <p style="font-size: 0.875rem; color: #92400e; margin-bottom: 12px;">
+            When exploring this website, pay attention to:
+          </p>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <ul style="color: #92400e; font-size: 0.875rem; line-height: 1.5; margin: 0; padding-left: 16px;">
+            <li style="margin-bottom: 8px;"><strong>Typography:</strong> How many fonts are used? What styles?</li>
+            <li style="margin-bottom: 8px;"><strong>Color palette:</strong> Primary and accent colors</li>
+            <li style="margin-bottom: 8px;"><strong>Visual hierarchy:</strong> What draws your attention first?</li>
+            <li style="margin-bottom: 8px;"><strong>Interactive elements:</strong> Buttons, forms, navigation</li>
+          </ul>
+          <p style="font-size: 0.875rem; color: #92400e; margin-top: 16px; font-style: italic; text-align: center;">
+            Come back to take notes on what you learned!
+          </p>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+          <button id="confirmBtn" style="
+            padding: 8px 16px;
+            background: #d97706;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+          " onmouseover="this.style.background='#b45309'" onmouseout="this.style.background='#d97706'">
+            <span>Let's inspect!</span>
+          </button>
+        </div>
       </div>
     </div>
-    <style>
-      @keyframes slideIn {
-        0% { transform: scale(0.8); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
-      }
-    </style>
   `;
 
-    // Add click handler for the confirm button
+    // Add click handlers
     document.body.appendChild(popupDiv);
     
     const confirmBtn = document.getElementById('confirmBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    
     if (confirmBtn) {
         confirmBtn.addEventListener('click', () => {
+            document.body.removeChild(popupDiv);
+            onConfirm();
+        });
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
             document.body.removeChild(popupDiv);
             onConfirm();
         });
