@@ -334,9 +334,9 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={onToggleMinimize}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-colors"
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-6 shadow-lg transition-colors"
         >
-          <MessageCircle size={20} />
+          <MessageCircle size={28} />
         </button>
       </div>
     );
