@@ -367,7 +367,7 @@ const FlowComponent: React.FC = () => {
     }, [nodes, setNodes, nextWebPreviewPosition, currentColumn, searchForWebsiteUrl]);
 
     // Function to create FontNodes from chat API responses
-    const createFontNodes = useCallback(async (fontNodesData: FontNodeData[]) => {
+    const createFontNodes = useCallback(async (fontNodesData: FontNodeData[], onFirstNodeCreated?: (x: number, y: number) => void) => {
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
         const nodeWidth = 700;
@@ -375,10 +375,13 @@ const FlowComponent: React.FC = () => {
         const horizontalSpacing = 50;
         const verticalSpacing = 100;
         
+        // Position below web preview nodes
+        const baseY = 3300; // Below typical web preview nodes
+        
         // First, create a text instruction node with font guidance
         const instructionNodeWidth = 400;
-        const instructionNodeX = currentColumn.current * (nodeWidth + horizontalSpacing) + 50;
-        const instructionNodeY = 50;
+        const instructionNodeX = 50; // Start from left
+        const instructionNodeY = baseY;
         
         const instructionNode: Node = {
             id: `font-instruction-${Date.now()}`,
@@ -402,17 +405,21 @@ const FlowComponent: React.FC = () => {
         
         newNodes.push(instructionNode);
         
+        // Call the callback with instruction node position for viewport centering
+        if (onFirstNodeCreated) {
+            onFirstNodeCreated(instructionNodeX + instructionNodeWidth / 2, instructionNodeY + 200);
+        }
+        
         // Create separate nodes for each font category
         const categories = ['Sans Serif', 'Serif', 'Decorative'];
         const baseX = instructionNodeX + instructionNodeWidth + horizontalSpacing + 100;
-        const baseY = instructionNodeY;
         
         // Extract the preview text from the first font data
-        const previewText = fontNodesData.length > 0 ? fontNodesData[0].parameters.textToDisplay : "Your text here";
+        const previewText = fontNodesData.length > 0 ? fontNodesData[0].parameters.previewText : "Your text here";
         
         categories.forEach((category, categoryIndex) => {
             const x = baseX + (categoryIndex * (nodeWidth + horizontalSpacing));
-            const y = baseY;
+            const y = instructionNodeY;
             
             const fontNode: Node = {
                 id: `font-${category.toLowerCase().replace(' ', '-')}-${Date.now()}`,
@@ -445,14 +452,11 @@ const FlowComponent: React.FC = () => {
             newEdges.push(edge);
         });
         
-        // Move to next column for future nodes
-        currentColumn.current += 4; // Account for instruction node + 3 font nodes
-        
         if (newNodes.length > 0) {
             setNodes((prevNodes) => [...prevNodes, ...newNodes]);
             setEdges((prevEdges) => [...prevEdges, ...newEdges]);
         }
-    }, [setNodes, setEdges, currentColumn]);
+    }, [setNodes, setEdges]);
 
     // Function to create TextInstructionNodes from chat API responses
     const createTextInstructionNodes = useCallback(async (textInstructionNodesData: TextInstructionNodeData[]) => {

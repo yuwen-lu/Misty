@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 import { LuInfo } from 'react-icons/lu';
+import { useCoins } from '../../contexts/CoinContext';
 
 interface FontData {
   name: string;
@@ -96,6 +97,8 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
   const [currentFontIndex, setCurrentFontIndex] = useState(0);
   const [selectedFonts, setSelectedFonts] = useState<{ [category: string]: string }>({});
   const [previewText, setPreviewText] = useState(data.previewText || 'Beautiful Modern Design');
+  const [rewardedCategories, setRewardedCategories] = useState<Set<string>>(new Set());
+  const { celebrateCoinsWithMessage } = useCoins();
 
   // Find the category based on the data.category prop, defaulting to Sans Serif
   const categoryTitle = data.category || 'Sans Serif';
@@ -112,6 +115,13 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
     } else {
       // Select if not selected
       newSelectedFonts[currentCategoryData.title] = currentFont.name;
+      
+      // Award diamonds for Sans Serif or Serif selections (not Decorative)
+      if ((currentCategoryData.title === 'Sans Serif' || currentCategoryData.title === 'Serif') 
+          && !rewardedCategories.has(currentCategoryData.title)) {
+        celebrateCoinsWithMessage(2, `Nice choice! +2 💎 for selecting a ${currentCategoryData.title} font`);
+        setRewardedCategories(prev => new Set([...prev, currentCategoryData.title]));
+      }
     }
     
     setSelectedFonts(newSelectedFonts);
@@ -248,7 +258,14 @@ const FontNode: React.FC<NodeProps> = React.memo(({ id, data }) => {
                 : 'bg-gray-900 text-white hover:bg-gray-800'
             }`}
           >
-            {isCurrentFontSelected ? '✓ Selected' : 'Select This Font'}
+            {isCurrentFontSelected ? '✓ Selected' : 
+              `Pick for your design${
+                (currentCategoryData.title === 'Sans Serif' || currentCategoryData.title === 'Serif') 
+                && !rewardedCategories.has(currentCategoryData.title) 
+                  ? ' (+💎💎)' 
+                  : ''
+              }`
+            }
           </button>
         </div>
       </div>

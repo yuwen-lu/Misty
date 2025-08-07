@@ -12,7 +12,7 @@ interface ChatPanelProps {
   initialMessage?: string;
   selectedModel?: Models;
   onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void, nodeIds?: string[]) => void;
-  onCreateFontNode?: (fontNodes: FontNodeData[]) => void;
+  onCreateFontNode?: (fontNodes: FontNodeData[], onFirstNodeCreated?: (x: number, y: number) => void) => void;
   onCreateTextInstructionNode?: (textInstructionNodes: TextInstructionNodeData[]) => void;
   onCenterCanvas?: (x: number, y: number) => void;
 }
@@ -113,16 +113,21 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
       onCreateWebPreviewNode(webPreviewNodes, handleFirstNode, nodeIds);
     }
     
-    if (fontNodes.length > 0 && onCreateFontNode && !hasHandledFirstNode) {
+    if (fontNodes.length > 0 && onCreateFontNode) {
+      const fontInstructionNodeId = `font-instruction-${Date.now()}`;
+      
       toolCalls.push({
         id: `font-${Date.now()}`,
         toolName: 'createFontNode',
         description: `${fontNodes.length} font selection tool${fontNodes.length > 1 ? 's' : ''} created`,
-        nodesCreated: [],
-        isClickable: false
+        nodesCreated: [{
+          id: fontInstructionNodeId,
+          position: { x: 250, y: 3300 } // Position of the instruction node
+        }],
+        isClickable: true
       });
       
-      onCreateFontNode(fontNodes);
+      onCreateFontNode(fontNodes, handleFirstNode);
     }
     
     if (textInstructionNodes.length > 0 && onCreateTextInstructionNode && !hasHandledFirstNode) {
