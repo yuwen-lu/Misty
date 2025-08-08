@@ -309,7 +309,14 @@ const FlowComponent: React.FC = () => {
     // Function to create DesignGenerationNode
     const createDesignGenerationNode = useCallback((onNodeCreated?: (x: number, y: number) => void, designContext?: string) => {
         const nodeId = `design-generation-${Date.now()}`;
-        const position = { x: 400, y: 200 };
+        
+        // Position to the right of font nodes
+        const webPreviewAreaWidth = 600 + 2 * (1280 + 700); // Web preview area
+        const fontAreaWidth = 400 + 700 + 50; // Font instruction + font node + spacing
+        const designNodeX = webPreviewAreaWidth + fontAreaWidth + 200; // To the right of font area
+        const designNodeY = nextWebPreviewPosition.current.y || 200; // Same row as other nodes
+        
+        const position = { x: designNodeX, y: designNodeY };
         
         const newNode: Node = {
             id: nodeId,
@@ -1431,10 +1438,45 @@ const FlowComponent: React.FC = () => {
                 }
 
                 try {
-                    // Parse the JSON response
-                    console.log('📦 Final design generation response:', finalResponse);
-                    const designResult = JSON.parse(finalResponse);
+                    // Clean and validate the response before parsing
+                    console.log('📦 Raw design generation response:', finalResponse);
+                    
+                    // Remove potential markdown code blocks and clean the response
+                    let cleanedResponse = finalResponse.trim();
+                    
+                    // Remove markdown code blocks if present
+                    if (cleanedResponse.startsWith('```json')) {
+                        cleanedResponse = cleanedResponse.replace(/^```json\s*/, '').replace(/\s*```\s*$/, '');
+                    } else if (cleanedResponse.startsWith('```')) {
+                        cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/\s*```\s*$/, '');
+                    }
+                    
+                    // Remove any leading/trailing backticks or whitespace
+                    cleanedResponse = cleanedResponse.replace(/^`+|`+$/g, '').trim();
+                    
+                    console.log('🧹 Cleaned response for parsing:', cleanedResponse);
+                    
+                    if (!cleanedResponse) {
+                        throw new Error('Empty response after cleaning');
+                    }
+                    
+                    // Attempt to find JSON within the response if it's not pure JSON
+                    let jsonMatch;
+                    if (!cleanedResponse.startsWith('{')) {
+                        jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+                        if (jsonMatch) {
+                            cleanedResponse = jsonMatch[0];
+                            console.log('🔍 Extracted JSON from response:', cleanedResponse);
+                        }
+                    }
+                    
+                    const designResult = JSON.parse(cleanedResponse);
                     console.log('✅ Parsed design result:', designResult);
+                    
+                    if (!designResult.designCode) {
+                        throw new Error('No designCode found in parsed result');
+                    }
+                    
                     const { designCode } = designResult;
                     console.log('💻 Extracted design code:', designCode);
 
@@ -1446,7 +1488,8 @@ const FlowComponent: React.FC = () => {
                                     ...node,
                                     data: {
                                         ...node.data,
-                                        designCode: designCode
+                                        designCode: designCode,
+                                        response: finalResponse // Store original response for debugging
                                     }
                                 }
                                 : node
@@ -1454,6 +1497,50 @@ const FlowComponent: React.FC = () => {
                     );
                 } catch (parseError) {
                     console.error("Error parsing design generation response:", parseError);
+                    console.error("Raw response that failed to parse:", finalResponse);
+                    
+                    // Try to extract any JavaScript function from the response as fallback
+                    try {
+                        const functionMatch = finalResponse.match(/\(\s*\)\s*=>\s*\{[\s\S]*\}/);
+                        if (functionMatch) {
+                            const extractedCode = functionMatch[0];
+                            console.log('🔧 Extracted function as fallback:', extractedCode);
+                            
+                            setNodes((prevNodes) =>
+                                prevNodes.map((node) =>
+                                    node.id === targetNodeId
+                                        ? {
+                                            ...node,
+                                            data: {
+                                                ...node.data,
+                                                designCode: extractedCode,
+                                                response: finalResponse
+                                            }
+                                        }
+                                        : node
+                                )
+                            );
+                        } else {
+                            // Final fallback: show error message in the node
+                            setNodes((prevNodes) =>
+                                prevNodes.map((node) =>
+                                    node.id === targetNodeId
+                                        ? {
+                                            ...node,
+                                            data: {
+                                                ...node.data,
+                                                designCode: `() => <div className="p-8 text-center"><h2 className="text-red-600 text-xl mb-4">Parsing Error</h2><p className="text-gray-600">Could not parse API response. Check console for details.</p></div>`,
+                                                response: finalResponse,
+                                                parseError: parseError instanceof Error ? parseError.message : String(parseError)
+                                            }
+                                        }
+                                        : node
+                                )
+                            );
+                        }
+                    } catch (fallbackError) {
+                        console.error("Fallback extraction also failed:", fallbackError);
+                    }
                 }
             }
         } catch (err) {
