@@ -92,8 +92,8 @@ const initialNodes: Node[] = [
             title: "How This Canvas Works",
             instructions: [
                 "Use the chat to describe your design",
-                "Interact with canvas to earn 💎",
-                "Accumulate 💎 to unlock next steps"
+                "Interact with canvas elements to earn 💎",
+                "Collect 💎 to unlock next steps"
             ]
         },
     },
