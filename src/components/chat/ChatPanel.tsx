@@ -36,7 +36,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
   const [currentModel, setCurrentModel] = useState<Models>(selectedModel);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitialMessage = useRef(false);
-  const { coins, spendCoins } = useCoins();
+  const { coins, spendCoins, isLoaded } = useCoins();
   
   // Function to parse and execute tool calls from API response
   const executeToolCalls = async (content: string): Promise<ToolCall[]> => {
@@ -220,7 +220,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
 
   // Handle initial message when component mounts
   useEffect(() => {
-    if (initialMessage && !hasProcessedInitialMessage.current) {
+    if (initialMessage && !hasProcessedInitialMessage.current && isLoaded) {
       hasProcessedInitialMessage.current = true;
       const userMessage: Message = {
         id: Date.now().toString(),
@@ -239,6 +239,12 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
         messages: [],
         diamondCount: coins,
       };
+      
+      console.log('🔷 Sending initial message to design-chat API:', {
+        message: initialMessage,
+        diamondCount: coins,
+        messagesLength: 0
+      });
       
       fetch('/api/design-chat', {
         method: 'POST',
@@ -310,7 +316,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
         setIsLoading(false);
       });
     }
-  }, [initialMessage, currentModel, coins]);
+  }, [initialMessage, currentModel, coins, isLoaded]);
 
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -334,6 +340,12 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
         messages: messages,
         diamondCount: coins,
       };
+      
+      console.log('🔷 Sending message to design-chat API:', {
+        message: input,
+        diamondCount: coins,
+        messagesLength: messages.length
+      });
       
       const response = await fetch('/api/design-chat', {
         method: 'POST',

@@ -1428,8 +1428,11 @@ const FlowComponent: React.FC = () => {
 
                 try {
                     // Parse the JSON response
+                    console.log('📦 Final design generation response:', finalResponse);
                     const designResult = JSON.parse(finalResponse);
+                    console.log('✅ Parsed design result:', designResult);
                     const { designCode } = designResult;
+                    console.log('💻 Extracted design code:', designCode);
 
                     // Update the design generation node with the new code
                     setNodes((prevNodes) =>

@@ -8,6 +8,7 @@ interface CoinContextType {
   addCoins: (amount: number) => void;
   spendCoins: (amount: number) => boolean;
   celebrateCoins: (amount: number) => void;
+  isLoaded: boolean;
   celebrateCoinsWithMessage: (amount: number, message: string) => void;
   // Feature discovery
   discoveredFeature: DiscoverableFeature | null;
@@ -18,10 +19,12 @@ const CoinContext = createContext<CoinContextType | undefined>(undefined);
 
 export const CoinProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [coins, setCoins] = useState<number>(0);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [discoveredFeature, setDiscoveredFeature] = useState<DiscoverableFeature | null>(null);
   const previousCoinsRef = useRef<number>(0);
   const isInitializedRef = useRef<boolean>(false);
 
+  // Load coins from session storage after hydration
   useEffect(() => {
     const savedCoins = loggedSessionStorage.getItem('userCoins');
     if (savedCoins) {
@@ -29,6 +32,7 @@ export const CoinProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCoins(coinValue);
       previousCoinsRef.current = coinValue;
     }
+    setIsLoaded(true);
     isInitializedRef.current = true;
   }, []);
 
@@ -84,7 +88,8 @@ export const CoinProvider: React.FC<{ children: React.ReactNode }> = ({ children
       celebrateCoins, 
       celebrateCoinsWithMessage: celebrateCoinsWithMessageFunc,
       discoveredFeature,
-      clearDiscoveredFeature
+      clearDiscoveredFeature,
+      isLoaded
     }}>
       {children}
     </CoinContext.Provider>

@@ -16,6 +16,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { message, images, model, messages = [], diamondCount = 0 } = req.body;
+    
+    console.log('💎 Design-chat API received request:', {
+      message: message?.substring(0, 50) + '...',
+      diamondCount,
+      messagesLength: messages.length,
+      hasImages: !!images?.length
+    });
 
     if (!message) {
       return res.status(400).json({ error: 'No message provided' });
@@ -38,21 +45,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const systemPrompt = `You are a design mentor who helps users create thoughtful, purpose-driven designs. Your goal is to educate while creating - teaching design principles through practical application. You guide users through the design process step by step. Be concise in your response.
 
 ## DIAMOND SYSTEM:
-The user currently has ${diamondCount} 💎. Certain advanced features cost 💎:
+Certain advanced features cost 💎:
 - createFontNode for user to pick from a list of fonts: 3 💎
 - createDesignGenerationNode for user to generate a design: 5 💎
 
 CRITICAL DIAMOND RULES:
 1. ALWAYS ask for confirmation before using diamonds. Never deduct diamonds without explicit user consent.
-2. If user has enough diamonds: "To show font options, it will cost 3 💎. You currently have ${diamondCount} 💎. Do you want to proceed?"
+2. Check the user's current diamond count from the message context (it will be provided at the end of their message).
+3. If user has enough diamonds: "To show font options, it will cost 3 💎. You currently have X 💎. Do you want to proceed?"
    \`\`\`json
    {
      "chatOptions": ["Yes (-3 💎)", "No"]
    }
    \`\`\`
-3. If user doesn't have enough: "This feature requires X 💎, but you currently have ${diamondCount} 💎. You can earn more 💎 by interacting with designs on the canvas! Come back when you have enough."
-4. Only proceed with the diamond-costing feature AFTER the user confirms by selecting "Yes" option.
-5. Use the deductDiamonds tool after receiving user confirmation.
+4. If user doesn't have enough: "This feature requires X 💎, but you currently have Y 💎. You can earn more 💎 by interacting with designs on the canvas! Come back when you have enough."
+5. Only proceed with the diamond-costing feature AFTER the user confirms by selecting "Yes" option.
+6. Use the deductDiamonds tool after receiving user confirmation.
 
 ## CRITICAL RULES:
 1. **ALWAYS use JSON format when presenting options to users** - The user interface has special chips that parse chatOptions JSON. Never present options in plain text.
@@ -254,7 +262,7 @@ Stores user design requirements and preferences for design generation context. U
     "audience": "casual readers, students", 
     "topic": "creative arts",
     "style": "modern",
-    "requirements": ["mobile-friendly", "easy to read"]
+    "requirements": ["easy to read", "well-designed"]
   }
 }
 \`\`\`
@@ -432,7 +440,7 @@ Remember:
       if (messages.length === 0) {
         conversationMessages.push({
           role: 'user',
-          content: buildMessageContent(message, images, systemPrompt)
+          content: buildMessageContent(message, images, systemPrompt, diamondCount)
         });
       } else {
         // For subsequent messages, build full conversation history
@@ -454,10 +462,11 @@ Remember:
           });
         }
         
-        // Add the new message
+        // Add the new message with diamond count
+        const messageWithDiamonds = `${message}\n\n(Current diamond count: ${diamondCount} 💎)`;
         conversationMessages.push({
           role: 'user',
-          content: message
+          content: messageWithDiamonds
         });
       }
 
@@ -525,9 +534,10 @@ Remember:
 }
 
 
-function buildMessageContent(message: string, images: string[] = [], systemPrompt: string) {
+function buildMessageContent(message: string, images: string[] = [], systemPrompt: string, diamondCount: number = 0) {
+  const messageWithDiamonds = `${message}\n\n(Current diamond count: ${diamondCount} 💎)`;
   const content = [
-    { type: 'text', text: `${systemPrompt}\n\nUser: ${message}` }
+    { type: 'text', text: `${systemPrompt}\n\nUser: ${messageWithDiamonds}` }
   ];
 
   if (images && images.length > 0) {

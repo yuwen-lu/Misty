@@ -7,20 +7,12 @@ import { defaultBoundingBox, loadingIdState } from '../../util';
 
 const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, selected }) => {
     const [designCode, setDesignCode] = useState<string>(() => {
-        // Start with a placeholder or the generated code if available
-        return data.designCode || `() => {
-            return (
-                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                    <div className="text-center">
-                        <h1 className="text-4xl font-bold text-gray-900 mb-4">Ready to Generate</h1>
-                        <p className="text-xl text-gray-600">Click "Generate Design" to create your custom website</p>
-                    </div>
-                </div>
-            );
-        }`;
+        // Return empty string initially - will be populated by generation
+        return data.designCode || '';
     });
     const [isAnimating, setIsAnimating] = useState(false);
     const [hasGenerated, setHasGenerated] = useState(false);
+    const [hasAutoStarted, setHasAutoStarted] = useState(false);
 
     const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -35,6 +27,7 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
     // Update design code when received from API
     useEffect(() => {
         if (data.designCode && data.designCode !== designCode) {
+            console.log('🎨 Design code received:', data.designCode);
             setDesignCode(data.designCode);
             setHasGenerated(true);
         }
@@ -48,6 +41,9 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
         // Use the design context from the chat assistant
         const designContext = data.designContext || "Generate a modern website design based on user preferences.";
         
+        console.log('⚡ Starting design generation...');
+        console.log('📋 Context:', designContext);
+        
         // Call the design generation API
         data.handleDesignGeneration && data.handleDesignGeneration(
             designContext,
@@ -55,6 +51,16 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
             {} // No manual design request needed
         );
     }, [isAnimating, data, id]);
+
+    // Auto-start generation when node is first created
+    useEffect(() => {
+        if (!hasAutoStarted && !data.designCode && data.handleDesignGeneration && data.designContext) {
+            console.log('🚀 Auto-starting design generation for node:', id);
+            console.log('📋 Design context:', data.designContext);
+            setHasAutoStarted(true);
+            generateDesign();
+        }
+    }, [hasAutoStarted, data.designCode, data.handleDesignGeneration, data.designContext, generateDesign, id]);
 
     const regenerateDesign = useCallback(() => {
         setHasGenerated(false);
@@ -66,7 +72,11 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
                 border-t-8 border-t-purple-900
             w-full h-full 
-            transition-shadow duration-300 ease-in-out ${selected ? 'shadow-2xl ring-4 ring-purple-500 ring-opacity-50' : ''}`}>
+            transition-shadow duration-300 ease-in-out ${selected ? 'shadow-2xl ring-4 ring-purple-500 ring-opacity-50' : ''}`}
+            style={{
+                minWidth: '1280px',
+                minHeight: '800px'
+            }}>
             
             <div
                 className="design-generation-container flex flex-col items-center"
@@ -127,7 +137,7 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
                 </div>
 
                 {/* Resize Control */}
-                <NodeResizeControl style={{ background: 'transparent', border: 'none' }} minWidth={600} minHeight={700}>
+                <NodeResizeControl style={{ background: 'transparent', border: 'none' }} minWidth={1280} minHeight={800}>
                     <div style={{ color: "#ddd", position: 'absolute', right: 7, bottom: 5, visibility: selected ? "visible" : "hidden" }}>
                         <LuEqual />
                     </div>
