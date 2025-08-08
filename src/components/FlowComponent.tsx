@@ -319,6 +319,10 @@ const FlowComponent: React.FC = () => {
                 designCode: '',
                 response: '',
                 designContext: designContext || '', // Pass the design context from the assistant
+            },
+            style: {
+                width: 1280,
+                height: 800
             }
         };
         

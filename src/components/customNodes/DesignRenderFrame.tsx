@@ -30,8 +30,14 @@ const DesignRenderFrame: React.FC<DesignRenderFrameProps> = ({
         return currentNodeState?.loading || false;
     }, [loadingStates, nodeId]);
 
+    const liveProviderScope = useMemo(() => ({
+        React, 
+        useState: React.useState,
+        ...LuIcons
+    }), []);
+
     return (
-        <div className="code-render-container grow w-full overflow-auto relative">
+        <div className="code-render-container w-full h-full overflow-hidden relative">
             {/* Loading overlay */}
             <div className={`spinner-wrapper z-50 ${isLoading ? "visible" : "invisible"}`}>
                 <div className={`spinner ${isLoading ? 'animate-spin' : ''}`}></div>
@@ -52,19 +58,29 @@ const DesignRenderFrame: React.FC<DesignRenderFrameProps> = ({
 
             {/* Design preview */}
             <div className={`${isLoading ? "invisible" : ""} w-full h-full`}>
-                <div className="h-full overflow-auto bg-white rounded-lg shadow-inner">
-                    <LiveProvider
-                        code={designCode}
-                        scope={useMemo(() => ({
-                            React, 
-                            useState: React.useState,
-                            ...LuIcons
-                        }), [])}
-                    >
-                        <LivePreview />
-                        <LiveError />
-                    </LiveProvider>
-                </div>
+                {designCode ? (
+                    <div className="w-full h-full overflow-auto bg-white rounded-lg shadow-inner">
+                        <div className="w-full h-full max-w-full max-h-full overflow-auto">
+                            <LiveProvider
+                                code={designCode}
+                                scope={liveProviderScope}
+                            >
+                                <div className="w-full h-full overflow-auto">
+                                    <LivePreview />
+                                </div>
+                                <LiveError />
+                            </LiveProvider>
+                        </div>
+                    </div>
+                ) : (
+                    /* Empty state - no design code yet and not loading */
+                    <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg shadow-inner">
+                        <div className="text-center text-gray-400">
+                            <div className="text-lg font-medium mb-2">Design Generation</div>
+                            <div className="text-sm">Initializing...</div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

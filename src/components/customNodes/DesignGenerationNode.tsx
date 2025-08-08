@@ -68,60 +68,55 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
     }, [generateDesign]);
 
     return (
-        <div className={`flex flex-row px-20 py-5 
+        <div className={`flex flex-col px-5 py-3 
             text-white bg-purple-700 bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-lg border-2 border-stone-400 border-opacity-30 shadow-lg 
                 border-t-8 border-t-purple-900
-            w-full h-full 
+            w-full h-full overflow-hidden
             transition-shadow duration-300 ease-in-out ${selected ? 'shadow-2xl ring-4 ring-purple-500 ring-opacity-50' : ''}`}
             style={{
-                minWidth: '1280px',
-                minHeight: '800px'
+                width: '1280px',
+                height: '800px'
             }}>
             
             <div
-                className="design-generation-container flex flex-col items-center"
+                className="design-generation-container flex flex-col w-full h-full"
                 ref={nodeRef}
             >
                 {/* Header */}
-                <div className='w-full flex relative items-begin mb-6'>
+                <div className='w-full flex relative items-center mb-4'>
                     <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl'>
                         Design Generation
                     </div>
 
-                    <div className='ml-auto flex gap-2'>
-                        {/* Generate/Regenerate Button */}
-                        <button
-                            className='flex items-center space-x-2 font-normal text-md text-purple-900 px-4 rounded bg-white/10 hover:bg-white/20'
-                            onClick={hasGenerated ? regenerateDesign : generateDesign}>
-                            {hasGenerated ? (
-                                <>
-                                    <RefreshCw className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-spin' : ''}`} />
-                                    <span>Regenerate</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Sparkles className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-complex-rotate' : ''}`} />
-                                    <span>Generate Design</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
+                    {/* Only show Regenerate button after generation is complete */}
+                    {hasGenerated && (
+                        <div className='ml-auto'>
+                            <button
+                                className='flex items-center space-x-2 font-normal text-sm text-purple-900 px-3 py-1 rounded bg-white/10 hover:bg-white/20'
+                                onClick={regenerateDesign}>
+                                <RefreshCw className={`transition-all duration-1500 ease-in-out ${isAnimating ? 'animate-spin' : ''}`} size={16} />
+                                <span>Regenerate</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Design Preview */}
-                <DesignRenderFrame
-                    nodeId={id}
-                    response={data.response || ""}
-                    designCode={designCode}
-                    loadingStates={data.loadingStates || []}
-                    updateLoadingState={data.updateLoadingState}
-                    abortController={data.abortController}
-                />
+                {/* Design Preview - takes remaining height */}
+                <div className="flex-1 w-full overflow-hidden">
+                    <DesignRenderFrame
+                        nodeId={id}
+                        response={data.response || ""}
+                        designCode={designCode}
+                        loadingStates={data.loadingStates || []}
+                        updateLoadingState={data.updateLoadingState}
+                        abortController={data.abortController}
+                    />
+                </div>
 
                 {/* Action Buttons */}
-                <div className='flex flex-row gap-3 mt-6'>
+                <div className='flex flex-row justify-end gap-3 mt-4'>
                     <button
-                        className={`flex items-center rounded-lg px-5 py-3 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900`}
+                        className={`flex items-center rounded-lg px-4 py-2 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900`}
                         onClick={() => {
                             if (!data.codePanelVisible) {
                                 data.setDisplayCode && data.setDisplayCode(designCode);
@@ -131,7 +126,7 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
                             data.toggleCodePanelVisible && data.toggleCodePanelVisible();
                         }}
                     >
-                        <LuTerminal />
+                        <LuTerminal size={16} />
                         <span className='ml-2'>{data.codePanelVisible ? "Hide" : "Show"} Code</span>
                     </button>
                 </div>
