@@ -82,7 +82,7 @@ CRITICAL: Do not include any text before or after the code. Return only the func
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
+          max_tokens: 20000,
           stream: true,
           messages: [
             {
