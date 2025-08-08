@@ -14,6 +14,7 @@ interface ChatInputProps {
   model: Models;
   onModelChange: (model: Models) => void;
   animateSendButton?: boolean;
+  showDiamondCursor?: boolean;
 }
 
 export const ChatInput: React.FC<ChatInputProps> = ({
@@ -24,6 +25,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   model,
   onModelChange,
   animateSendButton = false,
+  showDiamondCursor = false,
 }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -55,20 +57,29 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     <div className="sticky bottom-0 w-full pt-4 flex flex-col gap-4">
       <div className="w-full flex flex-col gap-1 bg-gray-50 p-2.5 pl-4 rounded-xl border shadow-sm">
         <div className="flex gap-2 items-end">
-          {/* Main input textarea */}
-          <textarea
-            ref={inputRef}
-            placeholder="Send a message."
-            className="min-h-[40px] max-h-32 overflow-auto w-full bg-transparent border-none resize-none focus:outline-none text-sm"
-            autoFocus
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            rows={1}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
+          {/* Main input textarea with diamond cursor overlay */}
+          <div className="relative w-full">
+            <textarea
+              ref={inputRef}
+              placeholder="Send a message."
+              className="min-h-[40px] max-h-32 overflow-auto w-full bg-transparent border-none resize-none focus:outline-none text-sm"
+              autoFocus
+              spellCheck={false}
+              autoComplete="off"
+              autoCorrect="off"
+              rows={1}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            {/* Diamond cursor overlay */}
+            {showDiamondCursor && (
+              <div className="absolute top-0 left-0 pointer-events-none text-sm leading-[40px] pl-0">
+                <span className="invisible">{input}</span>
+                <span className="animate-pulse text-green-500">💎</span>
+              </div>
+            )}
+          </div>
 
           {/* File upload button */}
           {/* <button className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">

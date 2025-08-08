@@ -412,16 +412,50 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
 
   // State for send button animation
   const [animateSendButton, setAnimateSendButton] = useState(false);
+  
+  // State for typing animation
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingText, setTypingText] = useState('');
+  const [showDiamondCursor, setShowDiamondCursor] = useState(false);
+
+  // Typing animation function
+  const typeMessage = (message: string) => {
+    setIsTyping(true);
+    setShowDiamondCursor(true);
+    setInput('');
+    setTypingText('');
+    
+    let currentIndex = 0;
+    const typingSpeed = 50; // milliseconds per character
+    
+    const typeNextCharacter = () => {
+      if (currentIndex < message.length) {
+        const nextText = message.slice(0, currentIndex + 1);
+        setTypingText(nextText);
+        setInput(nextText);
+        currentIndex++;
+        setTimeout(typeNextCharacter, typingSpeed);
+      } else {
+        // Typing complete - just trigger send button animation
+        setIsTyping(false);
+        setShowDiamondCursor(false);
+        setAnimateSendButton(true);
+        setTimeout(() => {
+          setAnimateSendButton(false);
+        }, 1800); // 0.6s × 3 repetitions
+      }
+    };
+    
+    typeNextCharacter();
+  };
 
   // Handle programmatic messages from diamond menu
   useEffect(() => {
     if (initialMessage && initialMessage.includes('__')) {
       // Extract the actual message without timestamp
       const actualMessage = initialMessage.split('__')[0];
-      setInput(actualMessage);
-      // Trigger send button animation
-      setAnimateSendButton(true);
-      setTimeout(() => setAnimateSendButton(false), 600);
+      // Start typing animation instead of instant population
+      typeMessage(actualMessage);
     }
   }, [initialMessage]);
 
@@ -484,6 +518,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
           model={currentModel}
           onModelChange={setCurrentModel}
           animateSendButton={animateSendButton}
+          showDiamondCursor={showDiamondCursor}
         />
       </div>
     </div>
