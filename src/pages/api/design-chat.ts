@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { message, images, model, messages = [], diamondCount = 0 } = req.body;
+    const { message, images, model, messages = [], diamondCount = 0, designContext = null } = req.body;
     
     console.log('💎 Design-chat API received request:', {
       message: message?.substring(0, 50) + '...',
@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       // System prompt for design assistant
-      const systemPrompt = `You are a design mentor who helps users create thoughtful, purpose-driven designs. Your goal is to educate while creating - teaching design principles through practical application. You guide users through the design process step by step. Be concise in your response.
+      const baseSystemPrompt = `You are a design mentor who helps users create thoughtful, purpose-driven designs. Your goal is to educate while creating - teaching design principles through practical application. You guide users through the design process step by step. Be concise in your response.
 
 ## DIAMOND SYSTEM:
 Certain advanced features cost 💎:
@@ -267,33 +267,19 @@ Stores user design requirements and preferences for design generation context. U
 }
 \`\`\`
 
-### 7. getDesignContext
-Gets the current user's design context from their session to show before design generation.
-
-**Flow:** When user asks to generate design:
-1. First use getDesignContext to retrieve and show their context
-2. Display context in a clean format (no subtitles): "Blog website for industry professionals focused on Technology and AI, informed and trusted style, selected fonts: Inter (headings), Roboto (body), key insights: clean whitespace, minimal navigation, typography focus"
-3. Then check diamonds and ask for confirmation
-
-\`\`\`json
-{
-  "tool": "getDesignContext"
-}
-\`\`\`
-
-### 8. createDesignGenerationNode
+### 7. createDesignGenerationNode
 Creates a design generation canvas where users can generate website designs.
 
 \`\`\`json
 {
   "tool": "createDesignGenerationNode",
   "parameters": {
-    "designContext": "Compiled design context including: project type, audience, style, fonts selected, and key design insights from explored examples"
+    "designContext": "Use the exact context data returned by getDesignContext tool - contains user's actual project requirements, selected fonts, and design notes from session storage"
   }
 }
 \`\`\`
 
-### 9. deductDiamonds
+### 8. deductDiamonds
 Deducts diamonds when providing premium features. Only use this AFTER successfully providing the feature.
 \`\`\`json
 {
@@ -428,6 +414,11 @@ Remember:
 - WAIT for responses before proceeding
 - Show examples ONLY AFTER understanding their needs
 - You're helping the user become a better designer through practical application and curated learning.`;
+
+      // Add design context if available
+      const systemPrompt = designContext 
+        ? `${baseSystemPrompt}\n\n## CURRENT DESIGN CONTEXT:\n${designContext}`
+        : baseSystemPrompt;
 
       // Determine which model to use
       const anthropicModel = model === 'claude-opus' ? 'claude-opus-4-20250514' : 'claude-sonnet-4-20250514';

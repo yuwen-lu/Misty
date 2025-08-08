@@ -303,7 +303,7 @@ export const compileUserInteractionContext = (): string => {
     
     // Add design notes to context
     if (Object.keys(designNotes).length > 0) {
-      context += "DESIGN FEEDBACK FROM WEBSITES:\n";
+      context += "DESIGN NOTES FROM WEBSITES:\n";
       for (const [websiteName, notes] of Object.entries(designNotes)) {
         context += `\n${websiteName}:\n`;
         notes.forEach((note, index) => {

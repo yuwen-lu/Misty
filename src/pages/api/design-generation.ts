@@ -67,13 +67,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 - Lucide React icons (imported as LuIconName): LuActivity, LuAirplay, LuAlertCircle, LuAlignCenter, LuAlignJustify, LuAlignLeft, LuAlignRight, LuAnchor, LuAperture, LuArchive, LuArrowDown, LuArrowLeft, LuArrowRight, LuArrowUp, LuAtSign, LuAward, LuBarChart, LuBattery, LuBell, LuBluetooth, LuBook, LuBookmark, LuBox, LuBriefcase, LuCalendar, LuCamera, LuCheck, LuCheckCircle, LuChevronDown, LuChevronLeft, LuChevronRight, LuChevronUp, LuClipboard, LuClock, LuCloud, LuCode, LuCompass, LuCopy, LuCreditCard, LuCrop
 
 ## Output Format
-Return ONLY a JSON object with this exact structure:
-{
-  "designExplanation": "Brief explanation of the design concept and key features (max 50 words)",
-  "designCode": "() => { /* Complete React component code here */ }"
-}
+Return ONLY the React component function code - no JSON wrapper, no explanations, just the raw code:
 
-CRITICAL: Do not include any text before or after the JSON. The response must be valid JSON only.`;
+() => { /* Complete React component code here */ }
+
+CRITICAL: Do not include any text before or after the code. Return only the function code.`;
 
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',

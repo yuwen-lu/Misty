@@ -5,7 +5,7 @@ import { ChatMessageList, Message } from './ChatMessageList';
 import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from './ChatMessage';
 import { ToolCall } from './ToolCallWidget';
 import { useCoins } from '../../contexts/CoinContext';
-import { storeUserIntent } from '../../utils/userInteractionStorage';
+import { storeUserIntent, compileUserInteractionContext } from '../../utils/userInteractionStorage';
 
 interface ChatPanelProps {
   isMinimized: boolean;
@@ -88,20 +88,6 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
             nodesCreated: [],
             isClickable: false
           });
-        } else if (parsed.tool === 'getDesignContext') {
-          // Get design context for the assistant to show to user
-          const { compileUserInteractionContext } = await import('../../utils/userInteractionStorage');
-          compileUserInteractionContext(); // Just compile, return value handled by assistant
-          
-          toolCalls.push({
-            id: `get-context-${Date.now()}`,
-            toolName: 'getDesignContext',
-            description: 'Design context retrieved',
-            nodesCreated: [],
-            isClickable: false
-          });
-          
-          // The context is available for the assistant to use in the next response
         } else if (parsed.tool === 'deductDiamonds' && parsed.parameters) {
           const amount = parsed.parameters.amount || 0;
           totalDiamondsToDeduct += amount;
@@ -233,11 +219,13 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
       setIsLoading(true);
 
       // Send the initial message to API
+      const initialDesignContext = compileUserInteractionContext();
       const initialPayload = {
         message: initialMessage,
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
         messages: [],
         diamondCount: coins,
+        designContext: initialDesignContext,
       };
       
       console.log('🔷 Sending initial message to design-chat API:', {
@@ -334,11 +322,15 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
     setIsLoading(true);
 
     try {
+      // Get fresh design context for each message
+      const designContext = compileUserInteractionContext();
+      
       const payload = {
         message: input,
         model: currentModel === Models.claudeOpus4 ? 'claude-opus' : 'claude-sonnet',
         messages: messages,
         diamondCount: coins,
+        designContext: designContext,
       };
       
       console.log('🔷 Sending message to design-chat API:', {

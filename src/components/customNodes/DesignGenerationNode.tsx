@@ -96,6 +96,14 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(
             }
         }, [data]);
 
+        const regenerateDesign = useCallback(() => {
+            console.log("🔄 Regenerating design...");
+            // Clear current design code to show loading state
+            setDesignCode("");
+            // Call the same generation function
+            generateDesign();
+        }, [generateDesign]);
+
         return (
             <div
                 className={`flex flex-col px-5 py-3 
@@ -152,6 +160,15 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(
                                 {data.codePanelVisible ? "Hide" : "Show"} Code
                             </span>
                         </button>
+
+                        <button
+                            className="flex items-center rounded-lg px-4 py-2 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"
+                            onClick={regenerateDesign}
+                        >
+                            <Sparkles size={16} />
+                            <span className="ml-2">Regenerate</span>
+                        </button>
+
                         {/* <button
                             className="flex items-center rounded-lg px-4 py-2 text-white font-semibold focus:outline-none bg-zinc-700 hover:bg-zinc-900"
                             onClick={createVariationNode}

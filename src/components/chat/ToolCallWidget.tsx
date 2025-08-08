@@ -109,7 +109,6 @@ const getToolDisplayName = (toolName: string): string => {
     storeUserIntent: 'Requirements Stored',
     deductDiamonds: 'Use Diamonds',
     createDesignGenerationNode: 'Generate Design',
-    getDesignContext: 'Check Design Context',
     imageUpload: 'Image Upload',
     codeRender: 'Code Generation',
   };

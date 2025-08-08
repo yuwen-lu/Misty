@@ -1438,15 +1438,15 @@ const FlowComponent: React.FC = () => {
                 }
 
                 try {
-                    // Clean and validate the response before parsing
+                    // Clean and validate the response - now expecting raw code instead of JSON
                     console.log('📦 Raw design generation response:', finalResponse);
                     
                     // Remove potential markdown code blocks and clean the response
                     let cleanedResponse = finalResponse.trim();
                     
                     // Remove markdown code blocks if present
-                    if (cleanedResponse.startsWith('```json')) {
-                        cleanedResponse = cleanedResponse.replace(/^```json\s*/, '').replace(/\s*```\s*$/, '');
+                    if (cleanedResponse.startsWith('```javascript') || cleanedResponse.startsWith('```jsx') || cleanedResponse.startsWith('```js')) {
+                        cleanedResponse = cleanedResponse.replace(/^```(javascript|jsx|js)\s*/, '').replace(/\s*```\s*$/, '');
                     } else if (cleanedResponse.startsWith('```')) {
                         cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/\s*```\s*$/, '');
                     }
@@ -1460,25 +1460,20 @@ const FlowComponent: React.FC = () => {
                         throw new Error('Empty response after cleaning');
                     }
                     
-                    // Attempt to find JSON within the response if it's not pure JSON
-                    let jsonMatch;
-                    if (!cleanedResponse.startsWith('{')) {
-                        jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
-                        if (jsonMatch) {
-                            cleanedResponse = jsonMatch[0];
-                            console.log('🔍 Extracted JSON from response:', cleanedResponse);
+                    // Validate that this looks like a React component function
+                    if (!cleanedResponse.match(/^\s*\(\s*\)\s*=>\s*\{/)) {
+                        // Try to find a function within the response
+                        const functionMatch = cleanedResponse.match(/\(\s*\)\s*=>\s*\{[\s\S]*\}/);
+                        if (functionMatch) {
+                            cleanedResponse = functionMatch[0];
+                            console.log('🔍 Extracted function from response:', cleanedResponse);
+                        } else {
+                            throw new Error('Response does not contain a valid React component function');
                         }
                     }
                     
-                    const designResult = JSON.parse(cleanedResponse);
-                    console.log('✅ Parsed design result:', designResult);
-                    
-                    if (!designResult.designCode) {
-                        throw new Error('No designCode found in parsed result');
-                    }
-                    
-                    const { designCode } = designResult;
-                    console.log('💻 Extracted design code:', designCode);
+                    console.log('✅ Valid React component code found');
+                    console.log('💻 Design code:', cleanedResponse);
 
                     // Update the design generation node with the new code
                     setNodes((prevNodes) =>
@@ -1488,7 +1483,7 @@ const FlowComponent: React.FC = () => {
                                     ...node,
                                     data: {
                                         ...node.data,
-                                        designCode: designCode,
+                                        designCode: cleanedResponse,
                                         response: finalResponse // Store original response for debugging
                                     }
                                 }
