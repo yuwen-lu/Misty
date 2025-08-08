@@ -20,6 +20,7 @@ const DesignRenderFrame: React.FC<DesignRenderFrameProps> = ({
     updateLoadingState, 
     abortController 
 }) => {
+    const [renderError, setRenderError] = useState<string | null>(null);
     const cancelGeneration = useCallback(() => {
         updateLoadingState(nodeId, false);
         abortController && abortController.abort();
@@ -35,6 +36,26 @@ const DesignRenderFrame: React.FC<DesignRenderFrameProps> = ({
         useState: React.useState,
         ...LuIcons
     }), []);
+
+    const safeDesignCode = useMemo(() => {
+        if (!designCode) return '';
+        
+        try {
+            // Basic validation - check if it's valid JavaScript/JSX syntax
+            if (designCode.includes('JSON.parse') || designCode.includes('JSON.stringify')) {
+                // If code contains JSON operations, wrap them in try-catch
+                return designCode.replace(
+                    /JSON\.(parse|stringify)\([^)]+\)/g, 
+                    (match) => `(() => { try { return ${match}; } catch (e) { console.error('JSON parsing error:', e); return null; } })()`
+                );
+            }
+            return designCode;
+        } catch (error) {
+            console.error('Error processing design code:', error);
+            setRenderError(`Code processing error: ${error}`);
+            return '';
+        }
+    }, [designCode]);
 
     return (
         <div className="code-render-container w-full h-full overflow-hidden relative">
@@ -58,12 +79,29 @@ const DesignRenderFrame: React.FC<DesignRenderFrameProps> = ({
 
             {/* Design preview */}
             <div className={`${isLoading ? "invisible" : ""} w-full h-full`}>
-                {designCode ? (
+                {renderError ? (
+                    <div className="w-full h-full flex items-center justify-center bg-red-50 rounded-lg shadow-inner">
+                        <div className="text-center text-red-600 p-4">
+                            <div className="text-lg font-medium mb-2">Render Error</div>
+                            <div className="text-sm">{renderError}</div>
+                            <button 
+                                className="mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                                onClick={() => setRenderError(null)}
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    </div>
+                ) : safeDesignCode ? (
                     <div className="w-full h-full overflow-auto bg-white rounded-lg shadow-inner">
                         <div className="w-full h-full max-w-full max-h-full overflow-auto">
                             <LiveProvider
-                                code={designCode}
+                                code={safeDesignCode}
                                 scope={liveProviderScope}
+                                onError={(error) => {
+                                    console.error('LiveProvider error:', error);
+                                    setRenderError(`Render error: ${error.toString()}`);
+                                }}
                             >
                                 <div className="w-full h-full overflow-auto">
                                     <LivePreview />

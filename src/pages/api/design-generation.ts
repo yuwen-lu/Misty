@@ -46,11 +46,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 ## Technical Requirements
 - Use only React (functional components with hooks) and Tailwind CSS classes
-- Create responsive layouts
+- Create responsive layouts optimized for DESKTOP viewing (1280px+ width)
+- Design for desktop-first, not mobile-first
 - Use semantic HTML structure
 - Return only the component function: () => { }
 - Do not include imports, exports, or additional code
 - Use proper Tailwind classes for styling
+- Assume the component will be rendered in a 1280px wide container
 
 ## Design Guidelines
 - Use appropriate color schemes that match the brand/industry

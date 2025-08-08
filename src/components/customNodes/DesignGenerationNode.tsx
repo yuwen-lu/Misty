@@ -27,29 +27,40 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
     // Update design code when received from API
     useEffect(() => {
         if (data.designCode && data.designCode !== designCode) {
-            console.log('🎨 Design code received:', data.designCode);
-            setDesignCode(data.designCode);
-            setHasGenerated(true);
+            try {
+                console.log('🎨 Design code received:', data.designCode);
+                setDesignCode(data.designCode);
+                setHasGenerated(true);
+            } catch (error) {
+                console.error('Error processing design code:', error);
+                setDesignCode('');
+                setHasGenerated(false);
+            }
         }
     }, [data.designCode]);
 
     const generateDesign = useCallback(() => {
-        if (!isAnimating) {
-            setIsAnimating(true);
+        try {
+            if (!isAnimating) {
+                setIsAnimating(true);
+            }
+            
+            // Use the design context from the chat assistant
+            const designContext = data.designContext || "Generate a modern website design based on user preferences.";
+            
+            console.log('⚡ Starting design generation...');
+            console.log('📋 Context:', designContext);
+            
+            // Call the design generation API
+            data.handleDesignGeneration && data.handleDesignGeneration(
+                designContext,
+                id,
+                {} // No manual design request needed
+            );
+        } catch (error) {
+            console.error('Error in design generation:', error);
+            setIsAnimating(false);
         }
-        
-        // Use the design context from the chat assistant
-        const designContext = data.designContext || "Generate a modern website design based on user preferences.";
-        
-        console.log('⚡ Starting design generation...');
-        console.log('📋 Context:', designContext);
-        
-        // Call the design generation API
-        data.handleDesignGeneration && data.handleDesignGeneration(
-            designContext,
-            id,
-            {} // No manual design request needed
-        );
     }, [isAnimating, data, id]);
 
     // Auto-start generation when node is first created
@@ -83,8 +94,8 @@ const DesignGenerationNode: React.FC<NodeProps> = React.memo(({ id, data, select
                 ref={nodeRef}
             >
                 {/* Header */}
-                <div className='w-full flex relative items-center mb-4'>
-                    <div className='text-purple-900 absolute left-1/2 transform -translate-x-1/2 font-semibold text-xl'>
+                <div className='w-full flex relative mb-4'>
+                    <div className='text-purple-900 font-semibold text-xl'>
                         Design Generation
                     </div>
 
