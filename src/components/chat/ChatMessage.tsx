@@ -139,9 +139,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = memo(({
   }, [onAddToInput]);
 
   return (
-    <div className="flex items-start gap-2 px-2 py-2 rounded-md bg-white">
+    <div className="flex items-start gap-2 px-2 py-2 rounded-xl bg-white">
       <div
-        className={`border rounded-md p-1 ${
+        className={`border rounded-lg p-1 ${
           role === 'user' ? 'bg-white' : 'bg-black border-black'
         }`}
       >

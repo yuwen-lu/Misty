@@ -439,12 +439,12 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
   }
 
   return (
-    <div className="chat-panel-fixed chat-panel-container right-4 top-4 bottom-4 w-96 bg-white border border-gray-300 rounded-lg shadow-xl flex flex-col z-50">
+    <div className="chat-panel-fixed chat-panel-container right-4 top-4 bottom-4 w-96 bg-white border border-gray-300 rounded-3xl shadow-xl flex flex-col z-50">
       {/* Header */}
       <div className="flex items-center justify-end p-4 border-b border-gray-200">
         <button
           onClick={onToggleMinimize}
-          className="p-1 hover:bg-gray-200 rounded"
+          className="p-1 hover:bg-gray-200 rounded-md"
         >
           <Minimize2 size={16} />
         </button>
@@ -460,7 +460,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
         
         {isLoading && (
           <div className="flex justify-start px-4 pb-4">
-            <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
+            <div className="bg-gray-100 text-gray-800 p-3 rounded-xl">
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>

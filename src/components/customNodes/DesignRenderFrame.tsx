@@ -106,7 +106,7 @@ const DesignRenderFrame: React.FC<DesignRenderFrameProps> = ({
                                 {renderError}
                             </div>
                             <div className="text-xs text-gray-600 mb-4">
-                                Don't worry, this happens! Try regenerating the design or check the code for syntax issues.
+                                Don&apos;t worry, this happens! Try regenerating the design or check the code for syntax issues.
                             </div>
                             <button 
                                 className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg text-sm hover:from-red-700 hover:to-red-800 shadow-md transition-all duration-200 transform hover:scale-105"

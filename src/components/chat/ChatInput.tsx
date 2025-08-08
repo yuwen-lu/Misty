@@ -53,7 +53,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   return (
     <div className="sticky bottom-0 w-full pt-4 flex flex-col gap-4">
-      <div className="w-full flex flex-col gap-1 bg-gray-50 p-2.5 pl-4 rounded-md border shadow-sm">
+      <div className="w-full flex flex-col gap-1 bg-gray-50 p-2.5 pl-4 rounded-xl border shadow-sm">
         <div className="flex gap-2 items-end">
           {/* Main input textarea */}
           <textarea
@@ -84,7 +84,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           <button
             onClick={handleSubmit}
             disabled={!input.trim() && !isLoading}
-            className={`w-8 h-8 flex items-center justify-center rounded-md transition-all ${
+            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
               animateSendButton 
                 ? 'bg-green-500 hover:bg-green-600 text-white animate-bounce-scale' 
                 : 'bg-black hover:bg-gray-800 text-white disabled:bg-gray-300'
