@@ -38,7 +38,7 @@ const CoinDisplay: React.FC<CoinDisplayProps> = ({
     };
 
     const handleGenerateDesignClick = () => {
-        // TODO: Implement generate design functionality
+        sendChatMessage("generate design for me");
         setShowMenu(false);
     };
 

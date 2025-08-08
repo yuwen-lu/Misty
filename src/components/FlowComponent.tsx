@@ -30,9 +30,11 @@ import TextInstructionNode from "./customNodes/TextInstructionNode";
 import DesignNotesNode from "./customNodes/DesignNotesNode";
 import { addDesignNote } from '../utils/userInteractionStorage';
 import DesignCritiqueNode from "./customNodes/DesignCritiqueNode";
+import DesignGenerationNode from "./customNodes/DesignGenerationNode";
 import CodeEditorPanel from "./CodeEditorPanel";
 import { ChatPanel } from "./chat/ChatPanel";
 import { Models } from "./chat/ChatInput";
+import { useCoins } from "../contexts/CoinContext";
 import InitialChatDialog from "./chat/InitialChatDialog";
 import { WebPreviewNodeData, FontNodeData, TextInstructionNodeData } from "./chat/ChatMessage";
 import { useChat } from "../contexts/ChatContext";
@@ -74,6 +76,7 @@ const nodeTypes: NodeTypes = {
     textInstructionNode: TextInstructionNode,
     designNotesNode: DesignNotesNode,
     designCritiqueNode: DesignCritiqueNode,
+    designGenerationNode: DesignGenerationNode,
 };
 
 const edgeTypes = {
@@ -119,6 +122,7 @@ const fetchResponseUrl = process.env.REACT_APP_DEPLOYMENT_BACKEND_URL
 
 
 const FlowComponent: React.FC = () => {
+    const { coins } = useCoins();
     const [nodes, setNodes] = useState<Node[]>(initialNodes);
     const [edges, setEdges] = useState<Edge[]>(initialEdges);
     const [isDragging, setIsDragging] = useState(false); // when we drag subimagenode (washi tape)
@@ -302,6 +306,34 @@ const FlowComponent: React.FC = () => {
     const nextWebPreviewPosition = React.useRef({ x: 600, y: 200 });
     // Global tracker for column position (0 or 1 for two columns)
     const currentColumn = React.useRef(0);
+    // Function to create DesignGenerationNode
+    const createDesignGenerationNode = useCallback((onNodeCreated?: (x: number, y: number) => void, designContext?: string) => {
+        const nodeId = `design-generation-${Date.now()}`;
+        const position = { x: 400, y: 200 };
+        
+        const newNode: Node = {
+            id: nodeId,
+            type: 'designGenerationNode',
+            position,
+            data: {
+                designCode: '',
+                response: '',
+                designContext: designContext || '', // Pass the design context from the assistant
+            }
+        };
+        
+        setNodes((prevNodes) => [...prevNodes, newNode]);
+        
+        // Center view on the new node
+        if (onNodeCreated) {
+            setTimeout(() => {
+                onNodeCreated(position.x + 300, position.y + 400);
+            }, 100);
+        }
+        
+        return nodeId;
+    }, []);
+
     // Function to create WebPreviewNodes from chat API responses
     const createWebPreviewNodes = useCallback(async (webPreviewNodesData: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void, nodeIds?: string[]) => {
         
@@ -1347,6 +1379,88 @@ const FlowComponent: React.FC = () => {
         }
     };
 
+    const handleDesignGeneration = async (
+        designContext: string,
+        targetNodeId: string,
+        _designRequest: any
+    ) => {
+        updateLoadingState(targetNodeId, true);
+        setResponse("");
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        try {
+            const requestData = {
+                designContext
+            };
+
+            const response = await fetch('/api/design-generation', {
+                signal: controller.signal,
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestData),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            if (response.body) {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let loopRunner = true;
+                let finalResponse = "";
+
+                while (loopRunner) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        loopRunner = false;
+                        break;
+                    }
+                    const decodedChunk = decoder.decode(value, {
+                        stream: true,
+                    });
+                    finalResponse += decodedChunk;
+                    setResponse((prevResponse) => prevResponse + decodedChunk);
+                }
+
+                try {
+                    // Parse the JSON response
+                    const designResult = JSON.parse(finalResponse);
+                    const { designCode } = designResult;
+
+                    // Update the design generation node with the new code
+                    setNodes((prevNodes) =>
+                        prevNodes.map((node) =>
+                            node.id === targetNodeId
+                                ? {
+                                    ...node,
+                                    data: {
+                                        ...node.data,
+                                        designCode: designCode
+                                    }
+                                }
+                                : node
+                        )
+                    );
+                } catch (parseError) {
+                    console.error("Error parsing design generation response:", parseError);
+                }
+            }
+        } catch (err) {
+            if (err instanceof DOMException && err.name === "AbortError") {
+                console.log("Design generation aborted");
+            } else {
+                console.error("Error in design generation:", err);
+            }
+        } finally {
+            updateLoadingState(targetNodeId, false);
+            setAbortController(null);
+        }
+    };
+
     const addExplanationsNode = (
         explanations: Change[] | string[],
         renderCodeNodeBoundingBox: BoundingBox
@@ -1375,7 +1489,7 @@ const FlowComponent: React.FC = () => {
         // update the coderendernode to display generation progress
         setNodes((nds) =>
             nds.map((node) =>
-                node.type === "codeRenderNode"
+                node.type === "codeRenderNode" || node.type === "designGenerationNode"
                     ? { ...node, data: { ...node.data, response: response } }
                     : node
             )
@@ -1659,6 +1773,21 @@ const FlowComponent: React.FC = () => {
                                 onSubImageConfirmed: createSubImages,
                             },
                         };
+                    } else if (node.type === "designGenerationNode") {
+                        return {
+                            ...node,
+                            data: {
+                                ...node.data,
+                                toggleCodePanelVisible: toggleCodePanelVisible,
+                                codePanelVisible: codePanelVisible,
+                                setDisplayCode: setDisplayCode,
+                                loadingStates: loadingStates,
+                                updateLoadingState: updateLoadingState,
+                                abortController: abortController,
+                                addNewEdge: addNewEdge,
+                                handleDesignGeneration: handleDesignGeneration,
+                            },
+                        };
                     } else {
                         return node;
                     }
@@ -1711,6 +1840,7 @@ const FlowComponent: React.FC = () => {
                     onCreateWebPreviewNode={createWebPreviewNodes}
                     onCreateFontNode={createFontNodes}
                     onCreateTextInstructionNode={createTextInstructionNodes}
+                    onCreateDesignGenerationNode={createDesignGenerationNode}
                     onCenterCanvas={handleCenterOnPosition}
                 />
             )}

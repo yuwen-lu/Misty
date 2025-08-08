@@ -15,6 +15,7 @@ interface ChatPanelProps {
   onCreateWebPreviewNode?: (webPreviewNodes: WebPreviewNodeData[], onFirstNodeCreated?: (x: number, y: number) => void, nodeIds?: string[]) => void;
   onCreateFontNode?: (fontNodes: FontNodeData[], onFirstNodeCreated?: (x: number, y: number) => void) => void;
   onCreateTextInstructionNode?: (textInstructionNodes: TextInstructionNodeData[]) => void;
+  onCreateDesignGenerationNode?: (onNodeCreated?: (x: number, y: number) => void, designContext?: string) => string;
   onCenterCanvas?: (x: number, y: number) => void;
 }
 
@@ -26,6 +27,7 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
   onCreateWebPreviewNode,
   onCreateFontNode,
   onCreateTextInstructionNode,
+  onCreateDesignGenerationNode,
   onCenterCanvas
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -59,6 +61,24 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
           fontNodes.push(parsed);
         } else if (parsed.tool === 'createTextInstructionNode' && parsed.parameters) {
           textInstructionNodes.push(parsed);
+        } else if (parsed.tool === 'createDesignGenerationNode' && parsed.parameters) {
+          // Create design generation node with design context
+          if (onCreateDesignGenerationNode) {
+            const nodeId = onCreateDesignGenerationNode(
+              (x, y) => {
+                if (onCenterCanvas) onCenterCanvas(x, y);
+              },
+              parsed.parameters.designContext
+            );
+            
+            toolCalls.push({
+              id: `design-generation-${Date.now()}`,
+              toolName: 'createDesignGenerationNode',
+              description: 'Design generation canvas created',
+              nodesCreated: [{ id: nodeId, position: { x: 400, y: 200 } }],
+              isClickable: true
+            });
+          }
         } else if (parsed.tool === 'storeUserIntent' && parsed.parameters) {
           storeUserIntent(parsed.parameters);
           toolCalls.push({
@@ -68,6 +88,20 @@ const ChatPanelComponent: React.FC<ChatPanelProps> = ({
             nodesCreated: [],
             isClickable: false
           });
+        } else if (parsed.tool === 'getDesignContext') {
+          // Get design context for the assistant to show to user
+          const { compileUserInteractionContext } = await import('../../utils/userInteractionStorage');
+          compileUserInteractionContext(); // Just compile, return value handled by assistant
+          
+          toolCalls.push({
+            id: `get-context-${Date.now()}`,
+            toolName: 'getDesignContext',
+            description: 'Design context retrieved',
+            nodesCreated: [],
+            isClickable: false
+          });
+          
+          // The context is available for the assistant to use in the next response
         } else if (parsed.tool === 'deductDiamonds' && parsed.parameters) {
           const amount = parsed.parameters.amount || 0;
           totalDiamondsToDeduct += amount;
