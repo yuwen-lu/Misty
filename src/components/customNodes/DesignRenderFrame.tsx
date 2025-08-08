@@ -122,10 +122,6 @@ const DesignRenderFrame: React.FC<DesignRenderFrameProps> = ({
                             <LiveProvider
                                 code={safeDesignCode}
                                 scope={liveProviderScope}
-                                onError={(error) => {
-                                    console.error('LiveProvider error:', error);
-                                    setRenderError(`Render error: ${error.toString()}`);
-                                }}
                             >
                                 <div className="w-full h-full overflow-auto">
                                     <LivePreview />
